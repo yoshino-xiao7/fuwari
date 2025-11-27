@@ -1,6 +1,6 @@
 ---
 title: "Ciallo～ (∠・ω< )⌒★，搭建博客，重新开始"
-published: 2025-09-06T02:22:00
+published: 2025-11-26T02:22:00
 description: "发现自己一直以来还是没有好好搭建一个自己的博客，就重新搞一下"
 image: "../assets/images/2025-11-26-22-40-37-image.jpg"
 tags: ["开场白"]
