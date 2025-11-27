@@ -290,8 +290,8 @@ var _hmt = _hmt || [];
 
 		<!-- 域名检测脚本 -->
 		<script>
-			(function(){
-  // 优先使用模板注入的 window.officialSites；没有时使用备用列表
+			(function() {
+  // 确保 blog-n.yukiryou.top 在 officialSites 数组中
   const officialSites = window.officialSites || [
     "https://blog-n.yukiryou.top",
     "https://blog.yukiryou.top"
@@ -300,15 +300,17 @@ var _hmt = _hmt || [];
   function normalizeHost(h) {
     if (!h) return "";
     h = String(h).trim().toLowerCase();
-    // 如果是完整 URL，则取 hostname
+
+    // 如果是完整 URL，提取 hostname
     try {
       if (h.includes("://")) {
         h = new URL(h).hostname;
       }
     } catch (e) {
-      // 不是完整 URL 就当作纯域名处理
+      // 不是完整 URL，直接当作纯域名处理
     }
-    // 去掉尾点与 www 前缀
+
+    // 去掉尾部的点（.）和 www 前缀
     return h.replace(/\.$/, "").replace(/^www\./, "");
   }
 
@@ -317,12 +319,12 @@ var _hmt = _hmt || [];
       const currentDomain = normalizeHost(location.hostname);
       const officialDomains = officialSites.map(s => normalizeHost(s)).filter(Boolean);
 
-      // 调试输出（生产可移除）
-      console.debug("[域名检测] current:", currentDomain, "officials:", officialDomains);
+      console.debug("[域名检测] 当前域名:", currentDomain, "官方域名:", officialDomains);
 
       const isOfficial = officialDomains.includes(currentDomain);
       const isLocal = ["localhost", "127.0.0.1"].includes(currentDomain);
 
+      // 确保正确识别官方域名
       if (!isOfficial && !isLocal) {
         const shouldRedirect = confirm(
           `⚠️ 域名安全警告\n\n` +
@@ -336,18 +338,13 @@ var _hmt = _hmt || [];
         if (shouldRedirect) {
           const currentPath = location.pathname + location.search + location.hash;
           let base = officialSites[0];
-          // 如果 base 没写协议，使用当前页面协议拼接
+
           if (!/^https?:\/\//i.test(base)) {
             base = location.protocol + "//" + base;
           }
-          try {
-            // 确保路径正确拼接，避免错误的路径格式
-            const redirectUrl = new URL(currentPath, base);
-            location.href = redirectUrl.toString();
-          } catch (e) {
-            // 兜底拼接：防止发生路径拼接错误
-            location.href = base.replace(/\/$/, "") + currentPath;
-          }
+
+          const redirectUrl = new URL(currentPath, base);
+          location.href = redirectUrl.toString();
         }
       }
     } catch (err) {
@@ -361,7 +358,6 @@ var _hmt = _hmt || [];
     checkDomain();
   }
 })();
-
 </script>
 
 <Analytics />
