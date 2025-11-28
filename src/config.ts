@@ -56,6 +56,10 @@ export const siteConfig: SiteConfig = {
 			//   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
 		},
 	],
+	officialSites: [
+		{ url: "https://blog-n.yukiryou.top", alias: "Vercel" },
+		{ url: "https://blog.yukiryou.top", alias: "香港" },
+	],
 };
 
 export const navBarConfig: NavBarConfig = {
