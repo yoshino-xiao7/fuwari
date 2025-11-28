@@ -3,5 +3,6 @@
   "useMarkdownLinks": true,
   "newFileLocation": "folder",
   "newFileFolderPath": "src/content/posts",
-  "attachmentFolderPath": "src/content/assets/images"
+  "attachmentFolderPath": "src/content/assets/images",
+  "promptDelete": false
 }
