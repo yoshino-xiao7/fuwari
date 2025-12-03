@@ -60,6 +60,7 @@ export const siteConfig: SiteConfig = {
 		{ url: "https://blog-n.yukiryou.top", alias: "Vercel" },
 		{ url: "https://blog.yukiryou.icu", alias: "备案域" },
 		{ url: "https://blog.yukiryou.top", alias: "香港" },
+		{ url: "https://yukiryou.icu", alias: "阿里云" },
 	],
 };
 
