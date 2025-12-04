@@ -37,7 +37,7 @@ export const siteConfig: SiteConfig = {
 	},
 	background: {
 		enable: true, // Enable background image
-		src: "https://eopfapi.b.2.f.f.0.7.4.0.1.0.0.2.ip6.arpa/pic?img=ua", // Background image URL (supports HTTPS)
+		src: "https://img.yukiryou.icu/pic?img=ua", // Background image URL (supports HTTPS)
 		position: "center", // Background position: 'top', 'center', 'bottom'
 		size: "cover", // Background size: 'cover', 'contain', 'auto'
 		repeat: "no-repeat", // Background repeat: 'no-repeat', 'repeat', 'repeat-x', 'repeat-y'
@@ -60,7 +60,7 @@ export const siteConfig: SiteConfig = {
 		{ url: "https://blog-n.yukiryou.top", alias: "Vercel" },
 		{ url: "https://blog.yukiryou.icu", alias: "备案域" },
 		{ url: "https://blog.yukiryou.top", alias: "香港" },
-		{ url: "https://yukiryou.icu", alias: "阿里云" },
+		{ url: "https://yukiryou.icu", alias: "阿里云" }
 	],
 };
 
