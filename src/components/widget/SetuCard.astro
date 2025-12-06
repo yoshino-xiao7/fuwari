@@ -1,0 +1,228 @@
+---
+import WidgetLayout from "./WidgetLayout.astro";
+
+interface Props {
+  class?: string;
+  style?: string;
+}
+
+const className = Astro.props.class;
+const style = Astro.props.style;
+---
+
+<WidgetLayout name="图片抽卡" id="setu-card" class={className} style={style}>
+  <div class="flex flex-col gap-3 text-sm">
+    <div class="flex justify-between items-center text-xs text-neutral-500 gap-2">
+      <span id="setu-status-text">点击右侧按钮抽一张图</span>
+
+      <button
+        id="setu-draw-btn"
+        type="button"
+        aria-label="抽一张随机插画"
+        class="btn-regular h-8 text-sm px-3 rounded-lg inline-flex items-center flex-shrink-0 whitespace-nowrap"
+      >
+        <span id="setu-draw-text">抽卡</span>
+      </button>
+    </div>
+
+    <!-- 抽卡结果 -->
+    <div id="setu-result" class="flex gap-3 items-start hidden">
+      <!-- 缩略图（点击预览） -->
+      <button
+        id="setu-thumb-wrapper"
+        type="button"
+        class="w-16 h-16 rounded-lg overflow-hidden bg-neutral-200 dark:bg-neutral-700 flex-shrink-0"
+        aria-label="预览图片"
+      >
+        <img
+          id="setu-thumb"
+          src=""
+          alt=""
+          loading="lazy"
+          class="w-full h-full object-cover"
+        />
+      </button>
+
+      <div class="flex flex-col gap-1 min-w-0">
+        <div
+          id="setu-title"
+          class="font-medium text-neutral-800 dark:text-neutral-200 line-clamp-2"
+        ></div>
+        <div
+          id="setu-author"
+          class="text-xs text-neutral-500"
+        ></div>
+
+        <a
+          id="setu-link"
+          href="#"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="在新标签页查看原图"
+          class="btn-regular h-8 text-sm px-3 rounded-lg inline-flex items-center flex-shrink-0 whitespace-nowrap w-fit"
+        >
+          <span>查看原图</span>
+        </a>
+      </div>
+    </div>
+
+    <p id="setu-error" class="text-xs text-red-500 hidden"></p>
+  </div>
+</WidgetLayout>
+
+<div
+  id="setu-preview"
+  class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden"
+>
+  <div class="max-w-3xl max-h-[90vh] relative px-4">
+    <button
+      id="setu-preview-close"
+      type="button"
+      class="absolute -top-10 right-4 text-sm text-neutral-200 hover:text-white"
+    >
+      关闭
+    </button>
+    <img
+      id="setu-preview-img"
+      src=""
+      alt=""
+      class="max-w-full max-h-[90vh] rounded-lg shadow-lg"
+    />
+  </div>
+</div>
+
+<script>
+  const API_URL = "https://api.yukiryou.icu/setu/v2";
+
+  (function () {
+    const root = document.getElementById("setu-card");
+    if (!root) return;
+
+    const drawBtn = root.querySelector("#setu-draw-btn");
+    const drawText = root.querySelector("#setu-draw-text");
+    const statusText = root.querySelector("#setu-status-text");
+
+    const result = root.querySelector("#setu-result");
+    const error = root.querySelector("#setu-error");
+    const thumb = root.querySelector("#setu-thumb");
+    const thumbWrapper = root.querySelector("#setu-thumb-wrapper");
+    const titleEl = root.querySelector("#setu-title");
+    const authorEl = root.querySelector("#setu-author");
+    const link = root.querySelector("#setu-link");
+
+    const preview = document.getElementById("setu-preview");
+    const previewImg = document.getElementById("setu-preview-img");
+    const previewClose = document.getElementById("setu-preview-close");
+
+    function openPreview() {
+      if (!preview || !previewImg || !thumb) return;
+      const src = thumb.getAttribute("src");
+      if (!src) return;
+      previewImg.src = src;
+      previewImg.alt = thumb.getAttribute("alt") || "";
+      preview.classList.remove("hidden");
+    }
+
+    function closePreview() {
+      if (!preview) return;
+      preview.classList.add("hidden");
+    }
+
+    if (thumbWrapper) {
+      thumbWrapper.addEventListener("click", () => {
+        openPreview();
+      });
+    }
+
+    if (preview) {
+      preview.addEventListener("click", (e) => {
+        if (e.target === preview) {
+          closePreview();
+        }
+      });
+    }
+
+    if (previewClose) {
+      previewClose.addEventListener("click", () => {
+        closePreview();
+      });
+    }
+
+    let loading = false;
+
+    drawBtn?.addEventListener("click", async () => {
+      if (loading) return;
+      loading = true;
+
+      if (error) {
+        error.textContent = "";
+        error.classList.add("hidden");
+      }
+
+      if (statusText) {
+        statusText.textContent = "正在抽卡中…";
+      }
+      if (drawText) {
+        drawText.textContent = "抽卡中…";
+      }
+
+      try {
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error("请求失败：" + res.status);
+
+        const json = await res.json();
+
+        if (json.error) {
+          throw new Error(json.error || "接口返回错误");
+        }
+
+        const item = json.data && json.data[0];
+        if (!item) throw new Error("没有抽到卡片 T_T");
+
+        const title = item.title || "无标题";
+        const author = item.author || "未知作者";
+        const imgUrl = item.urls && item.urls.original;
+
+        if (!imgUrl) {
+          throw new Error("没有找到图片链接");
+        }
+
+        if (thumb) {
+          thumb.src = imgUrl;
+          thumb.alt = title;
+        }
+        if (titleEl) {
+          titleEl.textContent = title;
+        }
+        if (authorEl) {
+          authorEl.textContent = "作者：" + author;
+        }
+        if (link) {
+          link.setAttribute("href", imgUrl);
+          link.setAttribute("target", "_blank");
+          link.setAttribute("rel", "noreferrer");
+        }
+        if (result) {
+          result.classList.remove("hidden");
+        }
+        if (statusText) {
+          statusText.textContent = "已抽到一张新图，点击缩略图预览，或点击查看原图打开原图～";
+        }
+      } catch (e) {
+        if (error) {
+          error.textContent =
+            e instanceof Error ? e.message : "抽卡失败，请稍后重试";
+          error.classList.remove("hidden");
+        }
+        if (statusText) {
+          statusText.textContent = "抽卡失败了，再试一次？";
+        }
+      } finally {
+        loading = false;
+        if (drawText) {
+          drawText.textContent = "再抽一次";
+        }
+      }
+    });
+  })();
+</script>
