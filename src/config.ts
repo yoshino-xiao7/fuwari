@@ -93,7 +93,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "https://q2.qlogo.cn/headimg_dl?dst_uin=1207211555&spec=0", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+	avatar: "https://q2.qlogo.cn/headimg_dl?dst_uin=2830323446&spec=0", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "雪涼",
 	bio: "小琦天天开心.",
 	links: [
