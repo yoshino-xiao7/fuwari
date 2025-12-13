@@ -51,7 +51,7 @@ export const siteConfig: SiteConfig = {
 	favicon: [
 		// Leave this array empty to use the default favicon
 		{
-			src: "https://q2.qlogo.cn/headimg_dl?dst_uin=1207211555&spec=0", // Path of the favicon, relative to the /public directory
+			src: "https://q2.qlogo.cn/headimg_dl?dst_uin=2830323446&spec=0", // Path of the favicon, relative to the /public directory
 			//   theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
 			//   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
 		},
@@ -59,8 +59,8 @@ export const siteConfig: SiteConfig = {
 	officialSites: [
 		{ url: "https://blog-n.yukiryou.top", alias: "Vercel" },
 		{ url: "https://blog.yukiryou.icu", alias: "备案域" },
-		{ url: "https://blog.yukiryou.top", alias: "香港" },
-		{ url: "https://yukiryou.icu", alias: "阿里云" }
+		{ url: "https://blog.yukiryou.top", alias: "HK" },
+		{ url: "https://yukiryou.icu", alias: "CN" }
 	],
 };
 
@@ -82,6 +82,11 @@ export const navBarConfig: NavBarConfig = {
 		{
 			name: "状态",
 			url: "https://db.yukiryou.top/", // Internal links should not include the base path, as it is automatically added
+			external: true, // Show an external link icon and will open in a new tab
+		},
+		{
+			name: "服务",
+			url: "https://cloud.yukiryou.icu/", // Internal links should not include the base path, as it is automatically added
 			external: true, // Show an external link icon and will open in a new tab
 		},
 	],
