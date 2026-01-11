@@ -1,5 +1,5 @@
 import type {
-    ExpressiveCodeConfig,
+	ExpressiveCodeConfig,
 	GitHubEditConfig,
 	ImageFallbackConfig,
 	LicenseConfig,
@@ -58,9 +58,7 @@ export const siteConfig: SiteConfig = {
 	],
 	officialSites: [
 		{ url: "https://blog-n.yukiryou.top", alias: "Vercel" },
-		{ url: "https://blog.yukiryou.icu", alias: "备案域" },
-		{ url: "https://yukiryou.icu", alias: "CN" },
-		{ url: "https://blog.yukiryou.top", alias: "HK" }
+		{ url: "https://blog.yukiryou.icu", alias: "备案域" }
 	],
 };
 
