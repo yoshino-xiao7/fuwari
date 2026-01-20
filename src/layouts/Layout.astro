@@ -6,6 +6,7 @@ import "@fontsource/roboto/700.css";
 
 import { profileConfig, siteConfig } from "@/config";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
+import GlobalMusicPlayer from "@components/widget/GlobalMusicPlayer.astro";
 import {
 	AUTO_MODE,
 	BANNER_HEIGHT,
@@ -278,7 +279,10 @@ var _hmt = _hmt || [];
 	>
 		<ConfigCarrier></ConfigCarrier>
 		<slot />
-2
+		
+		<!-- 全局音乐播放器 -->
+		<GlobalMusicPlayer />
+
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
 
