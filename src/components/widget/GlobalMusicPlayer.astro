@@ -586,14 +586,38 @@ const style = Astro.props.style;
         if (!res.ok) throw new Error("获取播放地址失败");
 
         const json = await res.json();
-        const url = json.data?.[0]?.url;
+        let url = json.data?.[0]?.url;
 
         if (!url) throw new Error("歌曲无法播放");
 
-        song.url = url;
+        // 优先使用 HTTPS（解决混合内容问题）
+        const httpsUrl = url.replace(/^http:\/\//, 'https://');
+        const httpUrl = url; // 保留原始 HTTP 地址作为降级备选
+        
+        song.url = httpsUrl;
         if (this.audio) {
-          this.audio.src = url;
-          this.audio.play();
+          // 先尝试 HTTPS
+          this.audio.src = httpsUrl;
+          
+          // 监听加载错误，自动降级到 HTTP
+          const handleError = () => {
+            console.warn("HTTPS 播放失败，降级到 HTTP");
+            if (this.audio && httpsUrl !== httpUrl) {
+              this.audio.removeEventListener("error", handleError);
+              this.audio.src = httpUrl;
+              song.url = httpUrl;
+              this.audio.play().catch(() => {
+                console.error("HTTP 播放也失败了");
+              });
+            }
+          };
+          
+          // 一次性错误监听器
+          this.audio.addEventListener("error", handleError, { once: true });
+          
+          this.audio.play().catch(() => {
+            // play() 失败会触发上面的 error 事件处理
+          });
         }
         this.saveState();
       } catch (e) {
