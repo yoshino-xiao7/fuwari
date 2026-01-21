@@ -8,6 +8,30 @@ const className = Astro.props.class;
 const style = Astro.props.style;
 ---
 
+<!-- 侧边收缩状态 - 只显示箭头（放在主播放器外部）-->
+<div
+  id="player-collapsed"
+  class="hidden fixed bottom-4 left-0 z-[100]"
+>
+  <button
+    id="player-expand-from-side"
+    type="button"
+    class="w-10 h-14 rounded-r-xl
+           bg-white/90 dark:bg-neutral-800/90 backdrop-blur-lg
+           shadow-lg border border-l-0 border-neutral-200 dark:border-neutral-700
+           flex items-center justify-center
+           hover:w-12 transition-all duration-300
+           text-[oklch(0.65_0.2_var(--hue))]"
+    aria-label="展开播放器"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 18l6-6-6-6"/>
+    </svg>
+  </button>
+  <!-- 播放状态指示器 -->
+  <div id="collapsed-playing-indicator" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-[oklch(0.65_0.2_var(--hue))] rounded-full animate-pulse"></div>
+</div>
+
 <!-- 全局音乐播放器 -->
 <div
   id="global-music-player"
@@ -69,6 +93,17 @@ const style = Astro.props.style;
           <path d="M18 15l-6-6-6 6"/>
         </svg>
       </button>
+      <button
+        id="player-collapse-side-mini"
+        type="button"
+        class="w-8 h-8 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-700
+               flex items-center justify-center transition-colors text-neutral-600 dark:text-neutral-400"
+        aria-label="收起到侧边"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -99,6 +134,17 @@ const style = Astro.props.style;
             --
           </div>
         </div>
+        <button
+          id="player-collapse-side-full"
+          type="button"
+          class="w-8 h-8 rounded-full hover:bg-neutral-200/50 dark:hover:bg-neutral-700/50
+                 flex items-center justify-center transition-colors text-neutral-500"
+          aria-label="收起到侧边"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
         <button
           id="player-minimize-btn"
           type="button"
@@ -372,12 +418,14 @@ const style = Astro.props.style;
     private currentIndex: number = -1;
     private isPlaying: boolean = false;
     private isMinimized: boolean = false;
+    private isCollapsed: boolean = false;
     private volume: number = 0.8;
 
     // 元素
     private playerEl: HTMLElement | null = null;
     private miniEl: HTMLElement | null = null;
     private fullEl: HTMLElement | null = null;
+    private collapsedEl: HTMLElement | null = null;
 
     constructor() {
       this.init();
@@ -388,6 +436,7 @@ const style = Astro.props.style;
       this.playerEl = document.getElementById("global-music-player");
       this.miniEl = document.getElementById("player-mini");
       this.fullEl = document.getElementById("player-full");
+      this.collapsedEl = document.getElementById("player-collapsed");
 
       if (!this.audio || !this.playerEl) return;
 
@@ -415,6 +464,10 @@ const style = Astro.props.style;
         if (savedVolume) this.volume = parseFloat(savedVolume);
         if (savedMinimized) this.isMinimized = savedMinimized === "true";
         
+        // 加载收缩状态
+        const savedCollapsed = localStorage.getItem("music_is_collapsed");
+        if (savedCollapsed) this.isCollapsed = savedCollapsed === "true";
+        
         // 加载音质设置
         if (savedQuality) {
           const qualitySelect = document.getElementById("player-quality") as HTMLSelectElement;
@@ -433,6 +486,7 @@ const style = Astro.props.style;
         localStorage.setItem("music_current_index", String(this.currentIndex));
         localStorage.setItem("music_volume", String(this.volume));
         localStorage.setItem("music_is_minimized", String(this.isMinimized));
+        localStorage.setItem("music_is_collapsed", String(this.isCollapsed));
       } catch (e) {
         console.error("保存播放器状态失败", e);
       }
@@ -467,6 +521,16 @@ const style = Astro.props.style;
         this.expand();
       });
       this.miniEl?.addEventListener("click", () => this.expand());
+
+      // 收缩到侧边
+      document.getElementById("player-collapse-side-mini")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.collapse();
+      });
+      document.getElementById("player-collapse-side-full")?.addEventListener("click", () => this.collapse());
+      
+      // 从侧边展开
+      document.getElementById("player-expand-from-side")?.addEventListener("click", () => this.expandFromSide());
 
       // 进度条
       const progressInput = document.getElementById("player-progress") as HTMLInputElement;
@@ -526,13 +590,45 @@ const style = Astro.props.style;
     }
 
     private showPlayer() {
+      if (this.isCollapsed) {
+        this.playerEl?.classList.add("hidden");
+        this.collapsedEl?.classList.remove("hidden");
+        return;
+      }
+      
+      this.collapsedEl?.classList.add("hidden");
       this.playerEl?.classList.remove("hidden");
+      this.playerEl?.classList.add("pl-4"); // 添加左边距
       if (this.isMinimized) {
         this.miniEl?.classList.remove("hidden");
         this.fullEl?.classList.add("hidden");
       } else {
         this.miniEl?.classList.add("hidden");
         this.fullEl?.classList.remove("hidden");
+      }
+    }
+
+    private collapse() {
+      this.isCollapsed = true;
+      this.playerEl?.classList.add("hidden");
+      this.collapsedEl?.classList.remove("hidden");
+      this.updateCollapsedIndicator();
+      this.saveState();
+    }
+
+    private expandFromSide() {
+      this.isCollapsed = false;
+      this.collapsedEl?.classList.add("hidden");
+      this.showPlayer();
+      this.saveState();
+    }
+
+    private updateCollapsedIndicator() {
+      const indicator = document.getElementById("collapsed-playing-indicator");
+      if (this.isPlaying) {
+        indicator?.classList.remove("hidden");
+      } else {
+        indicator?.classList.add("hidden");
       }
     }
 
@@ -816,6 +912,9 @@ const style = Astro.props.style;
         playerFull?.classList.remove("playing");
         playerMini?.classList.remove("playing");
       }
+      
+      // 更新收缩状态指示器
+      this.updateCollapsedIndicator();
     }
 
     private updateVolumeIcon() {
