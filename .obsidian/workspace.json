@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "src/content/posts/iPhone17.md",
+                "file": "src/content/posts/shortener.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "iPhone17"
+              "title": "shortener"
             }
           }
         ]
@@ -185,9 +185,10 @@
   },
   "active": "7188c4c794595939",
   "lastOpenFiles": [
+    "src/content/assets/images/2026-01-21-15-04-40-image.png",
+    "src/content/posts/iPhone17.md",
     "src/content/assets/images/df47bfb496974fa5fa6933b68b33b502.png",
     "src/content/assets/images/9f6d30ad3a2a7721d0b5adc5c74bd57b.mp4",
-    "src/content/posts/iPhone17.md",
     "src/content/assets/images/e5f143ebf52a62354452227b4d37e56c.png",
     "src/content/assets/images/939359975742068760539697c5c96d36.png",
     "src/content/posts/icp.md",
@@ -210,7 +211,6 @@
     "dist/_astro/2025-12-27-22-05-32-image.4ZbK4EV4.png",
     "dist/_astro/2025-12-13-23-22-00-image.DN6azugU.png",
     "dist/_astro/2025-12-13-23-18-53-image.MkgMVZcE.png",
-    "dist/_astro/2025-12-13-23-14-59-image.CXooTaJC.png",
     "src/content/posts/setu_cloud v2.md",
     "src/content/posts/setu_api.md",
     "src/content/posts/sponsor.md",
