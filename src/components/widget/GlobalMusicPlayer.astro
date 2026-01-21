@@ -39,7 +39,6 @@ const style = Astro.props.style;
     fixed bottom-4 left-4 z-[100]
     transition-all duration-500 ease-out
     hidden
-    animate-slide-up
   `]}
   style={style}
 >
@@ -395,6 +394,128 @@ const style = Astro.props.style;
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
   }
+  
+  /* 收缩/展开动画 */
+  .animate-collapse-out {
+    animation: collapseOut 0.4s ease-in-out forwards;
+  }
+  
+  .animate-expand-in {
+    animation: expandIn 0.4s ease-out forwards;
+  }
+  
+  .animate-arrow-in {
+    animation: arrowIn 0.3s ease-out forwards;
+  }
+  
+  .animate-arrow-out {
+    animation: arrowOut 0.3s ease-in forwards;
+  }
+  
+  @keyframes collapseOut {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+  }
+  
+  @keyframes expandIn {
+    0% {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes arrowIn {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes arrowOut {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+  }
+  
+  /* Mini/Full 切换动画 - 垂直滑动 */
+  .animate-slide-down-out {
+    animation: slideDownOut 0.3s ease-in-out forwards;
+  }
+  
+  .animate-slide-up-in {
+    animation: slideUpIn 0.3s ease-out forwards;
+  }
+  
+  .animate-slide-up-out {
+    animation: slideUpOut 0.3s ease-in-out forwards;
+  }
+  
+  .animate-slide-down-in {
+    animation: slideDownIn 0.3s ease-out forwards;
+  }
+  
+  @keyframes slideDownOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+  }
+  
+  @keyframes slideUpIn {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideUpOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+  
+  @keyframes slideDownIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 </style>
 
 <script>
@@ -559,10 +680,25 @@ const style = Astro.props.style;
         playlistEl?.classList.toggle("hidden");
       });
 
-      // 音质选择
+      // 音质选择 - 切换后立即重新加载当前歌曲
       const qualitySelect = document.getElementById("player-quality") as HTMLSelectElement;
       qualitySelect?.addEventListener("change", () => {
         localStorage.setItem("music_quality", qualitySelect.value);
+        // 如果当前有歌曲在播放，重新加载以应用新音质
+        if (this.currentIndex >= 0 && this.audio) {
+          const currentTime = this.audio.currentTime;
+          const wasPlaying = this.isPlaying;
+          this.playCurrent().then(() => {
+            // 恢复播放进度
+            if (this.audio && currentTime > 0) {
+              this.audio.currentTime = currentTime;
+            }
+            // 如果之前没在播放，暂停
+            if (!wasPlaying && this.audio) {
+              this.audio.pause();
+            }
+          });
+        }
       });
     }
 
@@ -597,8 +733,20 @@ const style = Astro.props.style;
       }
       
       this.collapsedEl?.classList.add("hidden");
+      
+      // 首次显示时添加从下方滑入动画
+      const wasHidden = this.playerEl?.classList.contains("hidden");
+      
       this.playerEl?.classList.remove("hidden");
-      this.playerEl?.classList.add("pl-4"); // 添加左边距
+      this.playerEl?.classList.add("pl-4");
+      
+      if (wasHidden) {
+        this.playerEl?.classList.add("animate-slide-up");
+        setTimeout(() => {
+          this.playerEl?.classList.remove("animate-slide-up");
+        }, 500);
+      }
+      
       if (this.isMinimized) {
         this.miniEl?.classList.remove("hidden");
         this.fullEl?.classList.add("hidden");
@@ -610,16 +758,77 @@ const style = Astro.props.style;
 
     private collapse() {
       this.isCollapsed = true;
-      this.playerEl?.classList.add("hidden");
-      this.collapsedEl?.classList.remove("hidden");
+      
+      // 添加退出动画
+      this.playerEl?.classList.add("animate-collapse-out");
+      
+      // 动画结束后隐藏播放器，显示箭头
+      setTimeout(() => {
+        this.playerEl?.classList.add("hidden");
+        this.playerEl?.classList.remove("animate-collapse-out");
+        this.collapsedEl?.classList.remove("hidden");
+        this.collapsedEl?.classList.add("animate-arrow-in");
+        
+        // 清理箭头动画类
+        setTimeout(() => {
+          this.collapsedEl?.classList.remove("animate-arrow-in");
+        }, 300);
+      }, 400);
+      
       this.updateCollapsedIndicator();
       this.saveState();
     }
 
     private expandFromSide() {
       this.isCollapsed = false;
-      this.collapsedEl?.classList.add("hidden");
-      this.showPlayer();
+      
+      // 箭头退出动画
+      this.collapsedEl?.classList.add("animate-arrow-out");
+      
+      // 动画结束后隐藏箭头，显示播放器
+      setTimeout(() => {
+        this.collapsedEl?.classList.add("hidden");
+        this.collapsedEl?.classList.remove("animate-arrow-out");
+        
+        // 先设置播放器初始位置在左侧屏幕外
+        if (this.playerEl) {
+          this.playerEl.style.transform = "translateX(-100%)";
+          this.playerEl.style.opacity = "0";
+        }
+        
+        this.playerEl?.classList.remove("hidden");
+        this.playerEl?.classList.add("pl-4");
+        
+        // 根据状态显示 mini 或 full
+        if (this.isMinimized) {
+          this.miniEl?.classList.remove("hidden");
+          this.fullEl?.classList.add("hidden");
+        } else {
+          this.miniEl?.classList.add("hidden");
+          this.fullEl?.classList.remove("hidden");
+        }
+        
+        // 使用 requestAnimationFrame 确保 DOM 更新后再开始动画
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (this.playerEl) {
+              this.playerEl.style.transition = "transform 0.4s ease-out, opacity 0.4s ease-out";
+              this.playerEl.style.transform = "translateX(0)";
+              this.playerEl.style.opacity = "1";
+            }
+            
+            // 清理样式
+            setTimeout(() => {
+              if (this.playerEl) {
+                this.playerEl.style.transition = "";
+                this.playerEl.style.transform = "";
+                this.playerEl.style.opacity = "";
+              }
+            }, 400);
+          });
+        });
+      }, 300);
+      
       this.saveState();
     }
 
@@ -634,15 +843,71 @@ const style = Astro.props.style;
 
     private minimize() {
       this.isMinimized = true;
-      this.miniEl?.classList.remove("hidden");
+      
+      // 立即隐藏 full
       this.fullEl?.classList.add("hidden");
+      
+      // 设置 mini 初始状态
+      if (this.miniEl) {
+        this.miniEl.style.opacity = "0";
+        this.miniEl.style.transform = "translateY(10px)";
+      }
+      this.miniEl?.classList.remove("hidden");
+      
+      // 动画显示 mini
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (this.miniEl) {
+            this.miniEl.style.transition = "opacity 0.25s ease-out, transform 0.25s ease-out";
+            this.miniEl.style.opacity = "1";
+            this.miniEl.style.transform = "translateY(0)";
+          }
+          
+          setTimeout(() => {
+            if (this.miniEl) {
+              this.miniEl.style.transition = "";
+              this.miniEl.style.opacity = "";
+              this.miniEl.style.transform = "";
+            }
+          }, 250);
+        });
+      });
+      
       this.saveState();
     }
 
     private expand() {
       this.isMinimized = false;
+      
+      // 立即隐藏 mini
       this.miniEl?.classList.add("hidden");
+      
+      // 设置 full 初始状态
+      if (this.fullEl) {
+        this.fullEl.style.opacity = "0";
+        this.fullEl.style.transform = "translateY(-10px)";
+      }
       this.fullEl?.classList.remove("hidden");
+      
+      // 动画显示 full
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (this.fullEl) {
+            this.fullEl.style.transition = "opacity 0.25s ease-out, transform 0.25s ease-out";
+            this.fullEl.style.opacity = "1";
+            this.fullEl.style.transform = "translateY(0)";
+          }
+          
+          setTimeout(() => {
+            if (this.fullEl) {
+              this.fullEl.style.transition = "";
+              this.fullEl.style.opacity = "";
+              this.fullEl.style.transform = "";
+            }
+          }, 250);
+        });
+      });
+      
       this.saveState();
     }
 
