@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "endfield-cloud-dev"
             }
+          },
+          {
+            "id": "6c6a0468b68e65dc",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "src/content/posts/endfield-yunzai-plugin.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "endfield-yunzai-plugin"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -183,23 +198,23 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "7188c4c794595939",
+  "active": "6c6a0468b68e65dc",
   "lastOpenFiles": [
+    "src/content/assets/images/QQ_1770817585583.png",
+    "src/content/assets/images/5e9331306b14ed91dc5adcef740ea10c.jpg",
+    "src/content/assets/images/ffa855be68d688c485e5a183f9160132.jpg",
+    "src/content/assets/images/002cbe3316a11b7cc951ad423eb07da7.jpg",
+    "src/content/posts/2026-02-04-daily.md",
     "src/content/assets/images/e6238bd8f6dbda4b2bdd64a078a76a61.png",
     "src/content/assets/images/93d084c0a269575fe8aaf02b5c4868e3.png",
     "src/content/assets/images/268c65d5bb9e92b61f014ce634a1ff32.png",
-    "src/content/posts/2026-02-04-daily.md",
     "src/content/assets/images/9d86b85df16f857c04b303a61cbfd496.jpg",
     "src/content/assets/images/53923c1d3b3c9208be3f0de58fb3f3aa.jpg",
     "src/content/assets/images/c013b1e6a7132cb6335979c75e66a818.jpg",
     "src/content/assets/images/2b6077827e8668f433b379fed70af269.png",
     "src/content/posts/shortener.md",
-    "src/content/assets/images/2026-01-21-15-04-40-image.png",
     "src/content/posts/iPhone17.md",
-    "src/content/assets/images/df47bfb496974fa5fa6933b68b33b502.png",
     "src/content/assets/images/9f6d30ad3a2a7721d0b5adc5c74bd57b.mp4",
-    "src/content/assets/images/e5f143ebf52a62354452227b4d37e56c.png",
-    "src/content/assets/images/939359975742068760539697c5c96d36.png",
     "src/content/posts/icp.md",
     "src/content/posts/admin.md",
     "src/content/posts/api_plugin.md",
