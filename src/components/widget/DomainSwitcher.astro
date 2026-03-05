@@ -1,5 +1,5 @@
 ---
-import WidgetLayout from "./WidgetLayout.astro";
+import LiquidGlassLayout from "./LiquidGlassLayout.astro";
 import { siteConfig } from "@/config";
 
 interface Props {
@@ -11,7 +11,7 @@ const style = Astro.props.style;
 
 const officialSites = siteConfig.officialSites || [];
 ---
-<WidgetLayout name="线路切换" id="domain-switcher" class={className} style={style}>
+<LiquidGlassLayout name="线路切换" icon="🔀" id="domain-switcher" class={className} style={style}>
     <div class="flex flex-col gap-2">
         {officialSites.map((site) => {
             const urlStr = typeof site === 'string' ? site : site.url;
@@ -39,7 +39,7 @@ const officialSites = siteConfig.officialSites || [];
             );
         })}
     </div>
-</WidgetLayout>
+</LiquidGlassLayout>
 
 <script>
     function initDomainSwitcher() {

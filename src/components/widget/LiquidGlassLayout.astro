@@ -1,0 +1,376 @@
+---
+interface Props {
+  id: string;
+  name?: string;
+  icon?: string;
+  isCollapsed?: boolean;
+  collapsedHeight?: string;
+  class?: string;
+  style?: string;
+}
+
+const { id, name, icon, isCollapsed, collapsedHeight, style } = Astro.props;
+const className = Astro.props.class;
+---
+
+<liquid-glass-widget data-id={id} data-is-collapsed={String(isCollapsed)} class:list={[className, "liquid-glass-wrapper"]} style={style}>
+  <!-- 玻璃容器 -->
+  <div class="liquid-glass-container" data-glass-id={id}>
+    <!-- 毛玻璃背景层 -->
+    <div class="glass-backdrop"></div>
+    <!-- 渐变边框层 1 (screen) -->
+    <div class="glass-border glass-border-screen"></div>
+    <!-- 渐变边框层 2 (overlay) -->
+    <div class="glass-border glass-border-overlay"></div>
+    <!-- 悬浮高光层 -->
+    <div class="glass-hover-glow"></div>
+
+    <!-- 内容层 -->
+    <div class="glass-content">
+      <!-- 标题 -->
+      {name && (
+        <div class="glass-header">
+          {icon && <div class="glass-title-icon">{icon}</div>}
+          <span class="glass-title-text">{name}</span>
+        </div>
+      )}
+
+      <!-- 可折叠内容区域 -->
+      <div id={id} class:list={["glass-body", { "collapsed": isCollapsed }]}>
+        <slot />
+      </div>
+
+      <!-- 展开按钮 -->
+      {isCollapsed && (
+        <div class="glass-expand-btn">
+          <button class="glass-expand-button" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="1"></circle>
+              <circle cx="19" cy="12" r="1"></circle>
+              <circle cx="5" cy="12" r="1"></circle>
+            </svg>
+            <span>更多</span>
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+</liquid-glass-widget>
+
+<style define:vars={{ collapsedHeight }}>
+  /* ===== Liquid Glass 基础容器 ===== */
+  .liquid-glass-wrapper {
+    position: relative;
+    padding: 4px;
+  }
+
+  .liquid-glass-container {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.35s ease;
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      0 2px 8px rgba(0, 0, 0, 0.06);
+    will-change: transform;
+  }
+
+  .liquid-glass-container:hover {
+    box-shadow:
+      0 12px 48px rgba(0, 0, 0, 0.15),
+      0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  :global(.dark) .liquid-glass-container {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  :global(.dark) .liquid-glass-container:hover {
+    box-shadow:
+      0 12px 48px rgba(0, 0, 0, 0.4),
+      0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* ===== 毛玻璃背景层 ===== */
+  .glass-backdrop {
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.25) 50%,
+      rgba(255, 255, 255, 0.35) 100%
+    );
+    z-index: 0;
+  }
+
+  :global(.dark) .glass-backdrop {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 50%,
+      rgba(255, 255, 255, 0.06) 100%
+    );
+  }
+
+  /* ===== 渐变边框层 ===== */
+  .glass-border {
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    pointer-events: none;
+    z-index: 3;
+    padding: 1.5px;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    box-shadow:
+      0 0 0 0.5px rgba(255, 255, 255, 0.4) inset,
+      0 1px 3px rgba(255, 255, 255, 0.2) inset;
+    transition: background 0.3s ease;
+  }
+
+  .glass-border-screen {
+    mix-blend-mode: screen;
+    opacity: 0.25;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.0) 0%,
+      rgba(255, 255, 255, 0.15) 33%,
+      rgba(255, 255, 255, 0.45) 66%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+  }
+
+  .glass-border-overlay {
+    mix-blend-mode: overlay;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.0) 0%,
+      rgba(255, 255, 255, 0.35) 33%,
+      rgba(255, 255, 255, 0.65) 66%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+  }
+
+  /* ===== 悬浮高光层 ===== */
+  .glass-hover-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 60%);
+    mix-blend-mode: overlay;
+    transition: opacity 0.35s ease;
+  }
+
+  .liquid-glass-container:hover .glass-hover-glow {
+    opacity: 0.5;
+  }
+
+  /* ===== 内容层 ===== */
+  .glass-content {
+    position: relative;
+    z-index: 4;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ===== 标题 ===== */
+  .glass-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .glass-title-icon {
+    font-size: 1.1rem;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+  }
+
+  .glass-title-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.75);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.02em;
+  }
+
+  :global(.dark) .glass-title-text {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ===== 可折叠内容区域 ===== */
+  .glass-body {
+    overflow: hidden;
+  }
+
+  .glass-body.collapsed {
+    height: var(--collapsedHeight);
+  }
+
+  /* ===== 展开按钮 ===== */
+  .glass-expand-btn {
+    display: flex;
+    justify-content: center;
+    margin-top: -4px;
+  }
+
+  .glass-expand-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    height: 32px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.25s ease;
+  }
+
+  .glass-expand-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  :global(.dark) .glass-expand-button {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  :global(.dark) .glass-expand-button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.7);
+  }
+</style>
+
+<script>
+  class LiquidGlassWidget extends HTMLElement {
+    private container: HTMLElement | null = null;
+    private borderScreen: HTMLElement | null = null;
+    private borderOverlay: HTMLElement | null = null;
+    private rafId: number | null = null;
+    private targetScaleX = 1;
+    private targetScaleY = 1;
+    private currentScaleX = 1;
+    private currentScaleY = 1;
+
+    constructor() {
+      super();
+
+      this.container = this.querySelector('.liquid-glass-container');
+      this.borderScreen = this.querySelector('.glass-border-screen');
+      this.borderOverlay = this.querySelector('.glass-border-overlay');
+
+      // 折叠/展开功能
+      if (this.dataset.isCollapsed === "true") {
+        const id = this.dataset.id;
+        const btn = this.querySelector('.glass-expand-btn');
+        const body = this.querySelector(`#${id}`);
+        btn?.addEventListener('click', () => {
+          body?.classList.remove('collapsed');
+          btn.classList.add('hidden');
+        });
+      }
+
+      // 鼠标交互
+      this.setupMouseInteraction();
+    }
+
+    private setupMouseInteraction() {
+      const onMouseMove = (e: MouseEvent) => {
+        if (!this.container) return;
+
+        const rect = this.container.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const deltaX = e.clientX - centerX;
+        const deltaY = e.clientY - centerY;
+
+        // 弹性缩放
+        const edgeDistX = Math.max(0, Math.abs(deltaX) - rect.width / 2);
+        const edgeDistY = Math.max(0, Math.abs(deltaY) - rect.height / 2);
+        const edgeDist = Math.sqrt(edgeDistX * edgeDistX + edgeDistY * edgeDistY);
+        const activationZone = 200;
+
+        if (edgeDist > activationZone) {
+          this.targetScaleX = 1;
+          this.targetScaleY = 1;
+        } else {
+          const fadeIn = 1 - edgeDist / activationZone;
+          const centerDist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+          if (centerDist > 0) {
+            const nx = deltaX / centerDist;
+            const ny = deltaY / centerDist;
+            const elasticity = 0.12;
+            const intensity = Math.min(centerDist / 300, 1) * elasticity * fadeIn;
+            this.targetScaleX = 1 + Math.abs(nx) * intensity * 0.25 - Math.abs(ny) * intensity * 0.12;
+            this.targetScaleY = 1 + Math.abs(ny) * intensity * 0.25 - Math.abs(nx) * intensity * 0.12;
+          }
+        }
+
+        // 边框渐变方向
+        const mouseOffsetX = ((e.clientX - centerX) / rect.width) * 100;
+        const mouseOffsetY = ((e.clientY - centerY) / rect.height) * 100;
+        const gradAngle = 135 + mouseOffsetX * 1.2;
+        const stop1 = Math.max(10, 33 + mouseOffsetY * 0.3);
+        const stop2 = Math.min(90, 66 + mouseOffsetY * 0.4);
+
+        if (this.borderScreen) {
+          const a1 = 0.12 + Math.abs(mouseOffsetX) * 0.006;
+          const a2 = 0.4 + Math.abs(mouseOffsetX) * 0.01;
+          this.borderScreen.style.background = `linear-gradient(${gradAngle}deg, rgba(255,255,255,0) 0%, rgba(255,255,255,${a1}) ${stop1}%, rgba(255,255,255,${a2}) ${stop2}%, rgba(255,255,255,0) 100%)`;
+        }
+        if (this.borderOverlay) {
+          const a1 = 0.32 + Math.abs(mouseOffsetX) * 0.006;
+          const a2 = 0.6 + Math.abs(mouseOffsetX) * 0.01;
+          this.borderOverlay.style.background = `linear-gradient(${gradAngle}deg, rgba(255,255,255,0) 0%, rgba(255,255,255,${a1}) ${stop1}%, rgba(255,255,255,${a2}) ${stop2}%, rgba(255,255,255,0) 100%)`;
+        }
+
+        this.startAnimation();
+      };
+
+      document.addEventListener("mousemove", onMouseMove);
+    }
+
+    private startAnimation() {
+      if (this.rafId === null) {
+        this.rafId = requestAnimationFrame(() => this.animateScale());
+      }
+    }
+
+    private animateScale() {
+      this.currentScaleX += (this.targetScaleX - this.currentScaleX) * 0.08;
+      this.currentScaleY += (this.targetScaleY - this.currentScaleY) * 0.08;
+
+      if (this.container) {
+        this.container.style.transform = `scaleX(${this.currentScaleX.toFixed(4)}) scaleY(${this.currentScaleY.toFixed(4)})`;
+      }
+
+      if (Math.abs(this.targetScaleX - this.currentScaleX) > 0.0001 || Math.abs(this.targetScaleY - this.currentScaleY) > 0.0001) {
+        this.rafId = requestAnimationFrame(() => this.animateScale());
+      } else {
+        this.rafId = null;
+      }
+    }
+  }
+
+  if (!customElements.get("liquid-glass-widget")) {
+    customElements.define("liquid-glass-widget", LiquidGlassWidget);
+  }
+</script>

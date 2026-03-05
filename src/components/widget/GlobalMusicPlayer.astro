@@ -16,9 +16,7 @@ const style = Astro.props.style;
   <button
     id="player-expand-from-side"
     type="button"
-    class="w-10 h-14 rounded-r-xl
-           bg-white/90 dark:bg-neutral-800/90 backdrop-blur-lg
-           shadow-lg border border-l-0 border-neutral-200 dark:border-neutral-700
+    class="player-glass-side-btn w-10 h-14 rounded-r-xl
            flex items-center justify-center
            hover:w-12 transition-all duration-300
            text-[oklch(0.65_0.2_var(--hue))]"
@@ -46,9 +44,8 @@ const style = Astro.props.style;
   <div
     id="player-mini"
     class="hidden flex items-center gap-3 px-3 py-2 rounded-xl
-           bg-white/90 dark:bg-neutral-800/90 backdrop-blur-lg
-           shadow-lg border border-neutral-200 dark:border-neutral-700
-           cursor-pointer hover:shadow-xl hover:scale-105 transition-all duration-300
+           player-glass-container
+           cursor-pointer hover:scale-105 transition-all duration-300
            animate-glow"
   >
     <img
@@ -110,8 +107,7 @@ const style = Astro.props.style;
   <div
     id="player-full"
     class="w-80 rounded-2xl overflow-hidden
-           bg-white/95 dark:bg-neutral-800/95 backdrop-blur-lg
-           shadow-2xl border border-neutral-200 dark:border-neutral-700"
+           player-glass-container"
   >
     <!-- 头部 -->
     <div class="relative">
@@ -263,10 +259,12 @@ const style = Astro.props.style;
       <!-- 音质选择 -->
       <select
         id="player-quality"
-        class="h-7 px-2 text-xs rounded-lg bg-neutral-100 dark:bg-neutral-700 
-               text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-600
+        class="h-7 px-2 text-xs rounded-lg
+               bg-white/20 dark:bg-white/8
+               text-neutral-600 dark:text-neutral-300
+               border border-white/30 dark:border-white/10
                focus:outline-none focus:ring-1 focus:ring-[oklch(0.65_0.2_var(--hue))]
-               cursor-pointer"
+               cursor-pointer backdrop-blur-sm"
         aria-label="音质选择"
       >
         <option value="standard">标准</option>
@@ -296,7 +294,7 @@ const style = Astro.props.style;
     <!-- 播放列表 -->
     <div
       id="player-playlist"
-      class="hidden border-t border-neutral-200 dark:border-neutral-700 max-h-48 overflow-y-auto"
+      class="hidden border-t border-white/20 dark:border-white/8 max-h-48 overflow-y-auto"
     >
       <div class="p-2 text-xs text-neutral-500 font-medium px-4">播放列表</div>
       <div id="player-playlist-items" class="pb-2">
@@ -310,6 +308,74 @@ const style = Astro.props.style;
 <audio id="global-audio" preload="metadata"></audio>
 
 <style>
+  /* ===== Player Liquid Glass Containers ===== */
+  .player-glass-container {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0.4) 100%
+    );
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.06),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.45),
+      inset 0 1px 3px rgba(255, 255, 255, 0.25);
+  }
+
+  :global(.dark) .player-glass-container {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.35),
+      0 2px 8px rgba(0, 0, 0, 0.2),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.12),
+      inset 0 1px 3px rgba(255, 255, 255, 0.06);
+  }
+
+  .player-glass-side-btn {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.35) 100%
+    );
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.1),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.4),
+      inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    border: none;
+  }
+
+  :global(.dark) .player-glass-side-btn {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.1),
+      inset 0 1px 2px rgba(255, 255, 255, 0.05);
+  }
+
+  /* Glass-styled text readability for player */
+  .player-glass-container *,
+  .player-glass-side-btn * {
+    text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.04);
+  }
+
+  :global(.dark) .player-glass-container *,
+  :global(.dark) .player-glass-side-btn * {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  }
   #player-playlist::-webkit-scrollbar {
     width: 4px;
   }
