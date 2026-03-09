@@ -241,6 +241,16 @@ const bannerOffset =
 				display: block !important;
 				transition: opacity 0.3s ease-in-out !important;
 			}
+
+			/* Mobile fix: background-attachment:fixed is broken on iOS/mobile browsers */
+			@media (max-width: 768px), (hover: none) {
+				body::before {
+					background-attachment: scroll !important;
+					position: fixed !important;
+					min-height: 100vh !important;
+					min-width: 100vw !important;
+				}
+			}
 			
 			body.bg-loaded::before {
 				opacity: calc(var(--bg-opacity) * var(--bg-enable)) !important;
