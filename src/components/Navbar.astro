@@ -45,6 +45,15 @@ let links: NavBarLink[] = navBarConfig.links.map(
         <div class="flex">
             <!--<SearchPanel client:load>-->
             <Search client:only="svelte"></Search>
+
+            <!-- Theme Toggle Button (3-way: Classic Dark → Liquid Glass → Light) -->
+            <button aria-label="Toggle Theme" class="btn-plain scale-animation rounded-lg h-11 px-3 active:scale-90 relative text-sm font-bold" id="theme-toggle-btn" title="切换主题">
+                <span id="theme-label-dark" class="theme-label">暗黑</span>
+                <span id="theme-label-glass" class="theme-label">玻璃</span>
+                <span id="theme-label-light" class="theme-label">明亮</span>
+            </button>
+
+
             {!siteConfig.themeColor.fixed && (
                     <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch">
                         <Icon name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
@@ -59,6 +68,17 @@ let links: NavBarLink[] = navBarConfig.links.map(
         <DisplaySettings client:only="svelte"></DisplaySettings>
     </div>
 </div>
+
+<style>
+    /* All labels hidden by default */
+    .theme-label {
+        display: none;
+    }
+    /* Show the label matching the current theme */
+    :global(html.dark:not(.glass)) #theme-label-dark { display: inline; }
+    :global(html.glass) #theme-label-glass { display: inline; }
+    :global(html:not(.dark):not(.glass)) #theme-label-light { display: inline; }
+</style>
 
 <script>
 function loadButtonScript() {
@@ -82,7 +102,38 @@ function loadButtonScript() {
             }
         };
     }
+
+    // Three-way theme cycle: classic-dark → glass → light → classic-dark
+    let themeBtn = document.getElementById("theme-toggle-btn");
+    if (themeBtn) {
+        themeBtn.onclick = function () {
+            const root = document.documentElement;
+            const isDark = root.classList.contains('dark');
+            const isGlass = root.classList.contains('glass');
+
+            if (isDark && !isGlass) {
+                // Classic Dark → Liquid Glass
+                root.classList.add('glass');
+                localStorage.setItem('theme', 'dark');
+                localStorage.setItem('style-mode', 'glass');
+            } else if (isGlass) {
+                // Liquid Glass → Light
+                root.classList.remove('dark');
+                root.classList.remove('glass');
+                localStorage.setItem('theme', 'light');
+                localStorage.setItem('style-mode', 'default');
+            } else {
+                // Light → Classic Dark
+                root.classList.add('dark');
+                root.classList.remove('glass');
+                localStorage.setItem('theme', 'dark');
+                localStorage.setItem('style-mode', 'default');
+            }
+        };
+    }
 }
 
 loadButtonScript();
+
+document.addEventListener('astro:page-load', loadButtonScript);
 </script>

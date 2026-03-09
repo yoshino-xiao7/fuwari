@@ -152,6 +152,14 @@ const bannerOffset =
 				}
 			}
 
+			// Load style mode (glass/default) from local storage
+			const styleMode = localStorage.getItem('style-mode');
+			if (styleMode === 'glass') {
+				document.documentElement.classList.add('glass');
+			} else {
+				document.documentElement.classList.remove('glass');
+			}
+
 			// Load the hue from local storage
 			const hue = localStorage.getItem('hue') || configHue;
 			document.documentElement.style.setProperty('--hue', hue);
@@ -236,6 +244,15 @@ const bannerOffset =
 			
 			body.bg-loaded::before {
 				opacity: calc(var(--bg-opacity) * var(--bg-enable)) !important;
+			}
+
+			/* ===== Glass mode: brighter page & more visible background ===== */
+			:root.glass {
+				--page-bg: oklch(0.25 0.015 var(--hue));
+				--bg-opacity: 0.55;
+			}
+			:root.glass body.bg-loaded::before {
+				opacity: calc(0.55 * var(--bg-enable)) !important;
 			}
 		</style>  <!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
 

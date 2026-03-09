@@ -1,8 +1,18 @@
 @tailwind components;
 
 @layer components {
+
+    /* ===== Default card (Classic Dark / Light) — opaque ===== */
     .card-base {
         @apply rounded-[var(--radius-large)] overflow-hidden transition;
+        background: var(--card-bg);
+        transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            box-shadow 0.35s ease,
+            background 0.3s ease;
+    }
+
+    /* ===== Liquid Glass mode — translucent glass cards ===== */
+    :root.glass .card-base {
         position: relative;
         background: linear-gradient(135deg,
                 rgba(255, 255, 255, 0.45) 0%,
@@ -15,12 +25,9 @@
             0 2px 8px rgba(0, 0, 0, 0.06),
             inset 0 0 0 0.5px rgba(255, 255, 255, 0.4),
             inset 0 1px 3px rgba(255, 255, 255, 0.2);
-        transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-            box-shadow 0.35s ease,
-            background 0.3s ease;
     }
 
-    .card-base:hover {
+    :root.glass .card-base:hover {
         box-shadow:
             0 12px 48px rgba(0, 0, 0, 0.15),
             0 4px 12px rgba(0, 0, 0, 0.08),
@@ -28,7 +35,7 @@
             inset 0 1px 3px rgba(255, 255, 255, 0.25);
     }
 
-    :root.dark .card-base {
+    :root.dark.glass .card-base {
         background: linear-gradient(135deg,
                 rgba(255, 255, 255, 0.08) 0%,
                 rgba(255, 255, 255, 0.03) 50%,
@@ -40,7 +47,7 @@
             inset 0 1px 3px rgba(255, 255, 255, 0.05);
     }
 
-    :root.dark .card-base:hover {
+    :root.dark.glass .card-base:hover {
         box-shadow:
             0 12px 48px rgba(0, 0, 0, 0.4),
             0 4px 12px rgba(0, 0, 0, 0.25),
@@ -48,49 +55,50 @@
             inset 0 1px 3px rgba(255, 255, 255, 0.08);
     }
 
-    /* Glass text readability - light mode: strong contrast on translucent bg */
-    .card-base {
+    /* ===== Glass text readability (only in glass mode) ===== */
+    :root.glass .card-base {
         color: rgba(0, 0, 0, 0.85);
     }
 
-    .card-base h1,
-    .card-base h2,
-    .card-base h3,
-    .card-base h4,
-    .card-base h5,
-    .card-base h6 {
+    :root.glass .card-base h1,
+    :root.glass .card-base h2,
+    :root.glass .card-base h3,
+    :root.glass .card-base h4,
+    :root.glass .card-base h5,
+    :root.glass .card-base h6 {
         color: rgba(0, 0, 0, 0.9);
         text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6), 0 0 8px rgba(255, 255, 255, 0.3);
     }
 
-    .card-base p,
-    .card-base span,
-    .card-base a,
-    .card-base div {
+    :root.glass .card-base p,
+    :root.glass .card-base span,
+    :root.glass .card-base a,
+    :root.glass .card-base div {
         text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
     }
 
-    /* Glass text readability - dark mode: bright text on dark glass */
-    :root.dark .card-base {
+    :root.dark.glass .card-base {
         color: rgba(255, 255, 255, 0.9);
     }
 
-    :root.dark .card-base h1,
-    :root.dark .card-base h2,
-    :root.dark .card-base h3,
-    :root.dark .card-base h4,
-    :root.dark .card-base h5,
-    :root.dark .card-base h6 {
+    :root.dark.glass .card-base h1,
+    :root.dark.glass .card-base h2,
+    :root.dark.glass .card-base h3,
+    :root.dark.glass .card-base h4,
+    :root.dark.glass .card-base h5,
+    :root.dark.glass .card-base h6 {
         color: rgba(255, 255, 255, 0.95);
         text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6), 0 0 12px rgba(0, 0, 0, 0.3);
     }
 
-    :root.dark .card-base p,
-    :root.dark .card-base span,
-    :root.dark .card-base a,
-    :root.dark .card-base div {
+    :root.dark.glass .card-base p,
+    :root.dark.glass .card-base span,
+    :root.dark.glass .card-base a,
+    :root.dark.glass .card-base div {
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     }
+
+
 
     h1,
     h2,
@@ -132,13 +140,17 @@
 
     .float-panel {
         @apply top-[5.25rem] rounded-[var(--radius-large)] overflow-hidden transition;
+        background: var(--float-panel-bg);
+    }
+
+    :root.glass .float-panel {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%);
         backdrop-filter: blur(20px) saturate(180%);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), inset 0 0 0 0.5px rgba(255, 255, 255, 0.4);
     }
 
-    :root.dark .float-panel {
+    :root.dark.glass .float-panel {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
     }

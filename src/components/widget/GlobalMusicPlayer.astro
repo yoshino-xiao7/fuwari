@@ -16,15 +16,20 @@ const style = Astro.props.style;
   <button
     id="player-expand-from-side"
     type="button"
-    class="player-glass-side-btn w-10 h-14 rounded-r-xl
+    class="player-lg-side-btn w-10 h-14 rounded-r-xl
            flex items-center justify-center
            hover:w-12 transition-all duration-300
            text-[oklch(0.65_0.2_var(--hue))]"
     aria-label="展开播放器"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M9 18l6-6-6-6"/>
-    </svg>
+    <div class="player-lg-backdrop"></div>
+    <div class="player-lg-border player-lg-border-screen"></div>
+    <div class="player-lg-border player-lg-border-overlay"></div>
+    <span class="relative z-10">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </span>
   </button>
   <!-- 播放状态指示器 -->
   <div id="collapsed-playing-indicator" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-[oklch(0.65_0.2_var(--hue))] rounded-full animate-pulse"></div>
@@ -40,14 +45,17 @@ const style = Astro.props.style;
   `]}
   style={style}
 >
-  <!-- 最小化状态 -->
   <div
     id="player-mini"
     class="hidden flex items-center gap-3 px-3 py-2 rounded-xl
-           player-glass-container
+           player-lg-container
            cursor-pointer hover:scale-105 transition-all duration-300
            animate-glow"
   >
+    <div class="player-lg-backdrop"></div>
+    <div class="player-lg-border player-lg-border-screen"></div>
+    <div class="player-lg-border player-lg-border-overlay"></div>
+    <div class="player-lg-hover-glow"></div>
     <img
       id="player-mini-cover"
       src=""
@@ -107,8 +115,12 @@ const style = Astro.props.style;
   <div
     id="player-full"
     class="w-80 rounded-2xl overflow-hidden
-           player-glass-container"
+           player-lg-container"
   >
+    <div class="player-lg-backdrop"></div>
+    <div class="player-lg-border player-lg-border-screen"></div>
+    <div class="player-lg-border player-lg-border-overlay"></div>
+    <div class="player-lg-hover-glow"></div>
     <!-- 头部 -->
     <div class="relative">
       <!-- 封面背景 -->
@@ -308,72 +320,141 @@ const style = Astro.props.style;
 <audio id="global-audio" preload="metadata"></audio>
 
 <style>
-  /* ===== Player Liquid Glass Containers ===== */
-  .player-glass-container {
+  /* ===== Player Liquid Glass Container ===== */
+  .player-lg-container {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 0.35s ease;
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  .player-lg-container:hover {
+    box-shadow:
+      0 12px 48px rgba(0, 0, 0, 0.15),
+      0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  :global(.dark) .player-lg-container {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  :global(.dark) .player-lg-container:hover {
+    box-shadow:
+      0 12px 48px rgba(0, 0, 0, 0.4),
+      0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Content z-index above glass layers */
+  .player-lg-container > *:not(.player-lg-backdrop):not(.player-lg-border):not(.player-lg-hover-glow) {
+    position: relative;
+    z-index: 5;
+  }
+
+  /* ===== Glass Backdrop Layer ===== */
+  .player-lg-backdrop {
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(20px) saturate(200%);
+    -webkit-backdrop-filter: blur(20px) saturate(200%);
     background: linear-gradient(
       135deg,
       rgba(255, 255, 255, 0.5) 0%,
       rgba(255, 255, 255, 0.3) 50%,
       rgba(255, 255, 255, 0.4) 100%
     );
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.12),
-      0 2px 8px rgba(0, 0, 0, 0.06),
-      inset 0 0 0 0.5px rgba(255, 255, 255, 0.45),
-      inset 0 1px 3px rgba(255, 255, 255, 0.25);
+    z-index: 0;
   }
-
-  :global(.dark) .player-glass-container {
+  :global(.dark) .player-lg-backdrop {
     background: linear-gradient(
       135deg,
       rgba(255, 255, 255, 0.1) 0%,
       rgba(255, 255, 255, 0.04) 50%,
       rgba(255, 255, 255, 0.08) 100%
     );
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.35),
-      0 2px 8px rgba(0, 0, 0, 0.2),
-      inset 0 0 0 0.5px rgba(255, 255, 255, 0.12),
-      inset 0 1px 3px rgba(255, 255, 255, 0.06);
   }
 
-  .player-glass-side-btn {
+  /* ===== Gradient Border Layers ===== */
+  .player-lg-border {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 3;
+    padding: 1.5px;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    box-shadow:
+      0 0 0 0.5px rgba(255, 255, 255, 0.4) inset,
+      0 1px 3px rgba(255, 255, 255, 0.2) inset;
+    transition: background 0.3s ease;
+  }
+  .player-lg-border-screen {
+    mix-blend-mode: screen;
+    opacity: 0.25;
     background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0.35) 100%
+      rgba(255, 255, 255, 0.0) 0%,
+      rgba(255, 255, 255, 0.15) 33%,
+      rgba(255, 255, 255, 0.45) 66%,
+      rgba(255, 255, 255, 0.0) 100%
     );
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+  .player-lg-border-overlay {
+    mix-blend-mode: overlay;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.0) 0%,
+      rgba(255, 255, 255, 0.35) 33%,
+      rgba(255, 255, 255, 0.65) 66%,
+      rgba(255, 255, 255, 0.0) 100%
+    );
+  }
+
+  /* ===== Hover Glow Layer ===== */
+  .player-lg-hover-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 60%);
+    mix-blend-mode: overlay;
+    transition: opacity 0.35s ease;
+  }
+  .player-lg-container:hover .player-lg-hover-glow {
+    opacity: 0.5;
+  }
+
+  /* ===== Side Button ===== */
+  .player-lg-side-btn {
+    position: relative;
+    overflow: hidden;
+    border: none;
     box-shadow:
       0 4px 16px rgba(0, 0, 0, 0.1),
-      inset 0 0 0 0.5px rgba(255, 255, 255, 0.4),
-      inset 0 1px 2px rgba(255, 255, 255, 0.2);
-    border: none;
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.4);
   }
-
-  :global(.dark) .player-glass-side-btn {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.04) 100%
-    );
+  :global(.dark) .player-lg-side-btn {
     box-shadow:
       0 4px 16px rgba(0, 0, 0, 0.3),
-      inset 0 0 0 0.5px rgba(255, 255, 255, 0.1),
-      inset 0 1px 2px rgba(255, 255, 255, 0.05);
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+  }
+  .player-lg-side-btn > .player-lg-backdrop {
+    border-radius: inherit;
   }
 
-  /* Glass-styled text readability for player */
-  .player-glass-container *,
-  .player-glass-side-btn * {
+  /* ===== Text readability ===== */
+  .player-lg-container *,
+  .player-lg-side-btn * {
     text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.04);
   }
-
-  :global(.dark) .player-glass-container *,
-  :global(.dark) .player-glass-side-btn * {
+  :global(.dark) .player-lg-container *,
+  :global(.dark) .player-lg-side-btn * {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   }
   #player-playlist::-webkit-scrollbar {

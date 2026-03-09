@@ -64,6 +64,17 @@ const className = Astro.props.class;
     padding: 4px;
   }
 
+  /* ===== Non-glass mode: hide decorative layers, use opaque bg ===== */
+  :global(html:not(.glass)) .liquid-glass-container {
+    background: var(--card-bg);
+    border-radius: 20px;
+  }
+  :global(html:not(.glass)) .glass-backdrop,
+  :global(html:not(.glass)) .glass-border,
+  :global(html:not(.glass)) .glass-hover-glow {
+    display: none;
+  }
+
   .liquid-glass-container {
     position: relative;
     border-radius: 20px;
