@@ -1,0 +1,334 @@
+---
+import LiquidGlassLayout from "./LiquidGlassLayout.astro";
+import { getCollection } from "astro:content";
+
+interface Props {
+  class?: string;
+  style?: string;
+}
+
+const className = Astro.props.class;
+const style = Astro.props.style;
+
+// 项目定义（后续新增项目只需在此数组追加即可）
+const projects = [
+  {
+    id: "xueliangyun",
+    name: "雪涼云",
+    description: "集图库、音乐、短链于一体的个人云服务平台，持续迭代中。",
+    repo: "https://cloud.yukiryou.icu/",
+  },
+  {
+    id: "endfield-yunzai",
+    name: "终末地 Yunzai 插件",
+    description: "Yunzai Bot 终末地游戏插件，支持数据查询、签到、体力提醒、抽卡分析。",
+    repo: "https://github.com/yoshino-xiao7/endfield-suzuki-plugin",
+  },
+];
+
+// Build 时读取所有 devlogs，按项目分组、按时间降序
+const allLogs = await getCollection("devlogs");
+const logsByProject: Record<string, { title: string; published: string; summary: string; slug: string }[]> = {};
+
+for (const proj of projects) {
+  logsByProject[proj.id] = allLogs
+    .filter((log) => log.data.project === proj.id)
+    .sort((a, b) => new Date(b.data.published).getTime() - new Date(a.data.published).getTime())
+    .map((log) => ({
+      title: log.data.title,
+      published: new Date(log.data.published).toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }),
+      summary: log.data.summary,
+      slug: log.slug,
+    }));
+}
+---
+
+<LiquidGlassLayout name="项目进度" id="project-progress" class={className} style={style}>
+  <div id="proj-progress-root" class="flex flex-col gap-3 text-sm">
+    <!-- 项目切换指示器 -->
+    <div class="flex items-center justify-between">
+      <div class="flex gap-1.5" id="proj-dots">
+        {projects.map((p, i) => (
+          <button
+            type="button"
+            class:list={["proj-dot w-2 h-2 rounded-full transition-all duration-300 cursor-pointer", i === 0 ? "bg-[oklch(0.65_0.2_var(--hue))] w-5" : "bg-neutral-400/40"]}
+            data-index={i}
+            title={p.name}
+          />
+        ))}
+      </div>
+      <span id="proj-name" class="text-xs font-medium text-neutral-500 dark:text-neutral-400 transition-opacity duration-300">
+        {projects[0].name}
+      </span>
+    </div>
+
+    <!-- 轮替进度条 -->
+    <div class="proj-progress-bar-track">
+      <div id="proj-progress-bar" class="proj-progress-bar-fill"></div>
+    </div>
+
+    <!-- 项目简介 -->
+    <p id="proj-desc" class="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed transition-opacity duration-300">
+      {projects[0].description}
+    </p>
+
+    <!-- 日志列表 -->
+    <div class="flex flex-col gap-0" id="proj-logs">
+      <!-- 由 JS 填充 -->
+    </div>
+  </div>
+</LiquidGlassLayout>
+
+<style>
+  .proj-dot {
+    border: none;
+    padding: 0;
+  }
+  .proj-dot:hover {
+    opacity: 0.8;
+  }
+  :global(.proj-log-item) {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.12);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.3s ease, transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  :global(.proj-log-item:last-child) {
+    border-bottom: none;
+  }
+  :global(.proj-log-item:hover) {
+    background: rgba(128, 128, 128, 0.06);
+    border-radius: 6px;
+    padding-left: 4px;
+    padding-right: 4px;
+    transform: scale(1.03);
+    transform-origin: left center;
+  }
+  :global(.proj-log-item:hover .proj-log-title) {
+    color: oklch(0.7 0.18 var(--hue));
+  }
+  :global(.proj-log-date) {
+    flex-shrink: 0;
+    font-size: 0.65rem;
+    color: oklch(0.7 0.18 var(--hue));
+    font-weight: 700;
+    min-width: 5em;
+    padding-top: 1px;
+  }
+  :global(.proj-log-title) {
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: rgba(0, 0, 0, 0.85);
+    transition: color 0.2s ease;
+  }
+  :global(.dark .proj-log-title) {
+    color: rgba(255, 255, 255, 0.9);
+  }
+  :global(.dark .proj-log-item:hover) {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Progress bar */
+  .proj-progress-bar-track {
+    width: 100%;
+    height: 3px;
+    background: rgba(128, 128, 128, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  #proj-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: oklch(0.7 0.18 var(--hue));
+    border-radius: 2px;
+  }
+
+  /* Expand button */
+  :global(.proj-expand-btn) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    padding: 4px 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.7rem;
+    color: oklch(0.65 0.15 var(--hue));
+    font-weight: 600;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  :global(.proj-expand-btn:hover) {
+    color: oklch(0.7 0.2 var(--hue));
+    transform: scale(1.02);
+  }
+  :global(.proj-expand-btn svg) {
+    transition: transform 0.3s ease;
+  }
+  :global(.proj-expand-btn.expanded svg) {
+    transform: rotate(180deg);
+  }
+
+  /* Fade animation */
+  .proj-fade-out {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  .proj-fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #proj-desc, #proj-name, #proj-logs {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+</style>
+
+<script define:vars={{ projects, logsByProject }}>
+function initProjectProgress() {
+  const nameEl = document.getElementById("proj-name");
+  const descEl = document.getElementById("proj-desc");
+  const logsEl = document.getElementById("proj-logs");
+  const dotsContainer = document.getElementById("proj-dots");
+  const progressBar = document.getElementById("proj-progress-bar");
+  if (!nameEl || !descEl || !logsEl || !dotsContainer || !progressBar) return;
+
+  const dots = dotsContainer.querySelectorAll(".proj-dot");
+  let current = 0;
+  let timer = null;
+  const MAX_VISIBLE = 3;
+
+  function renderLogs(projectId) {
+    const logs = logsByProject[projectId] || [];
+
+    if (logs.length === 0) {
+      logsEl.innerHTML = '<p class="text-xs text-neutral-400 italic">暂无日志</p>';
+      return;
+    }
+
+    const visible = logs.slice(0, MAX_VISIBLE);
+    const hidden = logs.slice(MAX_VISIBLE);
+
+    let html = visible.map(log => `
+      <a href="/devlogs/${log.slug}/" class="proj-log-item" title="${log.summary}">
+        <span class="proj-log-date">${log.published}</span>
+        <span class="proj-log-title">${log.title}</span>
+      </a>
+    `).join("");
+
+    if (hidden.length > 0) {
+      html += `<div id="proj-logs-hidden" style="display:none;">`;
+      html += hidden.map(log => `
+        <a href="/devlogs/${log.slug}/" class="proj-log-item" title="${log.summary}">
+          <span class="proj-log-date">${log.published}</span>
+          <span class="proj-log-title">${log.title}</span>
+        </a>
+      `).join("");
+      html += `</div>`;
+      html += `
+        <button type="button" class="proj-expand-btn" id="proj-expand-toggle">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+          <span>展开更多 (${hidden.length})</span>
+        </button>
+      `;
+    }
+
+    logsEl.innerHTML = html;
+
+    // Bind expand toggle
+    const expandBtn = document.getElementById("proj-expand-toggle");
+    if (expandBtn) {
+      expandBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        const hiddenEl = document.getElementById("proj-logs-hidden");
+        if (!hiddenEl) return;
+        const isExpanded = hiddenEl.style.display !== "none";
+        hiddenEl.style.display = isExpanded ? "none" : "block";
+        expandBtn.querySelector("span").textContent = isExpanded ? `展开更多 (${hidden.length})` : "收起";
+        expandBtn.classList.toggle("expanded", !isExpanded);
+      });
+    }
+  }
+
+  function startProgressBar() {
+    progressBar.style.transition = 'none';
+    progressBar.style.width = '0%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        progressBar.style.transition = 'width 30s cubic-bezier(0.4, 0, 0.2, 1)';
+        progressBar.style.width = '100%';
+      });
+    });
+  }
+
+  function switchTo(index, animate = true) {
+    if (index < 0 || index >= projects.length) return;
+    current = index;
+    const proj = projects[current];
+
+    startProgressBar();
+
+    if (animate) {
+      nameEl.style.opacity = "0";
+      descEl.style.opacity = "0";
+      logsEl.style.opacity = "0";
+
+      setTimeout(() => {
+        nameEl.textContent = proj.name;
+        descEl.textContent = proj.description;
+        renderLogs(proj.id);
+        updateDots();
+        nameEl.style.opacity = "1";
+        descEl.style.opacity = "1";
+        logsEl.style.opacity = "1";
+      }, 300);
+    } else {
+      nameEl.textContent = proj.name;
+      descEl.textContent = proj.description;
+      renderLogs(proj.id);
+      updateDots();
+    }
+  }
+
+  function updateDots() {
+    dots.forEach((dot, i) => {
+      if (i === current) {
+        dot.classList.add("bg-[oklch(0.65_0.2_var(--hue))]");
+        dot.classList.remove("bg-neutral-400/40");
+        dot.style.width = "20px";
+      } else {
+        dot.classList.remove("bg-[oklch(0.65_0.2_var(--hue))]");
+        dot.classList.add("bg-neutral-400/40");
+        dot.style.width = "8px";
+      }
+    });
+  }
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener("click", () => {
+      switchTo(i);
+      resetTimer();
+    });
+  });
+
+  function resetTimer() {
+    if (timer) clearInterval(timer);
+    timer = setInterval(() => {
+      switchTo((current + 1) % projects.length);
+    }, 30000);
+  }
+
+  switchTo(0, false);
+  resetTimer();
+}
+
+initProjectProgress();
+document.addEventListener("astro:page-load", initProjectProgress);
+</script>

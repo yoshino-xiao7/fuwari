@@ -37,8 +37,18 @@ const assetsCollection = defineCollection({
 	}),
 });
 
+const devlogsCollection = defineCollection({
+	schema: z.object({
+		title: z.string(),
+		published: z.date(),
+		project: z.string(),           // 项目ID，如 'xueliangyun' 或 'endfield-yunzai'
+		summary: z.string().optional().default(""),
+	}),
+});
+
 export const collections = {
 	posts: postsCollection,
 	spec: specCollection,
 	assets: assetsCollection,
+	devlogs: devlogsCollection,
 };

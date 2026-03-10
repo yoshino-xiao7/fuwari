@@ -154,10 +154,11 @@ const bannerOffset =
 
 			// Load style mode (glass/default) from local storage
 			const styleMode = localStorage.getItem('style-mode');
-			if (styleMode === 'glass') {
-				document.documentElement.classList.add('glass');
-			} else {
+			if (styleMode === 'default') {
 				document.documentElement.classList.remove('glass');
+			} else {
+				// Default to glass mode
+				document.documentElement.classList.add('glass');
 			}
 
 			// Load the hue from local storage

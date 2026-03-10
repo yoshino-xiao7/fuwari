@@ -6,6 +6,7 @@ import Profile from "./Profile.astro";
 import DomainSwitcher from "./DomainSwitcher.astro";
 import SetuCard from "./SetuCard.astro";
 import MusicSearch from "./MusicSearch.astro";
+import ProjectProgress from "./ProjectProgress.astro";
 
 interface Props {
 	class?: string;
@@ -24,6 +25,7 @@ const className = Astro.props.class;
         <!-- 标签卡片已隐藏 -->
         <!-- <Tag class="onload-animation" style="animation-delay: 200ms"></Tag> -->
         <MusicSearch class="onload-animation" style="animation-delay: 200ms" />
+        <ProjectProgress class="onload-animation" style="animation-delay: 225ms" />
 	<SetuCard class="onload-animation" style="animation-delay: 250ms" />
     </div>
 </div>
