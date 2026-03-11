@@ -185,7 +185,7 @@ for (const proj of projects) {
     transform: translateY(0);
   }
   #proj-desc, #proj-name, #proj-logs {
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 </style>
 
@@ -276,19 +276,34 @@ function initProjectProgress() {
     startProgressBar();
 
     if (animate) {
+      // Fade out + slide down
       nameEl.style.opacity = "0";
+      nameEl.style.transform = "translateY(6px)";
       descEl.style.opacity = "0";
+      descEl.style.transform = "translateY(6px)";
       logsEl.style.opacity = "0";
+      logsEl.style.transform = "translateY(8px)";
 
       setTimeout(() => {
         nameEl.textContent = proj.name;
         descEl.textContent = proj.description;
         renderLogs(proj.id);
         updateDots();
-        nameEl.style.opacity = "1";
-        descEl.style.opacity = "1";
-        logsEl.style.opacity = "1";
-      }, 300);
+
+        // Prep for slide up entrance
+        nameEl.style.transform = "translateY(-6px)";
+        descEl.style.transform = "translateY(-6px)";
+        logsEl.style.transform = "translateY(-8px)";
+
+        requestAnimationFrame(() => {
+          nameEl.style.opacity = "1";
+          nameEl.style.transform = "translateY(0)";
+          descEl.style.opacity = "1";
+          descEl.style.transform = "translateY(0)";
+          logsEl.style.opacity = "1";
+          logsEl.style.transform = "translateY(0)";
+        });
+      }, 400);
     } else {
       nameEl.textContent = proj.name;
       descEl.textContent = proj.description;
