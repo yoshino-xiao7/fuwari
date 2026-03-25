@@ -269,21 +269,22 @@ const style = Astro.props.style;
       </div>
       
       <!-- 音质选择 -->
-      <select
-        id="player-quality"
-        class="h-7 px-2 text-xs rounded-lg
-               bg-white/20 dark:bg-white/8
-               text-neutral-600 dark:text-neutral-300
-               border border-white/30 dark:border-white/10
-               focus:outline-none focus:ring-1 focus:ring-[oklch(0.65_0.2_var(--hue))]
-               cursor-pointer backdrop-blur-sm"
-        aria-label="音质选择"
-      >
-        <option value="standard">标准</option>
-        <option value="higher">较高</option>
-        <option value="exhigh" selected>极高</option>
-        <option value="lossless">无损</option>
-      </select>
+      <div class="quality-select-wrapper">
+        <select
+          id="player-quality"
+          class="quality-select"
+          aria-label="音质选择"
+        >
+          <option value="standard">标准</option>
+          <option value="higher">较高</option>
+          <option value="exhigh" selected>极高</option>
+          <option value="lossless">无损</option>
+          <option value="hires">Hi-Res</option>
+        </select>
+        <svg class="quality-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </div>
       
       <button
         id="player-list-toggle"
@@ -466,6 +467,74 @@ const style = Astro.props.style;
   #player-playlist::-webkit-scrollbar-thumb {
     background: oklch(0.7 0.1 var(--hue));
     border-radius: 2px;
+  }
+
+  /* ===== Quality Selector ===== */
+  .quality-select-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .quality-select {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 28px;
+    padding: 0 26px 0 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    border-radius: 14px;
+    background: linear-gradient(135deg, oklch(0.65 0.15 var(--hue) / 0.2), oklch(0.65 0.15 var(--hue) / 0.08));
+    color: oklch(0.45 0.1 var(--hue));
+    border: 1.5px solid oklch(0.65 0.15 var(--hue) / 0.3);
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.25s ease;
+    outline: none;
+  }
+  .quality-select:hover {
+    background: linear-gradient(135deg, oklch(0.65 0.15 var(--hue) / 0.35), oklch(0.65 0.15 var(--hue) / 0.15));
+    border-color: oklch(0.65 0.15 var(--hue) / 0.5);
+    box-shadow: 0 2px 12px oklch(0.65 0.2 var(--hue) / 0.2);
+  }
+  .quality-select:focus {
+    border-color: oklch(0.65 0.2 var(--hue) / 0.7);
+    box-shadow: 0 0 0 3px oklch(0.65 0.2 var(--hue) / 0.15),
+                0 2px 12px oklch(0.65 0.2 var(--hue) / 0.2);
+  }
+  .quality-select option {
+    background: #fff;
+    color: #333;
+    font-weight: 500;
+    padding: 4px 8px;
+  }
+  :global(.dark) .quality-select {
+    background: linear-gradient(135deg, oklch(0.65 0.15 var(--hue) / 0.15), oklch(0.65 0.15 var(--hue) / 0.05));
+    color: oklch(0.8 0.12 var(--hue));
+    border-color: oklch(0.65 0.15 var(--hue) / 0.25);
+  }
+  :global(.dark) .quality-select:hover {
+    background: linear-gradient(135deg, oklch(0.65 0.15 var(--hue) / 0.25), oklch(0.65 0.15 var(--hue) / 0.1));
+    border-color: oklch(0.65 0.15 var(--hue) / 0.45);
+  }
+  :global(.dark) .quality-select option {
+    background: #2a2a2a;
+    color: #e0e0e0;
+  }
+  .quality-arrow {
+    position: absolute;
+    right: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    color: oklch(0.55 0.12 var(--hue));
+    transition: color 0.2s ease;
+  }
+  :global(.dark) .quality-arrow {
+    color: oklch(0.75 0.12 var(--hue));
   }
   
   /* 封面旋转动画 */
@@ -1193,6 +1262,11 @@ const style = Astro.props.style;
       if (miniArtistEl) miniArtistEl.textContent = song.artist;
 
       this.updatePlaylist();
+
+      // Dispatch event for Dynamic Island sync
+      window.dispatchEvent(new CustomEvent("music:songChange", {
+        detail: { id: song.id, name: song.name, artist: song.artist, cover: coverUrl }
+      }));
     }
 
     private updatePlaylist() {
