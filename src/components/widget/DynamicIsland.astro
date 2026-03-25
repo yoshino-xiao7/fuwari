@@ -1,23 +1,19 @@
 ---
 /**
  * Dynamic Island — Apple-style pill in the navbar center
- * Acts as a thin controller that repositions and shows the
- * existing GlobalMusicPlayer (#player-full) below the island.
- * All features (volume, quality, playlist, etc.) are preserved.
+ * States: Idle (clock) → Playing (cover+lyric+waveform) → Pause 5s → Idle
  */
 ---
 
 <div id="dynamic-island" class="dynamic-island di-idle" title="音乐播放器">
-  <!-- Idle: music note -->
+  <!-- Idle: Beijing time clock -->
   <div id="di-idle" class="di-pill-idle">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-white/60" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-    </svg>
+    <span id="di-clock" class="di-clock">00:00:00</span>
   </div>
-  <!-- Playing: cover + lyric + waveform -->
+  <!-- Playing: cover + waveform (lyrics reserved) -->
   <div id="di-playing" class="di-pill-playing hidden">
     <img id="di-cover" src="" alt="" class="di-cover cover-spin" />
-    <div id="di-lyric" class="di-lyric">♪ 播放中</div>
+    <div id="di-lyric" class="di-lyric hidden">♪ 播放中</div>
     <div class="di-waveform" id="di-waveform">
       <span></span><span></span><span></span><span></span>
     </div>
@@ -28,7 +24,6 @@
 <div id="di-backdrop" class="di-backdrop hidden"></div>
 
 <style>
-  /* ===== Island pill ===== */
   .dynamic-island {
     display: flex;
     align-items: center;
@@ -54,11 +49,27 @@
     padding: 0 14px;
   }
 
-  /* Playing */
+  /* Clock */
+  .di-clock {
+    font-family: 'SF Mono', 'Menlo', 'Consolas', 'Monaco', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    letter-spacing: 0.08em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* Playing - default compact */
   .dynamic-island.di-playing-pill {
-    width: 180px;
+    width: 120px;
     height: 34px;
-    padding: 0 10px;
+    padding: 0 12px;
+  }
+  
+  /* Playing - with lyrics enabled */
+  .dynamic-island.di-playing-pill.with-lyric {
+    width: 180px;
   }
 
   /* Inner states */
@@ -67,8 +78,12 @@
     align-items: center;
     width: 100%;
   }
+  .di-pill-idle.hidden, .di-pill-playing.hidden {
+    display: none !important;
+  }
   .di-pill-idle { justify-content: center; }
-  .di-pill-playing { gap: 8px; }
+  .di-pill-playing { justify-content: space-between; }
+  .dynamic-island.with-lyric .di-pill-playing { gap: 8px; justify-content: flex-start; }
 
   /* Cover */
   .di-cover {
@@ -80,7 +95,7 @@
     flex-shrink: 0;
   }
 
-  /* Lyric */
+  /* Lyric (Reserved) */
   .di-lyric {
     flex: 1;
     font-size: 0.7rem;
@@ -92,6 +107,9 @@
     letter-spacing: 0.02em;
     line-height: 1;
     transition: opacity 0.15s ease;
+  }
+  .di-lyric.hidden {
+    display: none !important;
   }
 
   /* Waveform — only .active animates */
@@ -146,120 +164,147 @@
 
   /* Mobile */
   @media (max-width: 768px) {
-    .dynamic-island.di-playing-pill { width: 150px; }
+    .dynamic-island.di-playing-pill { width: 110px; }
+    .dynamic-island.di-playing-pill.with-lyric { width: 150px; }
   }
 </style>
 
 <script>
-class DynamicIsland {
-  private island: HTMLElement | null = null;
-  private backdropEl: HTMLElement | null = null;
-  private audio: HTMLAudioElement | null = null;
-  private isExpanded = false;
-  private lyrics: Array<{time: number, text: string}> = [];
-  private currentLyricIndex = -1;
-  private hasSong = false;
+// ===== Singleton guard =====
+declare global {
+  interface Window { __diInstance?: any; __diClockId?: number; __diPollId?: number; }
+}
 
-  constructor() { this.init(); }
+(function initDynamicIsland() {
+  // Clean up previous instance
+  if (window.__diClockId) { clearInterval(window.__diClockId); window.__diClockId = undefined; }
+  if (window.__diPollId) { clearInterval(window.__diPollId); window.__diPollId = undefined; }
 
-  private init() {
-    this.island = document.getElementById("dynamic-island");
-    this.backdropEl = document.getElementById("di-backdrop");
-    this.audio = document.getElementById("global-audio") as HTMLAudioElement;
-    if (!this.island) return;
-    this.bindEvents();
-    this.syncWithPlayer();
+  const island = document.getElementById("dynamic-island");
+  const idleEl = document.getElementById("di-idle");
+  const playingEl = document.getElementById("di-playing");
+  const lyricEl = document.getElementById("di-lyric");
+  const clockEl = document.getElementById("di-clock");
+  const coverEl = document.getElementById("di-cover") as HTMLImageElement | null;
+  const waveformEl = document.getElementById("di-waveform");
+  const backdropEl = document.getElementById("di-backdrop");
+  const audio = document.getElementById("global-audio") as HTMLAudioElement | null;
+
+  if (!island) return;
+
+  // 🌟 歌词开关
+  const enableLyrics = true;
+
+  let state: "idle" | "playing" = "idle";
+  let isExpanded = false;
+  let pauseTimer: ReturnType<typeof setTimeout> | null = null;
+  let lyrics: Array<{time: number, text: string}> = [];
+  let currentLyricIndex = -1;
+
+  // ===== Force idle on init =====
+  function showIdle() {
+    if (isExpanded) return;
+    state = "idle";
+    island!.className = "dynamic-island di-idle";
+    if (idleEl) idleEl.classList.remove("hidden");
+    if (playingEl) playingEl.classList.add("hidden");
+    if (lyricEl) lyricEl.classList.add("hidden");
   }
 
-  private bindEvents() {
-    // Click island → open player below it
-    this.island?.addEventListener("click", () => {
-      if (!this.isExpanded) this.openPlayer();
+  function showPlaying() {
+    if (isExpanded) return;
+    state = "playing";
+    island!.className = enableLyrics
+      ? "dynamic-island di-playing-pill with-lyric"
+      : "dynamic-island di-playing-pill";
+    if (idleEl) idleEl.classList.add("hidden");
+    if (playingEl) playingEl.classList.remove("hidden");
+    if (enableLyrics && lyricEl) lyricEl.classList.remove("hidden");
+  }
+
+  // Start in idle
+  showIdle();
+
+  // ===== Clock =====
+  function updateClock() {
+    if (!clockEl) return;
+    clockEl.textContent = new Date().toLocaleTimeString('zh-CN', {
+      timeZone: 'Asia/Shanghai', hour12: false,
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
+  }
+  updateClock();
+  window.__diClockId = setInterval(updateClock, 1000) as unknown as number;
 
-    // Click backdrop → close player
-    this.backdropEl?.addEventListener("click", () => this.closePlayer());
-
-    // Song change
-    window.addEventListener("music:songChange", ((e: CustomEvent) => {
-      this.onSongChange(e.detail);
-    }) as EventListener);
-
-    // Audio events
-    if (this.audio) {
-      this.audio.addEventListener("timeupdate", () => this.onTimeUpdate());
-      this.audio.addEventListener("play", () => this.onPlay());
-      this.audio.addEventListener("pause", () => this.onPause());
-    }
+  // ===== Audio events =====
+  function onPlay() {
+    if (pauseTimer) { clearTimeout(pauseTimer); pauseTimer = null; }
+    showPlaying();
+    waveformEl?.classList.add("active");
+    coverEl?.classList.add("playing");
   }
 
-  private syncWithPlayer() {
-    if (this.audio && !this.audio.paused && this.audio.src) {
-      this.onPlay();
-    }
-    // Fallback poll
-    setInterval(() => {
-      const title = document.getElementById("player-mini-title")?.textContent;
-      const cover = (document.getElementById("player-mini-cover") as HTMLImageElement)?.src;
-      if (title && title !== "未播放") {
-        this.hasSong = true;
-        this.updateCover(cover || "");
-        if (!this.audio?.paused) this.showPlayingPill();
-        else if (!this.isExpanded) this.showPlayingPill(); // show pill state for paused song
+  function onPause() {
+    waveformEl?.classList.remove("active");
+    coverEl?.classList.remove("playing");
+    // 暂停 5 秒后自动切换回时钟
+    if (pauseTimer) clearTimeout(pauseTimer);
+    pauseTimer = setTimeout(() => {
+      if (audio?.paused && !isExpanded) {
+        showIdle();
       }
-    }, 1000);
+    }, 5000);
   }
 
-  // ===== Play / Pause =====
-
-  private onPlay() {
-    this.showPlayingPill();
-    document.getElementById("di-waveform")?.classList.add("active");
-    document.getElementById("di-cover")?.classList.add("playing");
-  }
-
-  private onPause() {
-    document.getElementById("di-waveform")?.classList.remove("active");
-    document.getElementById("di-cover")?.classList.remove("playing");
-  }
-
-  private showPlayingPill() {
-    if (!this.island || this.isExpanded) return;
-    this.island.className = "dynamic-island di-playing-pill";
-    document.getElementById("di-idle")?.classList.add("hidden");
-    document.getElementById("di-playing")?.classList.remove("hidden");
-  }
-
-  private onSongChange(detail: any) {
-    if (detail) {
-      this.hasSong = true;
-      this.updateCover(detail.cover);
-      this.fetchLyrics(detail.id);
+  if (audio) {
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+    if (enableLyrics) {
+      audio.addEventListener("timeupdate", () => {
+        if (!audio.duration) return;
+        updateLyric(audio.currentTime);
+      });
     }
+    // If already playing
+    if (!audio.paused && audio.src) onPlay();
   }
 
-  private updateCover(cover: string) {
-    const el = document.getElementById("di-cover") as HTMLImageElement;
-    if (el && cover) el.src = cover;
-  }
+  // ===== Fallback poll =====
+  window.__diPollId = setInterval(() => {
+    const cover = (document.getElementById("player-mini-cover") as HTMLImageElement)?.src;
+    if (cover && coverEl) coverEl.src = cover;
+    // Only force playing if audio is truly playing and we're in idle
+    if (audio && !audio.paused && state === "idle" && !isExpanded) {
+      showPlaying();
+    }
+  }, 3000) as unknown as number;
 
-  // ===== Open / Close the REAL player panel =====
-  // Island pill stays the same size — only the player panel appears/disappears
+  // ===== Song change =====
+  window.addEventListener("music:songChange", ((e: CustomEvent) => {
+    if (e.detail) {
+      if (e.detail.cover && coverEl) coverEl.src = e.detail.cover;
+      if (enableLyrics && e.detail.id) fetchLyrics(e.detail.id);
+    }
+  }) as EventListener);
 
-  private openPlayer() {
+  // ===== Click handlers =====
+  island.addEventListener("click", () => {
+    if (isExpanded) closePlayer();
+    else openPlayer();
+  });
+  backdropEl?.addEventListener("click", () => closePlayer());
+
+  // ===== Open / Close player =====
+  function openPlayer() {
     const playerEl = document.getElementById("global-music-player");
     const fullEl = document.getElementById("player-full");
     const miniEl = document.getElementById("player-mini");
-    if (!playerEl || !fullEl) return;
-
-    this.isExpanded = true;
-
-    // Calculate position below the island
     const diContainer = document.getElementById("di-container");
-    if (!diContainer) return;
+    if (!playerEl || !fullEl || !diContainer) return;
+
+    isExpanded = true;
     const rect = diContainer.getBoundingClientRect();
 
-    // Position the player fixed, centered below the island
     playerEl.style.cssText = `
       position: fixed !important;
       top: ${rect.bottom + 8}px !important;
@@ -269,71 +314,49 @@ class DynamicIsland {
       z-index: 200 !important;
       padding-left: 0 !important;
     `;
-
-    // Show full panel, hide mini
     playerEl.classList.remove("hidden");
     miniEl?.classList.add("hidden");
     fullEl.classList.remove("hidden");
 
-    // Morph animation: scale from island pill shape
     fullEl.style.cssText = `
-      opacity: 0;
-      transform: scaleY(0) scaleX(0.5);
+      opacity: 0; transform: scaleY(0) scaleX(0.5);
       transform-origin: top center;
-      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                  transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.35s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
     `;
-
-    this.backdropEl?.classList.remove("hidden");
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        fullEl.style.opacity = "1";
-        fullEl.style.transform = "scaleY(1) scaleX(1)";
-      });
-    });
+    backdropEl?.classList.remove("hidden");
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      fullEl.style.opacity = "1";
+      fullEl.style.transform = "scaleY(1) scaleX(1)";
+    }));
   }
 
-  private closePlayer() {
+  function closePlayer() {
     const playerEl = document.getElementById("global-music-player");
     const fullEl = document.getElementById("player-full");
     if (!playerEl || !fullEl) return;
 
-    // Morph out animation
     fullEl.style.opacity = "0";
     fullEl.style.transform = "scaleY(0) scaleX(0.5)";
-
-    this.backdropEl?.classList.add("hidden");
+    backdropEl?.classList.add("hidden");
 
     setTimeout(() => {
-      this.isExpanded = false;
-      // Reset all inline styles
+      isExpanded = false;
       playerEl.style.cssText = "";
       fullEl.style.cssText = "";
       playerEl.classList.add("hidden");
-      // Island pill stays as-is, no size change needed
     }, 400);
   }
 
   // ===== Lyrics =====
-
-  private onTimeUpdate() {
-    if (!this.audio) return;
-    const { currentTime, duration } = this.audio;
-    if (!duration) return;
-    this.updateLyric(currentTime);
-  }
-
-  private updateLyric(time: number) {
-    if (this.lyrics.length === 0) return;
+  function updateLyric(time: number) {
+    if (lyrics.length === 0) return;
     let idx = -1;
-    for (let i = this.lyrics.length - 1; i >= 0; i--) {
-      if (time >= this.lyrics[i].time) { idx = i; break; }
+    for (let i = lyrics.length - 1; i >= 0; i--) {
+      if (time >= lyrics[i].time) { idx = i; break; }
     }
-    if (idx !== this.currentLyricIndex && idx >= 0) {
-      this.currentLyricIndex = idx;
-      const text = this.lyrics[idx].text || "♪";
-      const lyricEl = document.getElementById("di-lyric");
+    if (idx !== currentLyricIndex && idx >= 0) {
+      currentLyricIndex = idx;
+      const text = lyrics[idx].text || "♪";
       if (lyricEl) {
         lyricEl.style.opacity = "0";
         setTimeout(() => { lyricEl.textContent = text; lyricEl.style.opacity = "1"; }, 150);
@@ -341,21 +364,20 @@ class DynamicIsland {
     }
   }
 
-  private async fetchLyrics(songId: number | string) {
-    this.lyrics = [];
-    this.currentLyricIndex = -1;
+  async function fetchLyrics(songId: number | string) {
+    lyrics = []; currentLyricIndex = -1;
     try {
-      const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+      const isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
       const api = isLocal ? "http://localhost:9898/blog/music" : "https://api.yukiryou.icu/blog/music";
       const res = await fetch(`${api}/lyric?id=${songId}`);
       const data = await res.json();
       if (data.code === 200 && data.data?.lrc?.lyric) {
-        this.lyrics = this.parseLRC(data.data.lrc.lyric);
+        lyrics = parseLRC(data.data.lrc.lyric);
       }
     } catch (e) { /* ignore */ }
   }
 
-  private parseLRC(lrc: string): Array<{time: number, text: string}> {
+  function parseLRC(lrc: string) {
     const result: Array<{time: number, text: string}> = [];
     for (const line of lrc.split("\n")) {
       const m = line.match(/\[(\d{2}):(\d{2})\.(\d{2,3})\]/);
@@ -367,9 +389,15 @@ class DynamicIsland {
     }
     return result.sort((a, b) => a.time - b.time);
   }
-}
+})();
 
-function initDI() { new DynamicIsland(); }
-initDI();
-document.addEventListener("astro:page-load", initDI);
+// Re-init on Astro page transitions
+document.addEventListener("astro:page-load", () => {
+  // The IIFE above runs on initial load. For page transitions,
+  // we need to re-init. The cleanup at the top handles old intervals.
+  const script = document.querySelector('#dynamic-island')?.closest('astro-island');
+  if (script) {
+    // Astro will re-run the script automatically on page transitions
+  }
+});
 </script>

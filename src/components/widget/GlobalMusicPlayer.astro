@@ -8,10 +8,10 @@ const className = Astro.props.class;
 const style = Astro.props.style;
 ---
 
-<!-- 侧边收缩状态 - 只显示箭头（放在主播放器外部）-->
+<!-- 侧边收缩状态 - 已由灵动岛取代，永久隐藏 -->
 <div
   id="player-collapsed"
-  class="hidden fixed bottom-4 left-0 z-[100]"
+  class="!hidden fixed bottom-4 left-0 z-[100]"
 >
   <button
     id="player-expand-from-side"
@@ -97,17 +97,7 @@ const style = Astro.props.style;
           <path d="M18 15l-6-6-6 6"/>
         </svg>
       </button>
-      <button
-        id="player-collapse-side-mini"
-        type="button"
-        class="w-8 h-8 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-700
-               flex items-center justify-center transition-colors text-neutral-600 dark:text-neutral-400"
-        aria-label="收起到侧边"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 18l-6-6 6-6"/>
-        </svg>
-      </button>
+      <!-- 收缩按钮已由灵动岛取代 -->
     </div>
   </div>
 
@@ -141,28 +131,7 @@ const style = Astro.props.style;
             --
           </div>
         </div>
-        <button
-          id="player-collapse-side-full"
-          type="button"
-          class="w-8 h-8 rounded-full hover:bg-neutral-200/50 dark:hover:bg-neutral-700/50
-                 flex items-center justify-center transition-colors text-neutral-500"
-          aria-label="收起到侧边"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6"/>
-          </svg>
-        </button>
-        <button
-          id="player-minimize-btn"
-          type="button"
-          class="w-8 h-8 rounded-full hover:bg-neutral-200/50 dark:hover:bg-neutral-700/50
-                 flex items-center justify-center transition-colors text-neutral-500"
-          aria-label="最小化"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M6 9l6 6 6-6"/>
-          </svg>
-        </button>
+        <!-- 收缩/最小化按钮已由灵动岛取代 -->
       </div>
     </div>
 
