@@ -24,7 +24,12 @@
 <div id="di-backdrop" class="di-backdrop hidden"></div>
 
 <style>
+  /* ===== Island pill ===== */
   .dynamic-island {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,7 +37,7 @@
     border-radius: 99px;
     cursor: pointer;
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
-    z-index: 100;
+    z-index: 9999;
     overflow: hidden;
     flex-shrink: 0;
     transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
@@ -145,10 +150,7 @@
     position: fixed;
     inset: 0;
     z-index: 95;
-    background: rgba(0,0,0,0.15);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    transition: opacity 0.3s ease;
+    background: transparent;
   }
 
   /* Cover spin */
@@ -299,11 +301,10 @@ declare global {
     const playerEl = document.getElementById("global-music-player");
     const fullEl = document.getElementById("player-full");
     const miniEl = document.getElementById("player-mini");
-    const diContainer = document.getElementById("di-container");
-    if (!playerEl || !fullEl || !diContainer) return;
+    if (!playerEl || !fullEl || !island) return;
 
     isExpanded = true;
-    const rect = diContainer.getBoundingClientRect();
+    const rect = island.getBoundingClientRect();
 
     playerEl.style.cssText = `
       position: fixed !important;

@@ -8,7 +8,6 @@ import { url } from "../utils/url-utils";
 import Search from "./Search.svelte";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
 import NavMenuPanel from "./widget/NavMenuPanel.astro";
-import DynamicIsland from "./widget/DynamicIsland.astro";
 const className = Astro.props.class;
 
 let links: NavBarLink[] = navBarConfig.links.map(
@@ -19,32 +18,32 @@ let links: NavBarLink[] = navBarConfig.links.map(
 		return item;
 	},
 );
+
+const midIndex = Math.ceil(links.length / 2);
+const leftLinks = links.slice(0, midIndex);
+const rightLinks = links.slice(midIndex);
 ---
 <div id="navbar" class="z-50 onload-animation">
     <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div>
     <div class:list={[
         className,
-        "card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center px-4"]}>
+        "card-base !overflow-visible w-full max-w-[95rem] h-[4.5rem] !rounded-t-none mx-auto grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-4 md:px-6"]}>
 
-        <!-- Left: Logo -->
-        <a href={url('/')} class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95 flex-shrink-0">
-            <div class="flex flex-row text-[var(--primary)] items-center text-md">
-                <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
-                {siteConfig.title}
-            </div>
-        </a>
-
-        <!-- Center: Dynamic Island -->
-        <div class="flex-1 flex justify-center relative" id="di-container">
-            <DynamicIsland />
-        </div>
-
-        <!-- Right: Nav links + buttons -->
-        <div class="flex items-center flex-shrink-0">
-            <div class="hidden md:flex">
-                {links.map((l) => {
+        <!-- Left: Logo + Left Links -->
+        <div class="flex justify-between items-center w-full min-w-0 pr-2 lg:pr-4">
+            <!-- Logo (Far Left) -->
+            <a href={url('/')} class="btn-plain scale-animation rounded-lg h-[3.25rem] px-3 xl:px-5 font-bold active:scale-95 flex-shrink-0 mr-auto">
+                <div class="flex flex-row text-[var(--primary)] items-center text-md">
+                    <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
+                    {siteConfig.title}
+                </div>
+            </a>
+            
+            <!-- Left Links (Pushing against the middle gap) -->
+            <div class="hidden md:flex items-center shrink-0">
+                {leftLinks.map((l) => {
                     return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
-                              class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
+                              class="btn-plain scale-animation rounded-lg h-11 font-bold px-3 xl:px-4 active:scale-95 whitespace-nowrap"
                     >
                         <div class="flex items-center">
                             {l.name}
@@ -53,10 +52,34 @@ let links: NavBarLink[] = navBarConfig.links.map(
                     </a>;
                 })}
             </div>
-            <Search client:only="svelte"></Search>
+        </div>
 
-            <!-- Theme Toggle Button (3-way: Classic Dark → Liquid Glass → Light) -->
-            <button aria-label="Toggle Theme" class="btn-plain scale-animation rounded-lg h-11 px-3 active:scale-90 relative text-sm font-bold" id="theme-toggle-btn" title="切换主题">
+        <!-- Center: Empty space reserved for floating Dynamic Island to prevent overlap -->
+        <div class="w-[120px] lg:w-[260px] shrink-0" id="di-container">
+        </div>
+
+        <!-- Right: Right Links + buttons -->
+        <div class="flex justify-between items-center w-full min-w-0 pl-2 lg:pl-4">
+            <!-- Right Links (Pushing against the middle gap) -->
+            <div class="hidden md:flex items-center shrink-0 mr-auto">
+                {rightLinks.map((l) => {
+                    return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
+                              class="btn-plain scale-animation rounded-lg h-11 font-bold px-3 xl:px-4 active:scale-95 whitespace-nowrap"
+                    >
+                        <div class="flex items-center">
+                            {l.name}
+                            {l.external && <Icon name="fa6-solid:arrow-up-right-from-square" class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]"></Icon>}
+                        </div>
+                    </a>;
+                })}
+            </div>
+            
+            <!-- 功能按钮区：绝对保底可见 (Far Right) -->
+            <div class="flex flex-row items-center shrink-0">
+                <Search client:only="svelte"></Search>
+
+                <!-- Theme Toggle Button (3-way: Classic Dark → Liquid Glass → Light) -->
+                <button aria-label="Toggle Theme" class="btn-plain scale-animation rounded-lg h-11 px-3 active:scale-90 relative text-sm font-bold shrink-0" id="theme-toggle-btn" title="切换主题">
                 <span id="theme-label-dark" class="theme-label">暗黑</span>
                 <span id="theme-label-glass" class="theme-label">玻璃</span>
                 <span id="theme-label-light" class="theme-label">明亮</span>
@@ -71,6 +94,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
             <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch">
                 <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
             </button>
+            </div>
         </div>
         <NavMenuPanel links={links}></NavMenuPanel>
         <DisplaySettings client:only="svelte"></DisplaySettings>
