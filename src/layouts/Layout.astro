@@ -180,7 +180,8 @@ const bannerOffset =
 				if (urlMatch) {
 					img.onload = function() {
 						// 背景图片完全加载后，显示背景并启用卡片透明效果
-						document.body.classList.add('bg-loaded');
+						const bgEl = document.getElementById('bg-layer');
+						if (bgEl) bgEl.classList.add('bg-loaded');
 						document.documentElement.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
 						document.documentElement.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
 					};
@@ -224,8 +225,7 @@ const bannerOffset =
 				--bg-opacity: var(--bg-opacity);
 			}
 			
-			body::before {
-				content: '' !important;
+			#bg-layer {
 				position: fixed !important;
 				top: 0 !important;
 				left: 0 !important;
@@ -235,25 +235,15 @@ const bannerOffset =
 				background-position: var(--bg-position) !important;
 				background-size: var(--bg-size) !important;
 				background-repeat: var(--bg-repeat) !important;
-				background-attachment: var(--bg-attachment) !important;
 				opacity: 0 !important;
 				pointer-events: none !important;
 				z-index: -1 !important;
-				display: block !important;
 				transition: opacity 0.3s ease-in-out !important;
+				-webkit-transform: translateZ(0); /* iOS GPU compositing fix */
+				transform: translateZ(0);
 			}
 
-			/* Mobile fix: background-attachment:fixed is broken on iOS/mobile browsers */
-			@media (max-width: 768px), (hover: none) {
-				body::before {
-					background-attachment: scroll !important;
-					position: fixed !important;
-					min-height: 100vh !important;
-					min-width: 100vw !important;
-				}
-			}
-			
-			body.bg-loaded::before {
+			#bg-layer.bg-loaded {
 				opacity: calc(var(--bg-opacity) * var(--bg-enable)) !important;
 			}
 
@@ -262,7 +252,7 @@ const bannerOffset =
 				--page-bg: oklch(0.25 0.015 var(--hue));
 				--bg-opacity: 0.55;
 			}
-			:root.glass body.bg-loaded::before {
+			:root.glass #bg-layer.bg-loaded {
 				opacity: calc(0.55 * var(--bg-enable)) !important;
 			}
 		</style>  <!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
@@ -305,6 +295,7 @@ var _hmt = _hmt || [];
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
+		<div id="bg-layer"></div>
 		<ConfigCarrier></ConfigCarrier>
 		<slot />
 		
