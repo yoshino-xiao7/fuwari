@@ -40,10 +40,10 @@ const rightLinks = links.slice(midIndex);
             </a>
             
             <!-- Left Links (Pushing against the middle gap) -->
-            <div class="hidden md:flex items-center shrink-0">
+            <div class="hidden md:flex items-center overflow-hidden">
                 {leftLinks.map((l) => {
                     return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
-                              class="btn-plain scale-animation rounded-lg h-11 font-bold px-3 xl:px-4 active:scale-95 whitespace-nowrap"
+                              class="btn-plain scale-animation rounded-lg h-11 font-bold px-2 xl:px-3 active:scale-95 whitespace-nowrap"
                     >
                         <div class="flex items-center">
                             {l.name}
@@ -55,16 +55,16 @@ const rightLinks = links.slice(midIndex);
         </div>
 
         <!-- Center: Empty space reserved for floating Dynamic Island to prevent overlap -->
-        <div class="w-[120px] lg:w-[260px] shrink-0" id="di-container">
+        <div class="w-[120px] lg:w-[200px] shrink-0" id="di-container">
         </div>
 
         <!-- Right: Right Links + buttons -->
         <div class="flex justify-between items-center w-full min-w-0 pl-2 lg:pl-4">
             <!-- Right Links (Pushing against the middle gap) -->
-            <div class="hidden md:flex items-center shrink-0 mr-auto">
+            <div class="hidden md:flex items-center overflow-hidden mr-auto">
                 {rightLinks.map((l) => {
                     return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
-                              class="btn-plain scale-animation rounded-lg h-11 font-bold px-3 xl:px-4 active:scale-95 whitespace-nowrap"
+                              class="btn-plain scale-animation rounded-lg h-11 font-bold px-2 xl:px-3 active:scale-95 whitespace-nowrap"
                     >
                         <div class="flex items-center">
                             {l.name}
