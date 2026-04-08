@@ -34,9 +34,23 @@
               "icon": "lucide-file",
               "title": "2026-03-05-back-to-work"
             }
+          },
+          {
+            "id": "b46be918e02e02d6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "src/content/posts/2026-04-08-endfield-daily.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "2026-04-08-endfield-daily"
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -198,21 +212,22 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "6c6a0468b68e65dc",
+  "active": "b46be918e02e02d6",
   "lastOpenFiles": [
+    "src/content/assets/images/b38971c33c8595cab6e0c6f9a12910fe.png",
+    "src/content/posts/2026-04-08-endfield-daily.md",
+    "src/content/assets/images/002cbe3316a11b7cc951ad423eb07da7.jpg",
     "src/content/assets/images/2d28806d839aaf14860f2e6a8b23eaff.png",
+    "src/content/assets/images/e6238bd8f6dbda4b2bdd64a078a76a61.png",
+    "src/content/assets/images/ffa855be68d688c485e5a183f9160132.jpg",
+    "src/content/assets/images/2b6077827e8668f433b379fed70af269.png",
+    "src/content/assets/images/QQ_1770817585583.png",
+    "src/content/posts/2026-03-05-back-to-work.md",
     "src/content/posts/2026-02-04-daily.md",
     "src/content/posts/endfield-yunzai-plugin.md",
-    "src/content/assets/images/QQ_1770817585583.png",
     "src/content/assets/images/5e9331306b14ed91dc5adcef740ea10c.jpg",
-    "src/content/assets/images/ffa855be68d688c485e5a183f9160132.jpg",
-    "src/content/assets/images/002cbe3316a11b7cc951ad423eb07da7.jpg",
-    "src/content/assets/images/e6238bd8f6dbda4b2bdd64a078a76a61.png",
     "src/content/assets/images/93d084c0a269575fe8aaf02b5c4868e3.png",
     "src/content/assets/images/268c65d5bb9e92b61f014ce634a1ff32.png",
-    "src/content/assets/images/9d86b85df16f857c04b303a61cbfd496.jpg",
-    "src/content/assets/images/53923c1d3b3c9208be3f0de58fb3f3aa.jpg",
-    "src/content/assets/images/c013b1e6a7132cb6335979c75e66a818.jpg",
     "src/content/posts/shortener.md",
     "src/content/posts/iPhone17.md",
     "src/content/assets/images/9f6d30ad3a2a7721d0b5adc5c74bd57b.mp4",
