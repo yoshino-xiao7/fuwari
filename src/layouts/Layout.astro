@@ -177,8 +177,18 @@ const bannerOffset =
 			
 			if (bgUrl && bgUrl !== 'none' && bgEnable === '1') {
 				const img = new Image();
-				const urlMatch = bgUrl.match(/url\(["']?([^"')]+)["']?\)/);
-				if (urlMatch) {
+				// 更兼容的正则表达式：处理各种浏览器返回的 url() 格式差异
+				let urlMatch = bgUrl.match(/url\(["']?([^"')]+)["']?\)/);
+				// Safari 可能返回不带引号且格式不同的结果，尝试直接提取
+				if (!urlMatch && bgUrl.startsWith('url(')) {
+					const candidateUrl = bgUrl.slice(4, -1).trim().replace(/^["']|["']$/g, '');
+					if (candidateUrl) {
+						urlMatch = [null, candidateUrl];
+					}
+				}
+				
+				if (urlMatch && urlMatch[1]) {
+					const imageSource = urlMatch[1];
 					img.onload = function() {
 						// 背景图片完全加载后，显示背景并启用卡片透明效果
 						const bgEl = document.getElementById('bg-layer');
@@ -189,8 +199,16 @@ const bannerOffset =
 					img.onerror = function() {
 						// Keep cards opaque if background image fails to load
 						console.warn('Background image failed to load, keeping cards opaque');
+						// 即使图片加载失败，也尝试显示背景（更友好）
+						const bgEl = document.getElementById('bg-layer');
+						if (bgEl) bgEl.classList.add('bg-loaded');
 					};
-					img.src = urlMatch[1];
+					img.src = imageSource;
+				} else {
+					// 如果无法解析 URL，直接显示背景（降级方案）
+					console.warn('Could not parse background image URL, displaying anyway');
+					const bgEl = document.getElementById('bg-layer');
+					if (bgEl) bgEl.classList.add('bg-loaded');
 				}
 			}
 		</script>
@@ -240,7 +258,7 @@ const bannerOffset =
 				pointer-events: none !important;
 				z-index: -1 !important;
 				transition: opacity 0.3s ease-in-out !important;
-				-webkit-transform: translateZ(0); /* iOS GPU compositing fix */
+				-webkit-transform: translateZ(0);
 				transform: translateZ(0);
 			}
 
@@ -248,7 +266,6 @@ const bannerOffset =
 				opacity: calc(var(--bg-opacity) * var(--bg-enable)) !important;
 			}
 
-			/* ===== Glass mode: brighter page & more visible background ===== */
 			:root.glass {
 				--page-bg: oklch(0.25 0.015 var(--hue));
 				--bg-opacity: 0.55;
