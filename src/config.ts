@@ -6,7 +6,6 @@ import type {
 	NavBarConfig,
 	ProfileConfig,
 	SiteConfig,
-	UmamiConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
 
@@ -69,18 +68,13 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.About,
 		{
 			name: "友链",
-			url: "/friends/", // Internal links should not include the base path, as it is automatically added
-			external: false, // Show an external link icon and will open in a new tab
-		},
-		{
-			name: "统计",
-			url: "https://cloud.umami.is/share/CSOB5h5SZxKw6Ltv", // Internal links should not include the base path, as it is automatically added
-			external: true, // Show an external link icon and will open in a new tab
+			url: "/friends/",
+			external: false,
 		},
 		{
 			name: "状态",
-			url: "https://status.yukiryou.icu/", // Internal links should not include the base path, as it is automatically added
-			external: true, // Show an external link icon and will open in a new tab
+			url: "https://status.yukiryou.icu/",
+			external: true,
 		},
 		{
 			name: "服务",
@@ -120,13 +114,6 @@ export const imageFallbackConfig: ImageFallbackConfig = {
 	fallbackDomain: "eopfapi.b.2.f.f.0.7.4.0.1.0.0.2.ip6.arpa/pic?img=ua",
 };
 
-export const umamiConfig: UmamiConfig = {
-	enable: true,
-	baseUrl: "https://cloud.umami.is",
-	shareId: "CSOB5h5SZxKw6Ltv",
-	timezone: "Asia/Shanghai",
-};
-
 export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	theme: "github-dark",
 };
@@ -134,13 +121,4 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 export const gitHubEditConfig: GitHubEditConfig = {
 	enable: true,
 	baseUrl: "https://github.com/yoshino-xiao7/fuwari/edit/fuwari/main/src/content/posts",
-};
-
-
-export const statsConfig = {
-	viewsText: "浏览",
-	visitsText: "访客",
-	loadingText: "统计加载中...",
-	unavailableText: "统计不可用。请检查是否屏蔽了Umami域名，如AdGuard和AdBlock等插件",
-	getStatsText: (pageViews: number, visits: number) => `${statsConfig.viewsText} ${pageViews} · ${statsConfig.visitsText} ${visits}`,
 };

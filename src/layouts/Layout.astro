@@ -116,7 +116,6 @@ const bannerOffset =
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<script src="/js/umami-share.js" defer></script>
 		
 		{/* <!-- Content Security Policy -->
 		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://giscus.app https://hpic.072103.xyz https://umami.2x.nz https://hm.baidu.com https://www.googletagmanager.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://static.cloudflareinsights.com https://*.adtrafficquality.google; style-src 'self' 'unsafe-inline' https://giscus.app https://fonts.googleapis.com https://api.iconify.design; font-src 'self' https://fonts.gstatic.com https://api.iconify.design; img-src 'self' data: https: http:; connect-src 'self' https://umami.2x.nz https://hm.baidu.com https://www.google-analytics.com https://analytics.google.com https://api.iconify.design https://static.cloudflareinsights.com https://pic.2x.nz https://q2.qlogo.cn https://ep1.adtrafficquality.google https://googleads.g.doubleclick.net; frame-src 'self' https://giscus.app *.bilibili.com https://www.google.com https://googleads.g.doubleclick.net https://support.nodeget.com https://*.adtrafficquality.google; object-src 'none'; base-uri 'self'; form-action 'self';"> */}
@@ -278,37 +277,51 @@ const bannerOffset =
 		<slot name="head"></slot>
 
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
-		<!-- Umami分析 -->
-		<script defer src="https://cloud.umami.is/script.js" data-website-id="15924681-f412-49c8-8f0d-63f14495b9d7"></script> 
-		<!-- 百度统计 -->
-<script  data-swup-ignore-script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?69025b38a7f30d097ec77b0635cc7f84";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script>
-<!-- clarity 分析 -->
-<script type="text/javascript" data-swup-ignore-script>
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "udl1zwuz27");
-</script>
-		<!-- 谷歌分析 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8BSEJ23TXZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+		<script data-swup-ignore-script>
+			(function() {
+				if (localStorage.getItem('cookie-consent') !== 'accepted') return;
 
-  gtag('config', 'G-8BSEJ23TXZ');
-</script>
+				var s;
 
-<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "58c9626fdb9c418eb0aeac6d3c60aada"}' data-swup-ignore-script></script><!-- End Cloudflare Web Analytics -->
+				// Umami
+				s = document.createElement('script');
+				s.defer = true;
+				s.src = 'https://cloud.umami.is/script.js';
+				s.setAttribute('data-website-id', '15924681-f412-49c8-8f0d-63f14495b9d7');
+				document.head.appendChild(s);
+
+				// 百度统计
+				window._hmt = window._hmt || [];
+				s = document.createElement('script');
+				s.src = 'https://hm.baidu.com/hm.js?69025b38a7f30d097ec77b0635cc7f84';
+				s.async = true;
+				document.head.appendChild(s);
+
+				// Microsoft Clarity
+				(function(c,l,a,r,i,t,y){
+					c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+					t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
+					y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+				})(window, document, 'clarity', 'script', 'udl1zwuz27');
+
+				// Google Analytics
+				s = document.createElement('script');
+				s.async = true;
+				s.src = 'https://www.googletagmanager.com/gtag/js?id=G-8BSEJ23TXZ';
+				document.head.appendChild(s);
+				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+				gtag('config', 'G-8BSEJ23TXZ');
+
+				// Cloudflare Web Analytics
+				s = document.createElement('script');
+				s.defer = true;
+				s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+				s.setAttribute('data-cf-beacon', '{"token": "58c9626fdb9c418eb0aeac6d3c60aada"}');
+				document.head.appendChild(s);
+			})();
+		</script>
 	</head>
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
@@ -399,6 +412,83 @@ var _hmt = _hmt || [];
 </script>
 
 <Analytics />
+
+		<div id="cookie-consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-[100] pb-4 px-4">
+			<div class="mx-auto max-w-xl rounded-2xl p-4 md:p-5 border border-white/[0.12]" style="background: oklch(0.22 0.015 var(--hue) / 0.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+				<div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+					<p class="text-sm text-neutral-300 leading-relaxed">
+						本网站使用 Cookie 和分析服务来改善体验。继续使用即表示同意，详见<a href="/about/" class="text-[var(--primary)] underline underline-offset-2 hover:opacity-80">隐私政策</a>。
+					</p>
+					<div class="flex items-center gap-2 shrink-0">
+						<button id="cookie-decline" class="px-3 py-1.5 rounded-lg text-sm font-medium text-neutral-400 hover:text-white hover:bg-white/[0.06] transition">
+							拒绝
+						</button>
+						<button id="cookie-accept" class="px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--primary)] text-white hover:opacity-90 active:scale-95 transition">
+							接受
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script data-swup-ignore-script>
+			(function() {
+				var KEY = 'cookie-consent';
+				var banner = document.getElementById('cookie-consent-banner');
+				var acceptBtn = document.getElementById('cookie-accept');
+				var declineBtn = document.getElementById('cookie-decline');
+
+				if (localStorage.getItem(KEY)) return;
+
+				banner.classList.remove('hidden');
+
+				function injectAnalytics() {
+					var s;
+					s = document.createElement('script');
+					s.defer = true;
+					s.src = 'https://cloud.umami.is/script.js';
+					s.setAttribute('data-website-id', '15924681-f412-49c8-8f0d-63f14495b9d7');
+					document.head.appendChild(s);
+
+					window._hmt = window._hmt || [];
+					s = document.createElement('script');
+					s.src = 'https://hm.baidu.com/hm.js?69025b38a7f30d097ec77b0635cc7f84';
+					s.async = true;
+					document.head.appendChild(s);
+
+					(function(c,l,a,r,i,t,y){
+						c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+						t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
+						y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+					})(window, document, 'clarity', 'script', 'udl1zwuz27');
+
+					s = document.createElement('script');
+					s.async = true;
+					s.src = 'https://www.googletagmanager.com/gtag/js?id=G-8BSEJ23TXZ';
+					document.head.appendChild(s);
+					window.dataLayer = window.dataLayer || [];
+					function gtag(){dataLayer.push(arguments);}
+					gtag('js', new Date());
+					gtag('config', 'G-8BSEJ23TXZ');
+
+					s = document.createElement('script');
+					s.defer = true;
+					s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+					s.setAttribute('data-cf-beacon', '{"token": "58c9626fdb9c418eb0aeac6d3c60aada"}');
+					document.head.appendChild(s);
+				}
+
+				acceptBtn.addEventListener('click', function() {
+					localStorage.setItem(KEY, 'accepted');
+					banner.classList.add('hidden');
+					injectAnalytics();
+				});
+
+				declineBtn.addEventListener('click', function() {
+					localStorage.setItem(KEY, 'declined');
+					banner.classList.add('hidden');
+				});
+			})();
+		</script>
 	</body>
 </html>
 

@@ -30,12 +30,26 @@
 #### Google Analytics（谷歌分析）
 - 可能收集的信息：匿名化的用户数据、页面浏览量、会话时长、地理位置等。
 - 用途：进行网站性能分析和用户行为分析。
+- 使用 Cookie：是
 - 隐私政策：[Google 隐私政策](https://policies.google.com/privacy)
 
-#### Umami 分析
+#### 百度统计
+- 可能收集的信息：页面浏览量、访问来源、访客设备信息等。
+- 用途：网站流量统计与分析。
+- 使用 Cookie：是
+- 隐私政策：[百度统计隐私政策](https://tongji.baidu.com/web/help/article?id=330&type=0)
+
+#### Microsoft Clarity
+- 可能收集的信息：用户交互行为（点击、滚动）、页面热力图、会话回放。
+- 用途：用户体验分析与优化。
+- 使用 Cookie：是
+- 隐私政策：[Microsoft 隐私声明](https://privacy.microsoft.com/zh-cn/privacystatement)
+
+#### Cloudflare Web Analytics
 - 可能收集的信息：匿名化的页面浏览量、访问来源、设备类型等。
-- 用途：网站流量统计和分析。
+- 用途：网站性能与流量分析。
 - 特点：不使用 Cookie，注重隐私保护，所有数据均经过匿名化处理。
+- 隐私政策：[Cloudflare 隐私政策](https://www.cloudflare.com/privacypolicy/)
 
 ### 3. 灵动岛时钟服务
 
