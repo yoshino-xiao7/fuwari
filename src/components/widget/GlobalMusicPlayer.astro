@@ -770,9 +770,11 @@ const style = Astro.props.style;
         if (savedVolume) this.volume = parseFloat(savedVolume);
         if (savedMinimized) this.isMinimized = savedMinimized === "true";
         
-        // 加载收缩状态
-        const savedCollapsed = localStorage.getItem("music_is_collapsed");
-        if (savedCollapsed) this.isCollapsed = savedCollapsed === "true";
+        // 侧边收缩状态已废弃（由灵动岛取代），清除旧缓存
+        if (localStorage.getItem("music_is_collapsed")) {
+          localStorage.removeItem("music_is_collapsed");
+        }
+        this.isCollapsed = false;
         
         // 加载音质设置
         if (savedQuality) {
@@ -792,7 +794,6 @@ const style = Astro.props.style;
         localStorage.setItem("music_current_index", String(this.currentIndex));
         localStorage.setItem("music_volume", String(this.volume));
         localStorage.setItem("music_is_minimized", String(this.isMinimized));
-        localStorage.setItem("music_is_collapsed", String(this.isCollapsed));
       } catch (e) {
         console.error("保存播放器状态失败", e);
       }
@@ -911,12 +912,6 @@ const style = Astro.props.style;
     }
 
     private showPlayer() {
-      if (this.isCollapsed) {
-        this.playerEl?.classList.add("hidden");
-        this.collapsedEl?.classList.remove("hidden");
-        return;
-      }
-      
       this.collapsedEl?.classList.add("hidden");
       
       // 首次显示时添加从下方滑入动画
