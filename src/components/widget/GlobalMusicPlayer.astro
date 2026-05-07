@@ -750,10 +750,11 @@ const style = Astro.props.style;
       this.bindEvents();
       this.bindAudioEvents();
 
-      // 如果有播放列表，显示播放器
+      // 如果有播放列表，只恢复播放器数据。
+      // 可见状态和位置统一交给灵动岛管理，避免刷新后播放器按旧的左下角布局自行显示。
       if (this.playlist.length > 0) {
-        this.showPlayer();
         this.updateUI();
+        this.hideShellForDynamicIsland();
       }
     }
 
@@ -762,18 +763,16 @@ const style = Astro.props.style;
         const savedPlaylist = localStorage.getItem("music_playlist");
         const savedIndex = localStorage.getItem("music_current_index");
         const savedVolume = localStorage.getItem("music_volume");
-        const savedMinimized = localStorage.getItem("music_is_minimized");
         const savedQuality = localStorage.getItem("music_quality");
 
         if (savedPlaylist) this.playlist = JSON.parse(savedPlaylist);
         if (savedIndex) this.currentIndex = parseInt(savedIndex, 10);
         if (savedVolume) this.volume = parseFloat(savedVolume);
-        if (savedMinimized) this.isMinimized = savedMinimized === "true";
         
-        // 侧边收缩状态已废弃（由灵动岛取代），清除旧缓存
-        if (localStorage.getItem("music_is_collapsed")) {
-          localStorage.removeItem("music_is_collapsed");
-        }
+        // 可见状态已由灵动岛取代，清除旧版播放器自身的显示状态缓存。
+        localStorage.removeItem("music_is_minimized");
+        localStorage.removeItem("music_is_collapsed");
+        this.isMinimized = false;
         this.isCollapsed = false;
         
         // 加载音质设置
@@ -793,10 +792,21 @@ const style = Astro.props.style;
         localStorage.setItem("music_playlist", JSON.stringify(this.playlist));
         localStorage.setItem("music_current_index", String(this.currentIndex));
         localStorage.setItem("music_volume", String(this.volume));
-        localStorage.setItem("music_is_minimized", String(this.isMinimized));
       } catch (e) {
         console.error("保存播放器状态失败", e);
       }
+    }
+
+    private hideShellForDynamicIsland() {
+      if (!this.playerEl) return;
+
+      this.playerEl.style.cssText = "";
+      this.playerEl.classList.add("hidden");
+      this.playerEl.classList.remove("pl-4", "animate-slide-up", "animate-collapse-out");
+      this.collapsedEl?.classList.add("hidden");
+      this.collapsedEl?.classList.remove("animate-arrow-in", "animate-arrow-out");
+      this.miniEl?.classList.add("hidden");
+      this.fullEl?.classList.remove("hidden");
     }
 
     private bindEvents() {
@@ -909,31 +919,6 @@ const style = Astro.props.style;
           this.playNext();
         }
       });
-    }
-
-    private showPlayer() {
-      this.collapsedEl?.classList.add("hidden");
-      
-      // 首次显示时添加从下方滑入动画
-      const wasHidden = this.playerEl?.classList.contains("hidden");
-      
-      this.playerEl?.classList.remove("hidden");
-      this.playerEl?.classList.add("pl-4");
-      
-      if (wasHidden) {
-        this.playerEl?.classList.add("animate-slide-up");
-        setTimeout(() => {
-          this.playerEl?.classList.remove("animate-slide-up");
-        }, 500);
-      }
-      
-      if (this.isMinimized) {
-        this.miniEl?.classList.remove("hidden");
-        this.fullEl?.classList.add("hidden");
-      } else {
-        this.miniEl?.classList.add("hidden");
-        this.fullEl?.classList.remove("hidden");
-      }
     }
 
     private collapse() {
