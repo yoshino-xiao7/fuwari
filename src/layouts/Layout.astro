@@ -20,8 +20,7 @@ import DomainChecker from "@components/DomainChecker.astro";
 import AnalyticsScripts from "@components/analytics/AnalyticsScripts.astro";
 import HeadMeta from "@components/head/HeadMeta.astro";
 import ThemeInit from "@components/head/ThemeInit.astro";
-import DynamicIsland from "@components/widget/DynamicIsland.astro";
-import GlobalMusicPlayer from "@components/widget/GlobalMusicPlayer.astro";
+import MusicPlayer from "@components/music/MusicPlayer.svelte";
 import {
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
@@ -110,9 +109,8 @@ const bgStyle = [
 		<ConfigCarrier />
 		<slot />
 
-		<!-- 全局音乐播放器与灵动岛 -->
-		<GlobalMusicPlayer />
-		<DynamicIsland />
+		<!-- 全局音乐播放器与灵动岛 (Svelte 5) -->
+		<MusicPlayer client:load />
 
 		<!-- 页面过渡期间撑高页面，防止滚动跳动 -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
