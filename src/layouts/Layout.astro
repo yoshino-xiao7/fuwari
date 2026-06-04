@@ -79,11 +79,23 @@ const bannerOffsetByPosition = {
 };
 const bannerOffset =
 	bannerOffsetByPosition[siteConfig.banner.position || "center"];
+
+// Background image CSS variables — injected inline to avoid depending on external CSS loading
+const bgStyle = [
+	`--bg-url: ${siteConfig.background.src ? `url(${siteConfig.background.src})` : "none"}`,
+	`--bg-enable: ${siteConfig.background.enable ? "1" : "0"}`,
+	`--bg-position: ${siteConfig.background.position || "center"}`,
+	`--bg-size: ${siteConfig.background.size || "cover"}`,
+	`--bg-repeat: ${siteConfig.background.repeat || "no-repeat"}`,
+	`--bg-attachment: ${siteConfig.background.attachment || "fixed"}`,
+	`--bg-opacity: ${siteConfig.background.opacity || 0.3}`,
+].join(";");
 ---
 
 <!DOCTYPE html>
 <html lang={siteLang} class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
 	  data-overlayscrollbars-initialize
+	  style={bgStyle}
 >
 	<head>
 		<ThemeInit />

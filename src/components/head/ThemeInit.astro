@@ -15,7 +15,14 @@ const configHue = siteConfig.themeColor.hue;
 ---
 
 <!-- Theme initialization — runs before page render to prevent FOUC -->
-<script is:inline define:vars={{BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue, forceDarkMode: siteConfig.themeColor.forceDarkMode}}>
+<script is:inline define:vars={{
+	BANNER_HEIGHT_EXTEND,
+	PAGE_WIDTH,
+	configHue,
+	forceDarkMode: siteConfig.themeColor.forceDarkMode,
+	bgSrc: siteConfig.background.src || '',
+	bgEnable: siteConfig.background.enable ? '1' : '0',
+}}>
 	// ===== Unified theme mode initialization =====
 	// Single key: "theme-mode" = "dark" | "glass" | "light"
 	// Migrates from legacy keys: "theme" + "style-mode"
@@ -66,63 +73,29 @@ const configHue = siteConfig.themeColor.hue;
 	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
 
 	// Background image loading detection
-	const bgUrl = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').trim();
-	const bgEnable = getComputedStyle(document.documentElement).getPropertyValue('--bg-enable').trim();
-	
-	if (bgUrl && bgUrl !== 'none' && bgEnable === '1') {
+	// Use define:vars values directly instead of getComputedStyle,
+	// because the <style> block may be externalized by Astro and not yet loaded
+	if (bgSrc && bgEnable === '1') {
 		const img = new Image();
-		let urlMatch = bgUrl.match(/url\(["']?([^"')]+)["']?\)/);
-		if (!urlMatch && bgUrl.startsWith('url(')) {
-			const candidateUrl = bgUrl.slice(4, -1).trim().replace(/^["']|["']$/g, '');
-			if (candidateUrl) {
-				urlMatch = [null, candidateUrl];
-			}
-		}
-		
-		if (urlMatch && urlMatch[1]) {
-			const imageSource = urlMatch[1];
-			img.onload = function() {
-				const bgEl = document.getElementById('bg-layer');
-				if (bgEl) bgEl.classList.add('bg-loaded');
-				document.documentElement.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
-				document.documentElement.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
-			};
-			img.onerror = function() {
-				console.warn('Background image failed to load, keeping cards opaque');
-				const bgEl = document.getElementById('bg-layer');
-				if (bgEl) bgEl.classList.add('bg-loaded');
-			};
-			img.src = imageSource;
-		} else {
-			console.warn('Could not parse background image URL, displaying anyway');
+		img.onload = function() {
 			const bgEl = document.getElementById('bg-layer');
 			if (bgEl) bgEl.classList.add('bg-loaded');
-		}
+			document.documentElement.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
+			document.documentElement.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
+		};
+		img.onerror = function() {
+			console.warn('Background image failed to load, keeping cards opaque');
+			const bgEl = document.getElementById('bg-layer');
+			if (bgEl) bgEl.classList.add('bg-loaded');
+		};
+		img.src = bgSrc;
 	}
 </script>
 
 <!-- Global CSS variables for background image -->
-<style define:vars={{
-	configHue,
+<style is:global define:vars={{
 	'page-width': `${PAGE_WIDTH}rem`,
-	'bg-url': siteConfig.background.src ? `url(${siteConfig.background.src})` : 'none',
-	'bg-enable': siteConfig.background.enable ? '1' : '0',
-	'bg-position': siteConfig.background.position || 'center',
-	'bg-size': siteConfig.background.size || 'cover',
-	'bg-repeat': siteConfig.background.repeat || 'no-repeat',
-	'bg-attachment': siteConfig.background.attachment || 'fixed',
-	'bg-opacity': (siteConfig.background.opacity || 0.3).toString()
 }}>
-	:root {
-		--bg-url: var(--bg-url);
-		--bg-enable: var(--bg-enable);
-		--bg-position: var(--bg-position);
-		--bg-size: var(--bg-size);
-		--bg-repeat: var(--bg-repeat);
-		--bg-attachment: var(--bg-attachment);
-		--bg-opacity: var(--bg-opacity);
-	}
-	
 	#bg-layer {
 		position: fixed !important;
 		top: 0 !important;
