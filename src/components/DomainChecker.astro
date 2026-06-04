@@ -1,0 +1,71 @@
+---
+/**
+ * DomainChecker — 域名安全检测
+ * 检测当前访问域名是否在官方域名列表中，非官方域名弹出安全警告
+ */
+import { siteConfig } from "@/config";
+
+const officialSites = siteConfig.officialSites?.map((s) => s.url) ?? [
+	"https://blog-n.yukiryou.top",
+	"https://blog.yukiryou.top",
+	"https://blog.yukiryou.icu",
+	"https://yukiryou.icu",
+	"https://www.yukiryou.icu",
+];
+---
+
+<script define:vars={{ officialSites }}>
+	(function() {
+		const sites = officialSites || [];
+
+		function normalizeHost(h) {
+			if (!h) return "";
+			h = String(h).trim().toLowerCase();
+			try {
+				if (h.includes("://")) {
+					h = new URL(h).hostname;
+				}
+			} catch (e) {}
+			return h.replace(/\.$/, "").replace(/^www\./, "");
+		}
+
+		function checkDomain() {
+			try {
+				const currentDomain = normalizeHost(location.hostname);
+				const officialDomains = sites.map(s => normalizeHost(s)).filter(Boolean);
+
+				const isOfficial = officialDomains.includes(currentDomain);
+				const isLocal = ["localhost", "127.0.0.1"].includes(currentDomain);
+
+				if (!isOfficial && !isLocal) {
+					const shouldRedirect = confirm(
+						`\u26a0\ufe0f 域名安全警告\n\n` +
+						`您当前访问的域名：${location.hostname}\n` +
+						`官方域名：${officialDomains.join(', ')}\n\n` +
+						`您可能正在访问非官方网站，存在安全风险！\n\n` +
+						`点击"确定"跳转到官方网站（保留当前路径）\n` +
+						`点击"取消"继续访问当前网站（不推荐）`
+					);
+
+					if (shouldRedirect) {
+						const currentPath = location.pathname + location.search + location.hash;
+						let base = sites[0];
+						if (!/^https?:\/\//i.test(base)) {
+							base = location.protocol + "//" + base;
+						}
+						const redirectUrl = new URL(currentPath, base);
+						location.href = redirectUrl.toString();
+					}
+				}
+			} catch (err) {
+				console.warn("域名检测失败:", err);
+			}
+		}
+
+		if (document.readyState === "loading") {
+			document.addEventListener("DOMContentLoaded", checkDomain);
+		} else {
+			checkDomain();
+		}
+	})();
+</script>

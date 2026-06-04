@@ -1,6 +1,6 @@
 import { defineCollection, z } from "astro:content";
 
-const postsCollection = defineCollection({
+const postsCollection: ReturnType<typeof defineCollection> = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		published: z.date(),
@@ -20,7 +20,7 @@ const postsCollection = defineCollection({
 	}),
 });
 
-const specCollection = defineCollection({
+const specCollection: ReturnType<typeof defineCollection> = defineCollection({
 	schema: z.object({
 		title: z.string().optional(),
 		published: z.date().optional(),
@@ -29,24 +29,29 @@ const specCollection = defineCollection({
 	}),
 });
 
-const assetsCollection = defineCollection({
-	type: 'data',
+const assetsCollection: ReturnType<typeof defineCollection> = defineCollection({
+	type: "data",
 	schema: z.object({
 		title: z.string().optional(),
 		description: z.string().optional(),
 	}),
 });
 
-const devlogsCollection = defineCollection({
-	schema: z.object({
-		title: z.string(),
-		published: z.date(),
-		project: z.string(),           // 项目ID，如 'xueliangyun' 或 'endfield-yunzai'
-		summary: z.string().optional().default(""),
-	}),
-});
+const devlogsCollection: ReturnType<typeof defineCollection> = defineCollection(
+	{
+		schema: z.object({
+			title: z.string(),
+			published: z.date(),
+			project: z.string(), // 项目ID，如 'xueliangyun' 或 'endfield-yunzai'
+			summary: z.string().optional().default(""),
+		}),
+	},
+);
 
-export const collections = {
+export const collections: Record<
+	string,
+	ReturnType<typeof defineCollection>
+> = {
 	posts: postsCollection,
 	spec: specCollection,
 	assets: assetsCollection,

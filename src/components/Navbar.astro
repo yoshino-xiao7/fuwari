@@ -113,6 +113,8 @@ const rightLinks = links.slice(midIndex);
 </style>
 
 <script>
+import { cycleTheme } from "../scripts/theme-manager";
+
 function loadButtonScript() {
 
     let settingBtn = document.getElementById("display-settings-switch");
@@ -139,28 +141,7 @@ function loadButtonScript() {
     let themeBtn = document.getElementById("theme-toggle-btn");
     if (themeBtn) {
         themeBtn.onclick = function () {
-            const root = document.documentElement;
-            const isDark = root.classList.contains('dark');
-            const isGlass = root.classList.contains('glass');
-
-            if (isDark && !isGlass) {
-                // Classic Dark → Liquid Glass
-                root.classList.add('glass');
-                localStorage.setItem('theme', 'dark');
-                localStorage.setItem('style-mode', 'glass');
-            } else if (isGlass) {
-                // Liquid Glass → Light
-                root.classList.remove('dark');
-                root.classList.remove('glass');
-                localStorage.setItem('theme', 'light');
-                localStorage.setItem('style-mode', 'default');
-            } else {
-                // Light → Classic Dark
-                root.classList.add('dark');
-                root.classList.remove('glass');
-                localStorage.setItem('theme', 'dark');
-                localStorage.setItem('style-mode', 'default');
-            }
+            cycleTheme();
         };
     }
 }

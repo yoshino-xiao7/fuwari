@@ -1,0 +1,128 @@
+---
+/**
+ * ThemeInit — <head> 中的 inline script + style，负责：
+ *   1. 主题初始化（避免 FOUC）
+ *   2. 色相 / 玻璃模式 / banner 高度计算
+ *   3. 背景图加载检测
+ *   4. 全局 CSS 变量声明（背景图相关）
+ *
+ * 必须使用 is:inline define:vars，不能改为外部文件
+ */
+import { siteConfig } from "@/config";
+import { BANNER_HEIGHT_EXTEND, PAGE_WIDTH } from "../../constants/constants";
+
+const configHue = siteConfig.themeColor.hue;
+---
+
+<!-- Theme initialization — runs before page render to prevent FOUC -->
+<script is:inline define:vars={{
+	BANNER_HEIGHT_EXTEND,
+	PAGE_WIDTH,
+	configHue,
+	forceDarkMode: siteConfig.themeColor.forceDarkMode,
+	bgSrc: siteConfig.background.src || '',
+	bgEnable: siteConfig.background.enable ? '1' : '0',
+}}>
+	// ===== Unified theme mode initialization =====
+	// Single key: "theme-mode" = "dark" | "glass" | "light"
+	// Migrates from legacy keys: "theme" + "style-mode"
+	var THEME_KEY = 'theme-mode';
+	var themeMode = localStorage.getItem(THEME_KEY);
+
+	// Migrate from legacy keys if new key doesn't exist
+	if (!themeMode) {
+		var oldTheme = localStorage.getItem('theme');
+		var oldStyleMode = localStorage.getItem('style-mode');
+		if (oldTheme || oldStyleMode) {
+			if (oldStyleMode === 'glass') themeMode = 'glass';
+			else if (oldTheme === 'light') themeMode = 'light';
+			else themeMode = 'glass';
+			localStorage.setItem(THEME_KEY, themeMode);
+			localStorage.removeItem('theme');
+			localStorage.removeItem('style-mode');
+		}
+	}
+
+	// Apply forceDarkMode only on first visit (no stored preference)
+	if (!themeMode) {
+		themeMode = forceDarkMode ? 'dark' : 'glass';
+		localStorage.setItem(THEME_KEY, themeMode);
+	}
+
+	// Apply theme classes to <html>
+	var root = document.documentElement;
+	if (themeMode === 'light') {
+		root.classList.remove('dark');
+		root.classList.remove('glass');
+	} else if (themeMode === 'glass') {
+		root.classList.add('dark');
+		root.classList.add('glass');
+	} else {
+		// dark
+		root.classList.add('dark');
+		root.classList.remove('glass');
+	}
+
+	// Load the hue from local storage
+	const hue = localStorage.getItem('hue') || configHue;
+	document.documentElement.style.setProperty('--hue', hue);
+
+	// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
+	let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
+	offset = offset - offset % 4;
+	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+
+	// Background image loading detection
+	// Use define:vars values directly instead of getComputedStyle,
+	// because the <style> block may be externalized by Astro and not yet loaded
+	if (bgSrc && bgEnable === '1') {
+		const img = new Image();
+		img.onload = function() {
+			const bgEl = document.getElementById('bg-layer');
+			if (bgEl) bgEl.classList.add('bg-loaded');
+			document.documentElement.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
+			document.documentElement.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
+		};
+		img.onerror = function() {
+			console.warn('Background image failed to load, keeping cards opaque');
+			const bgEl = document.getElementById('bg-layer');
+			if (bgEl) bgEl.classList.add('bg-loaded');
+		};
+		img.src = bgSrc;
+	}
+</script>
+
+<!-- Global CSS variables for background image -->
+<style is:global define:vars={{
+	'page-width': `${PAGE_WIDTH}rem`,
+}}>
+	#bg-layer {
+		position: fixed !important;
+		top: 0 !important;
+		left: 0 !important;
+		width: 100% !important;
+		height: 100% !important;
+		background-image: var(--bg-url) !important;
+		background-position: var(--bg-position) !important;
+		background-size: var(--bg-size) !important;
+		background-repeat: var(--bg-repeat) !important;
+		opacity: 0 !important;
+		pointer-events: none !important;
+		z-index: -1 !important;
+		transition: opacity 0.3s ease-in-out !important;
+		-webkit-transform: translateZ(0);
+		transform: translateZ(0);
+	}
+
+	#bg-layer.bg-loaded {
+		opacity: calc(var(--bg-opacity) * var(--bg-enable)) !important;
+	}
+
+	:root.glass {
+		--page-bg: oklch(0.25 0.015 var(--hue));
+		--bg-opacity: 0.55;
+	}
+	:root.glass #bg-layer.bg-loaded {
+		opacity: calc(0.55 * var(--bg-enable)) !important;
+	}
+</style>

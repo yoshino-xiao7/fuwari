@@ -38,6 +38,8 @@ export type SiteConfig = {
 	};
 
 	favicon: Favicon[];
+
+	officialSites?: Array<{ url: string; alias: string }>;
 };
 
 export type Favicon = {
