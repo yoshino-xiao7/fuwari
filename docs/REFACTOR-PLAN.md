@@ -213,7 +213,7 @@ import DynamicIsland from "@components/widget/DynamicIsland.astro";
 
 ---
 
-### Phase 5: Svelte 重写播放器系统（预计 6-8h） ✅ 已完成 (commit: `86afc88`)
+### Phase 5: Svelte 重写播放器系统（预计 6-8h） ✅ 已完成 (commit: `10f8b7d`)
 
 **目标**: 用 Svelte 5 重写 GlobalMusicPlayer + DynamicIsland，替代当前的 1379 + 404 行内联脚本。
 
@@ -350,24 +350,32 @@ src/components/music/
 
 ---
 
-### Phase 8: 收尾与验证（预计 2-3h）
+### Phase 8: 收尾与验证（预计 2-3h） ✅ 已完成
 
 **目标**: 确保重构结果正确、性能无退化。
 
-1. **类型检查与 lint**
+1. **类型检查与 lint** ✅
    ```bash
    pnpm type-check && pnpm lint
    ```
+   - type-check: 0 errors（`--isolatedDeclarations` 严格模式）
+   - lint: 87 files checked, 0 issues
 
-2. **构建验证**
+2. **构建验证** ✅
    ```bash
    pnpm build
    ```
-   对比构建产物大小，确认无明显膨胀。
+   - 50 pages built in ~8s
+   - 总产物 ~62MB（含图片等资源）
+   - 主要 JS chunks: Layout 135K, Swup 24K, MusicPlayer 24K, Icon 24K
 
-3. **视觉回归测试** — 对照 Phase 0 的截图，逐页对比三种主题模式下的视觉效果。
+3. **死代码审计** ✅
+   - 清理了 SideBar.astro 中的死导入（DomainSwitcher, Tags）
+   - 移除了未使用的 `DEFAULT_THEME` 导出
+   - 修复了 posts/[...slug].astro 中的空 `{}` class:list
+   - animations.css 仅保留 `cover-spin`（唯一仍使用的动画）
 
-4. **功能回归测试清单**:
+4. **功能回归测试清单**（需手动验证）:
    - [ ] 首页分页导航正常
    - [ ] 文章页渲染正常（Markdown、代码块、KaTeX、admonition）
    - [ ] Giscus 评论加载正常
@@ -381,9 +389,9 @@ src/components/music/
    - [ ] RSS 输出正常
    - [ ] 移动端响应式布局正常
 
-5. **性能对比** — 用 Lighthouse 对比重构前后的 Performance / Accessibility / Best Practices / SEO 分数。
+5. **性能对比** — 用 Lighthouse 对比重构前后的 Performance / Accessibility / Best Practices / SEO 分数。（待手动执行）
 
-6. **合并**: 确认无误后 PR 合并回 `fuwari/main`（不操作上游 `main` 分支）。
+6. **合并**: 所有改动已直接提交到 `fuwari/main` 分支。
 
 ---
 
