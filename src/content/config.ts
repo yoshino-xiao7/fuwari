@@ -30,7 +30,7 @@ const specCollection = defineCollection({
 });
 
 const assetsCollection = defineCollection({
-	type: 'data',
+	type: "data",
 	schema: z.object({
 		title: z.string().optional(),
 		description: z.string().optional(),
@@ -41,7 +41,7 @@ const devlogsCollection = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		published: z.date(),
-		project: z.string(),           // 项目ID，如 'xueliangyun' 或 'endfield-yunzai'
+		project: z.string(), // 项目ID，如 'xueliangyun' 或 'endfield-yunzai'
 		summary: z.string().optional().default(""),
 	}),
 });

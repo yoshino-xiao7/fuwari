@@ -57,7 +57,7 @@ export const siteConfig: SiteConfig = {
 	],
 	officialSites: [
 		{ url: "https://blog-n.yukiryou.top", alias: "Vercel" },
-		{ url: "https://blog.yukiryou.icu", alias: "备案域" }
+		{ url: "https://blog.yukiryou.icu", alias: "备案域" },
 	],
 };
 
@@ -120,5 +120,6 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 
 export const gitHubEditConfig: GitHubEditConfig = {
 	enable: true,
-	baseUrl: "https://github.com/yoshino-xiao7/fuwari/edit/fuwari/main/src/content/posts",
+	baseUrl:
+		"https://github.com/yoshino-xiao7/fuwari/edit/fuwari/main/src/content/posts",
 };

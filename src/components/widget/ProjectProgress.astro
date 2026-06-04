@@ -1,10 +1,10 @@
 ---
-import LiquidGlassLayout from "./LiquidGlassLayout.astro";
 import { getCollection } from "astro:content";
+import LiquidGlassLayout from "./LiquidGlassLayout.astro";
 
 interface Props {
-  class?: string;
-  style?: string;
+	class?: string;
+	style?: string;
 }
 
 const className = Astro.props.class;
@@ -12,34 +12,46 @@ const style = Astro.props.style;
 
 // 项目定义（后续新增项目只需在此数组追加即可）
 const projects = [
-  {
-    id: "xueliangyun",
-    name: "雪涼云",
-    description: "集图库、音乐、短链于一体的个人云服务平台，持续迭代中。",
-    repo: "https://cloud.yukiryou.icu/",
-  },
-  {
-    id: "endfield-yunzai",
-    name: "终末地 Yunzai 插件",
-    description: "Yunzai Bot 终末地游戏插件，支持数据查询、签到、体力提醒、抽卡分析。",
-    repo: "https://github.com/yoshino-xiao7/endfield-suzuki-plugin",
-  },
+	{
+		id: "xueliangyun",
+		name: "雪涼云",
+		description: "集图库、音乐、短链于一体的个人云服务平台，持续迭代中。",
+		repo: "https://cloud.yukiryou.icu/",
+	},
+	{
+		id: "endfield-yunzai",
+		name: "终末地 Yunzai 插件",
+		description:
+			"Yunzai Bot 终末地游戏插件，支持数据查询、签到、体力提醒、抽卡分析。",
+		repo: "https://github.com/yoshino-xiao7/endfield-suzuki-plugin",
+	},
 ];
 
 // Build 时读取所有 devlogs，按项目分组、按时间降序
 const allLogs = await getCollection("devlogs");
-const logsByProject: Record<string, { title: string; published: string; summary: string; slug: string }[]> = {};
+const logsByProject: Record<
+	string,
+	{ title: string; published: string; summary: string; slug: string }[]
+> = {};
 
 for (const proj of projects) {
-  logsByProject[proj.id] = allLogs
-    .filter((log) => log.data.project === proj.id)
-    .sort((a, b) => new Date(b.data.published).getTime() - new Date(a.data.published).getTime())
-    .map((log) => ({
-      title: log.data.title,
-      published: new Date(log.data.published).toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }),
-      summary: log.data.summary,
-      slug: log.slug,
-    }));
+	logsByProject[proj.id] = allLogs
+		.filter((log) => log.data.project === proj.id)
+		.sort(
+			(a, b) =>
+				new Date(b.data.published).getTime() -
+				new Date(a.data.published).getTime(),
+		)
+		.map((log) => ({
+			title: log.data.title,
+			published: new Date(log.data.published).toLocaleDateString("zh-CN", {
+				year: "numeric",
+				month: "2-digit",
+				day: "2-digit",
+			}),
+			summary: log.data.summary,
+			slug: log.slug,
+		}));
 }
 ---
 
