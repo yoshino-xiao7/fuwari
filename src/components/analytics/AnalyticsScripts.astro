@@ -1,66 +1,25 @@
 ---
 /**
  * AnalyticsScripts — Cookie 同意横幅 + 分析脚本注入
- * 将原 Layout.astro 中 <head> 和 <body> 尾部的两段分析脚本合并为一份
  *
  * 逻辑：
- *   1. <head> 中放一段 inline script：如果已同意 cookie，立即注入分析脚本
- *   2. <body> 中放 Cookie 同意横幅 UI + 交互脚本
+ *   1. 渲染 Cookie 同意横幅 UI
+ *   2. 单一 inline script 负责：
+ *      a. 定义 injectAnalytics()（使用 define:vars 注入的配置，只写一次）
+ *      b. 页面加载时若已同意 cookie → 立即注入
+ *      c. 用户点击"接受" → 注入并隐藏横幅
+ *      d. 用户点击"拒绝" → 仅隐藏横幅
+ *
+ * 分析服务配置集中在 src/constants/analytics.ts，修改 ID 只需改那一个文件。
  */
 import Analytics from "@vercel/analytics/astro";
+import { analyticsConfig } from "../../constants/analytics";
 ---
 
-<!-- Head: 已同意 cookie 时自动注入分析脚本 -->
-<script data-swup-ignore-script>
-	(function() {
-		if (localStorage.getItem('cookie-consent') !== 'accepted') return;
-
-		var s;
-
-		// Umami
-		s = document.createElement('script');
-		s.defer = true;
-		s.src = 'https://cloud.umami.is/script.js';
-		s.setAttribute('data-website-id', '15924681-f412-49c8-8f0d-63f14495b9d7');
-		document.head.appendChild(s);
-
-		// 百度统计
-		window._hmt = window._hmt || [];
-		s = document.createElement('script');
-		s.src = 'https://hm.baidu.com/hm.js?69025b38a7f30d097ec77b0635cc7f84';
-		s.async = true;
-		document.head.appendChild(s);
-
-		// Microsoft Clarity
-		(function(c,l,a,r,i,t,y){
-			c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-			t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
-			y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-		})(window, document, 'clarity', 'script', 'udl1zwuz27');
-
-		// Google Analytics
-		s = document.createElement('script');
-		s.async = true;
-		s.src = 'https://www.googletagmanager.com/gtag/js?id=G-8BSEJ23TXZ';
-		document.head.appendChild(s);
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-		gtag('config', 'G-8BSEJ23TXZ');
-
-		// Cloudflare Web Analytics
-		s = document.createElement('script');
-		s.defer = true;
-		s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
-		s.setAttribute('data-cf-beacon', '{"token": "58c9626fdb9c418eb0aeac6d3c60aada"}');
-		document.head.appendChild(s);
-	})();
-</script>
-
-<!-- Vercel Analytics -->
+<!-- Vercel Analytics（不需要 cookie 同意，由 Vercel 平台管理） -->
 <Analytics />
 
-<!-- Cookie Consent Banner -->
+<!-- Cookie Consent Banner UI -->
 <div id="cookie-consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-[100] pb-4 px-4">
 	<div class="mx-auto max-w-xl rounded-2xl p-4 md:p-5 border border-white/[0.12]" style="background: oklch(0.22 0.015 var(--hue) / 0.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
 		<div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -79,62 +38,86 @@ import Analytics from "@vercel/analytics/astro";
 	</div>
 </div>
 
-<script data-swup-ignore-script>
-	(function() {
-		var KEY = 'cookie-consent';
-		var banner = document.getElementById('cookie-consent-banner');
-		var acceptBtn = document.getElementById('cookie-accept');
-		var declineBtn = document.getElementById('cookie-decline');
+<!-- 单一 script：分析注入 + Cookie 同意交互 -->
+<script is:inline data-swup-ignore-script define:vars={{ config: analyticsConfig }}>
+(function() {
+	var KEY = 'cookie-consent';
 
-		if (localStorage.getItem(KEY)) return;
+	/**
+	 * 注入所有第三方分析脚本
+	 * 配置来自 src/constants/analytics.ts，通过 define:vars 传入
+	 */
+	function injectAnalytics() {
+		var s;
 
-		banner.classList.remove('hidden');
+		// Umami
+		s = document.createElement('script');
+		s.defer = true;
+		s.src = config.umami.scriptUrl;
+		s.setAttribute('data-website-id', config.umami.websiteId);
+		document.head.appendChild(s);
 
-		function injectAnalytics() {
-			var s;
-			s = document.createElement('script');
-			s.defer = true;
-			s.src = 'https://cloud.umami.is/script.js';
-			s.setAttribute('data-website-id', '15924681-f412-49c8-8f0d-63f14495b9d7');
-			document.head.appendChild(s);
+		// 百度统计
+		window._hmt = window._hmt || [];
+		s = document.createElement('script');
+		s.src = config.baidu.scriptUrl;
+		s.async = true;
+		document.head.appendChild(s);
 
-			window._hmt = window._hmt || [];
-			s = document.createElement('script');
-			s.src = 'https://hm.baidu.com/hm.js?69025b38a7f30d097ec77b0635cc7f84';
-			s.async = true;
-			document.head.appendChild(s);
+		// Microsoft Clarity
+		(function(c,l,a,r,i,t,y){
+			c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+			t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
+			y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+		})(window, document, 'clarity', 'script', config.clarity.projectId);
 
-			(function(c,l,a,r,i,t,y){
-				c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-				t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
-				y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-			})(window, document, 'clarity', 'script', 'udl1zwuz27');
+		// Google Analytics
+		s = document.createElement('script');
+		s.async = true;
+		s.src = config.ga.scriptUrl + '?id=' + config.ga.trackingId;
+		document.head.appendChild(s);
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', config.ga.trackingId);
 
-			s = document.createElement('script');
-			s.async = true;
-			s.src = 'https://www.googletagmanager.com/gtag/js?id=G-8BSEJ23TXZ';
-			document.head.appendChild(s);
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-			gtag('config', 'G-8BSEJ23TXZ');
+		// Cloudflare Web Analytics
+		s = document.createElement('script');
+		s.defer = true;
+		s.src = config.cloudflare.scriptUrl;
+		s.setAttribute('data-cf-beacon', '{"token": "' + config.cloudflare.token + '"}');
+		document.head.appendChild(s);
+	}
 
-			s = document.createElement('script');
-			s.defer = true;
-			s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
-			s.setAttribute('data-cf-beacon', '{"token": "58c9626fdb9c418eb0aeac6d3c60aada"}');
-			document.head.appendChild(s);
-		}
+	// 页面加载时：如果用户之前已同意，立即注入分析脚本
+	if (localStorage.getItem(KEY) === 'accepted') {
+		injectAnalytics();
+	}
 
+	// Cookie 同意横幅交互
+	var banner = document.getElementById('cookie-consent-banner');
+	var acceptBtn = document.getElementById('cookie-accept');
+	var declineBtn = document.getElementById('cookie-decline');
+
+	// 如果已有同意/拒绝记录，不显示横幅
+	if (localStorage.getItem(KEY)) return;
+
+	// 显示横幅
+	if (banner) banner.classList.remove('hidden');
+
+	if (acceptBtn) {
 		acceptBtn.addEventListener('click', function() {
 			localStorage.setItem(KEY, 'accepted');
-			banner.classList.add('hidden');
+			if (banner) banner.classList.add('hidden');
 			injectAnalytics();
 		});
+	}
 
+	if (declineBtn) {
 		declineBtn.addEventListener('click', function() {
 			localStorage.setItem(KEY, 'declined');
-			banner.classList.add('hidden');
+			if (banner) banner.classList.add('hidden');
 		});
-	})();
+	}
+})();
 </script>
