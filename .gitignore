@@ -32,3 +32,6 @@ yarn.lock
 ori
 
 shiro
+
+# documentation (not tracked)
+docs/
