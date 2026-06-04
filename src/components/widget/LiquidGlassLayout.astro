@@ -268,6 +268,14 @@ const className = Astro.props.class;
     background: rgba(255, 255, 255, 0.12);
     color: rgba(255, 255, 255, 0.7);
   }
+
+  /* ===== 移动端降低 backdrop-filter 强度 (修复 iOS Safari 毛玻璃过重) ===== */
+  @media (max-width: 768px) {
+    .glass-backdrop {
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+    }
+  }
 </style>
 
 <script>

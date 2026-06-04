@@ -425,5 +425,10 @@ function handleBackdropClick() {
 		.dynamic-island.di-playing-pill.with-lyric {
 			width: 150px;
 		}
+		/* 降低 backdrop-filter 强度，修复 iOS Safari 毛玻璃过重 */
+		.player-lg-backdrop {
+			backdrop-filter: blur(12px) saturate(150%);
+			-webkit-backdrop-filter: blur(12px) saturate(150%);
+		}
 	}
 </style>

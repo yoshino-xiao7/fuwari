@@ -250,6 +250,40 @@
     }
 }
 
+/* ===== Fallback: 不支持 backdrop-filter 的设备（部分移动端浏览器） ===== */
+@supports not (backdrop-filter: blur(1px)) {
+    :root.glass .card-base {
+        background: rgba(235, 235, 240, 0.95);
+    }
+    :root.glass .card-base:hover {
+        background: rgba(228, 228, 235, 0.97);
+    }
+    :root.dark.glass .card-base {
+        background: rgba(28, 28, 35, 0.95);
+    }
+    :root.dark.glass .card-base:hover {
+        background: rgba(35, 35, 42, 0.97);
+    }
+    :root.glass .float-panel {
+        background: rgba(235, 235, 240, 0.95);
+    }
+    :root.dark.glass .float-panel {
+        background: rgba(28, 28, 35, 0.95);
+    }
+}
+
+/* ===== 移动端降低 backdrop-filter 强度 (修复 iOS Safari 毛玻璃过重) ===== */
+@media (max-width: 768px) {
+    :root.glass .card-base {
+        backdrop-filter: blur(12px) saturate(140%);
+        -webkit-backdrop-filter: blur(12px) saturate(140%);
+    }
+    :root.glass .float-panel {
+        backdrop-filter: blur(12px) saturate(140%);
+        -webkit-backdrop-filter: blur(12px) saturate(140%);
+    }
+}
+
 .custom-md img, #post-cover img {
     @apply cursor-zoom-in
 }
