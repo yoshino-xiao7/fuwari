@@ -9,50 +9,51 @@
  * 必须使用 is:inline define:vars，不能改为外部文件
  */
 import { siteConfig } from "@/config";
-import {
-	AUTO_MODE,
-	BANNER_HEIGHT_EXTEND,
-	DARK_MODE,
-	DEFAULT_THEME,
-	LIGHT_MODE,
-	PAGE_WIDTH,
-} from "../../constants/constants";
+import { BANNER_HEIGHT_EXTEND, PAGE_WIDTH } from "../../constants/constants";
 
 const configHue = siteConfig.themeColor.hue;
 ---
 
 <!-- Theme initialization — runs before page render to prevent FOUC -->
-<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue, forceDarkMode: siteConfig.themeColor.forceDarkMode}}>
-	// Force dark mode if configured
-	if (forceDarkMode) {
-		document.documentElement.classList.add('dark');
-		localStorage.setItem('theme', DARK_MODE);
-	} else {
-		// Load the theme from local storage
-		const theme = localStorage.getItem('theme') || DEFAULT_THEME;
-		switch (theme) {
-			case LIGHT_MODE:
-				document.documentElement.classList.remove('dark');
-				break
-			case DARK_MODE:
-				document.documentElement.classList.add('dark');
-				break
-			case AUTO_MODE:
-				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-					document.documentElement.classList.add('dark');
-				} else {
-					document.documentElement.classList.remove('dark');
-				}
+<script is:inline define:vars={{BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue, forceDarkMode: siteConfig.themeColor.forceDarkMode}}>
+	// ===== Unified theme mode initialization =====
+	// Single key: "theme-mode" = "dark" | "glass" | "light"
+	// Migrates from legacy keys: "theme" + "style-mode"
+	var THEME_KEY = 'theme-mode';
+	var themeMode = localStorage.getItem(THEME_KEY);
+
+	// Migrate from legacy keys if new key doesn't exist
+	if (!themeMode) {
+		var oldTheme = localStorage.getItem('theme');
+		var oldStyleMode = localStorage.getItem('style-mode');
+		if (oldTheme || oldStyleMode) {
+			if (oldStyleMode === 'glass') themeMode = 'glass';
+			else if (oldTheme === 'light') themeMode = 'light';
+			else themeMode = 'glass';
+			localStorage.setItem(THEME_KEY, themeMode);
+			localStorage.removeItem('theme');
+			localStorage.removeItem('style-mode');
 		}
 	}
 
-	// Load style mode (glass/default) from local storage
-	const styleMode = localStorage.getItem('style-mode');
-	if (styleMode === 'default') {
-		document.documentElement.classList.remove('glass');
+	// Apply forceDarkMode only on first visit (no stored preference)
+	if (!themeMode) {
+		themeMode = forceDarkMode ? 'dark' : 'glass';
+		localStorage.setItem(THEME_KEY, themeMode);
+	}
+
+	// Apply theme classes to <html>
+	var root = document.documentElement;
+	if (themeMode === 'light') {
+		root.classList.remove('dark');
+		root.classList.remove('glass');
+	} else if (themeMode === 'glass') {
+		root.classList.add('dark');
+		root.classList.add('glass');
 	} else {
-		// Default to glass mode
-		document.documentElement.classList.add('glass');
+		// dark
+		root.classList.add('dark');
+		root.classList.remove('glass');
 	}
 
 	// Load the hue from local storage
