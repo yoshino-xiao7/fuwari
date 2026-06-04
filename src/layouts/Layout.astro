@@ -1,7 +1,7 @@
 ---
 /**
  * Layout.astro — 站点布局骨架
- * 
+ *
  * 职责：组合各子组件，处理 banner 相关样式
  * 子组件拆分：
  *   - HeadMeta: meta 标签、favicon、OG
@@ -16,10 +16,10 @@ import "katex/dist/katex.css";
 
 import { siteConfig } from "@/config";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
+import DomainChecker from "@components/DomainChecker.astro";
 import AnalyticsScripts from "@components/analytics/AnalyticsScripts.astro";
 import HeadMeta from "@components/head/HeadMeta.astro";
 import ThemeInit from "@components/head/ThemeInit.astro";
-import DomainChecker from "@components/DomainChecker.astro";
 import DynamicIsland from "@components/widget/DynamicIsland.astro";
 import GlobalMusicPlayer from "@components/widget/GlobalMusicPlayer.astro";
 import {
@@ -27,7 +27,7 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	BANNER_HEIGHT_HOME,
 } from "../constants/constants";
-import { pathsEqual, url } from "../utils/url-utils";
+import { url, pathsEqual } from "../utils/url-utils";
 
 interface Props {
 	title?: string;
@@ -77,7 +77,8 @@ const bannerOffsetByPosition = {
 	center: `${BANNER_HEIGHT_EXTEND / 2}vh`,
 	bottom: "0",
 };
-const bannerOffset = bannerOffsetByPosition[siteConfig.banner.position || "center"];
+const bannerOffset =
+	bannerOffsetByPosition[siteConfig.banner.position || "center"];
 ---
 
 <!DOCTYPE html>
@@ -148,6 +149,7 @@ const bannerOffset = bannerOffsetByPosition[siteConfig.banner.position || "cente
 <!-- 站点初始化脚本 -->
 <script>
 import 'overlayscrollbars/overlayscrollbars.css';
+import '../styles/animations.css';
 import { initSite } from "../scripts/site-init";
 import { setupSwupHooks } from "../scripts/swup-hooks";
 import { setupFancybox } from "../scripts/fancybox-init";

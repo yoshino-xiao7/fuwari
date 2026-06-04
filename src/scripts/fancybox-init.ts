@@ -6,13 +6,13 @@ import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
 const fancyboxOptions = {
-	wheel: 'zoom' as const,
-	clickContent: 'close' as const,
-	dblclickContent: 'zoom' as const,
-	click: 'close' as const,
-	dblclick: 'zoom' as const,
+	wheel: "zoom" as const,
+	clickContent: "close" as const,
+	dblclickContent: "zoom" as const,
+	click: "close" as const,
+	dblclick: "zoom" as const,
 	Panels: {
-		display: ['counter', 'zoom'] as const,
+		display: ["counter", "zoom"] as const,
 	},
 	Images: {
 		panning: true,

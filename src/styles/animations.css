@@ -1,0 +1,206 @@
+/*
+ * animations.css — 全局动画关键帧与动画工具类
+ *
+ * 从 GlobalMusicPlayer.astro 和 DynamicIsland.astro 中提取的共享动画。
+ * 组件专属动画（如 diWave）仍保留在各自组件的 <style> 中。
+ */
+
+/* ===== 封面旋转 ===== */
+.cover-spin {
+    animation: spin 12s linear infinite;
+    animation-play-state: paused;
+}
+
+.cover-spin.playing {
+    animation-play-state: running;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== 入场滑动 ===== */
+.animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== 呼吸光效 ===== */
+.animate-glow.playing {
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 4px 20px oklch(0.65 0.2 var(--hue) / 0.3);
+    }
+    to {
+        box-shadow: 0 4px 30px oklch(0.65 0.2 var(--hue) / 0.6);
+    }
+}
+
+/* ===== 展开播放器呼吸效果 ===== */
+#player-full.playing {
+    animation: glowFull 2s ease-in-out infinite alternate;
+}
+
+@keyframes glowFull {
+    from {
+        box-shadow: 0 10px 40px oklch(0.65 0.2 var(--hue) / 0.2);
+    }
+    to {
+        box-shadow: 0 10px 50px oklch(0.65 0.2 var(--hue) / 0.4);
+    }
+}
+
+/* ===== 播放按钮脉冲 ===== */
+#player-toggle.playing {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* ===== 收缩/展开动画 ===== */
+.animate-collapse-out {
+    animation: collapseOut 0.4s ease-in-out forwards;
+}
+
+.animate-expand-in {
+    animation: expandIn 0.4s ease-out forwards;
+}
+
+.animate-arrow-in {
+    animation: arrowIn 0.3s ease-out forwards;
+}
+
+.animate-arrow-out {
+    animation: arrowOut 0.3s ease-in forwards;
+}
+
+@keyframes collapseOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes expandIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes arrowIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes arrowOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+}
+
+/* ===== Mini/Full 切换动画（预留） ===== */
+.animate-slide-down-out {
+    animation: slideDownOut 0.3s ease-in-out forwards;
+}
+
+.animate-slide-up-in {
+    animation: slideUpIn 0.3s ease-out forwards;
+}
+
+.animate-slide-up-out {
+    animation: slideUpOut 0.3s ease-in-out forwards;
+}
+
+.animate-slide-down-in {
+    animation: slideDownIn 0.3s ease-out forwards;
+}
+
+@keyframes slideDownOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+@keyframes slideUpIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUpOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes slideDownIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

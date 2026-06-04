@@ -10,29 +10,35 @@ import {
 } from "../constants/constants";
 
 export function setupScrollHandler() {
-	const bannerEnabled = !!document.getElementById('banner-wrapper');
-	const backToTopBtn = document.getElementById('back-to-top-btn');
-	const toc = document.getElementById('toc-wrapper');
-	const navbar = document.getElementById('navbar-wrapper');
+	const bannerEnabled = !!document.getElementById("banner-wrapper");
+	const backToTopBtn = document.getElementById("back-to-top-btn");
+	const toc = document.getElementById("toc-wrapper");
+	const navbar = document.getElementById("navbar-wrapper");
 
 	function onScroll() {
 		const bannerHeightPx = window.innerHeight * (BANNER_HEIGHT / 100);
 
 		// Back to top button
 		if (backToTopBtn) {
-			if (document.body.scrollTop > bannerHeightPx || document.documentElement.scrollTop > bannerHeightPx) {
-				backToTopBtn.classList.remove('hide');
+			if (
+				document.body.scrollTop > bannerHeightPx ||
+				document.documentElement.scrollTop > bannerHeightPx
+			) {
+				backToTopBtn.classList.remove("hide");
 			} else {
-				backToTopBtn.classList.add('hide');
+				backToTopBtn.classList.add("hide");
 			}
 		}
 
 		// TOC visibility
 		if (bannerEnabled && toc) {
-			if (document.body.scrollTop > bannerHeightPx || document.documentElement.scrollTop > bannerHeightPx) {
-				toc.classList.remove('toc-hide');
+			if (
+				document.body.scrollTop > bannerHeightPx ||
+				document.documentElement.scrollTop > bannerHeightPx
+			) {
+				toc.classList.remove("toc-hide");
 			} else {
-				toc.classList.add('toc-hide');
+				toc.classList.add("toc-hide");
 			}
 		}
 
@@ -43,15 +49,25 @@ export function setupScrollHandler() {
 		const MAIN_PANEL_EXCESS_HEIGHT = MAIN_PANEL_OVERLAPS_BANNER_HEIGHT * 16;
 
 		let effectiveBannerHeight = BANNER_HEIGHT;
-		if (document.body.classList.contains('lg:is-home') && window.innerWidth >= 1024) {
+		if (
+			document.body.classList.contains("lg:is-home") &&
+			window.innerWidth >= 1024
+		) {
 			effectiveBannerHeight = BANNER_HEIGHT_HOME;
 		}
-		const threshold = window.innerHeight * (effectiveBannerHeight / 100) - NAVBAR_HEIGHT - MAIN_PANEL_EXCESS_HEIGHT - 16;
+		const threshold =
+			window.innerHeight * (effectiveBannerHeight / 100) -
+			NAVBAR_HEIGHT -
+			MAIN_PANEL_EXCESS_HEIGHT -
+			16;
 
-		if (document.body.scrollTop >= threshold || document.documentElement.scrollTop >= threshold) {
-			navbar.classList.add('navbar-hidden');
+		if (
+			document.body.scrollTop >= threshold ||
+			document.documentElement.scrollTop >= threshold
+		) {
+			navbar.classList.add("navbar-hidden");
 		} else {
-			navbar.classList.remove('navbar-hidden');
+			navbar.classList.remove("navbar-hidden");
 		}
 	}
 
@@ -60,7 +76,10 @@ export function setupScrollHandler() {
 	window.onresize = () => {
 		// Recalculate --banner-height-extend (must be multiple of 4 to avoid blurry text)
 		let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
-		offset = offset - offset % 4;
-		document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+		offset = offset - (offset % 4);
+		document.documentElement.style.setProperty(
+			"--banner-height-extend",
+			`${offset}px`,
+		);
 	};
 }

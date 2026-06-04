@@ -153,17 +153,6 @@
     background: transparent;
   }
 
-  /* Cover spin */
-  .cover-spin {
-    animation: spin 12s linear infinite;
-    animation-play-state: paused;
-  }
-  .cover-spin.playing { animation-play-state: running; }
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
   /* Mobile */
   @media (max-width: 768px) {
     .dynamic-island.di-playing-pill { width: 110px; }
@@ -391,14 +380,4 @@ declare global {
     return result.sort((a, b) => a.time - b.time);
   }
 })();
-
-// Re-init on Astro page transitions
-document.addEventListener("astro:page-load", () => {
-  // The IIFE above runs on initial load. For page transitions,
-  // we need to re-init. The cleanup at the top handles old intervals.
-  const script = document.querySelector('#dynamic-island')?.closest('astro-island');
-  if (script) {
-    // Astro will re-run the script automatically on page transitions
-  }
-});
 </script>
