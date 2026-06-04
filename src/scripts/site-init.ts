@@ -4,24 +4,9 @@
  */
 import { siteConfig } from "../config";
 import { getHue, setHue } from "../utils/setting-utils";
+import { setupClickOutsideToClose } from "./panel-manager";
 import { initCustomScrollbar } from "./scrollbar";
 import { getThemeMode, setThemeMode } from "./theme-manager";
-
-/** 浮出面板：点击外部自动关闭 */
-function setupClickOutsideToClose(panelId: string, triggerIds: string[]) {
-	document.addEventListener("click", (event) => {
-		const panelDom = document.getElementById(panelId);
-		const tDom = event.target;
-		if (!(tDom instanceof Node)) return;
-		for (const ig of triggerIds) {
-			const ie = document.getElementById(ig);
-			if (ie === tDom || ie?.contains(tDom)) {
-				return;
-			}
-		}
-		panelDom?.classList.add("float-panel-closed");
-	});
-}
 
 function loadTheme() {
 	setThemeMode(getThemeMode());
@@ -41,7 +26,7 @@ function showBanner() {
 	banner.classList.remove("opacity-0", "scale-105");
 }
 
-export function initSite() {
+export function initSite(): void {
 	loadTheme();
 	loadHue();
 	initCustomScrollbar();

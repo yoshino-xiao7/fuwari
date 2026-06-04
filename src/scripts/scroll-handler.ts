@@ -9,7 +9,7 @@ import {
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 } from "../constants/constants";
 
-export function setupScrollHandler() {
+export function setupScrollHandler(): void {
 	const bannerEnabled = !!document.getElementById("banner-wrapper");
 	const backToTopBtn = document.getElementById("back-to-top-btn");
 	const toc = document.getElementById("toc-wrapper");

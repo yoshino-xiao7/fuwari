@@ -5,7 +5,7 @@
 import { Fancybox } from "@fancyapps/ui";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 
-const fancyboxOptions = {
+const fancyboxOptions: Record<string, unknown> = {
 	wheel: "zoom" as const,
 	clickContent: "close" as const,
 	dblclickContent: "zoom" as const,
@@ -23,7 +23,7 @@ const fancyboxOptions = {
 
 const SELECTOR = ".custom-md img, #post-cover img";
 
-export function setupFancybox() {
+export function setupFancybox(): void {
 	Fancybox.bind(SELECTOR, fancyboxOptions);
 
 	window.swup.hooks.on("page:view", () => {

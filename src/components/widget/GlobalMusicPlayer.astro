@@ -8,33 +8,6 @@ const className = Astro.props.class;
 const style = Astro.props.style;
 ---
 
-<!-- 侧边收缩状态 - 已由灵动岛取代，永久隐藏 -->
-<div
-  id="player-collapsed"
-  class="!hidden fixed bottom-4 left-0 z-[100]"
->
-  <button
-    id="player-expand-from-side"
-    type="button"
-    class="player-lg-side-btn w-10 h-14 rounded-r-xl
-           flex items-center justify-center
-           hover:w-12 transition-all duration-300
-           text-[oklch(0.65_0.2_var(--hue))]"
-    aria-label="展开播放器"
-  >
-    <div class="player-lg-backdrop"></div>
-    <div class="player-lg-border player-lg-border-screen"></div>
-    <div class="player-lg-border player-lg-border-overlay"></div>
-    <span class="relative z-10">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 18l6-6-6-6"/>
-      </svg>
-    </span>
-  </button>
-  <!-- 播放状态指示器 -->
-  <div id="collapsed-playing-indicator" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-[oklch(0.65_0.2_var(--hue))] rounded-full animate-pulse"></div>
-</div>
-
 <!-- 全局音乐播放器 -->
 <div
   id="global-music-player"
@@ -97,7 +70,6 @@ const style = Astro.props.style;
           <path d="M18 15l-6-6-6 6"/>
         </svg>
       </button>
-      <!-- 收缩按钮已由灵动岛取代 -->
     </div>
   </div>
 
@@ -131,8 +103,6 @@ const style = Astro.props.style;
             --
           </div>
         </div>
-        <!-- 收缩/最小化按钮已由灵动岛取代 -->
-      </div>
     </div>
 
     <!-- 进度条 -->
@@ -400,31 +370,11 @@ const style = Astro.props.style;
     opacity: 0.5;
   }
 
-  /* ===== Side Button ===== */
-  .player-lg-side-btn {
-    position: relative;
-    overflow: hidden;
-    border: none;
-    box-shadow:
-      0 4px 16px rgba(0, 0, 0, 0.1),
-      inset 0 0 0 0.5px rgba(255, 255, 255, 0.4);
-  }
-  :global(.dark) .player-lg-side-btn {
-    box-shadow:
-      0 4px 16px rgba(0, 0, 0, 0.3),
-      inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
-  }
-  .player-lg-side-btn > .player-lg-backdrop {
-    border-radius: inherit;
-  }
-
   /* ===== Text readability ===== */
-  .player-lg-container *,
-  .player-lg-side-btn * {
+  .player-lg-container * {
     text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.04);
   }
-  :global(.dark) .player-lg-container *,
-  :global(.dark) .player-lg-side-btn * {
+  :global(.dark) .player-lg-container * {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   }
   #player-playlist::-webkit-scrollbar {
@@ -533,14 +483,12 @@ const style = Astro.props.style;
     private currentIndex: number = -1;
     private isPlaying: boolean = false;
     private isMinimized: boolean = false;
-    private isCollapsed: boolean = false;
     private volume: number = 0.8;
 
     // 元素
     private playerEl: HTMLElement | null = null;
     private miniEl: HTMLElement | null = null;
     private fullEl: HTMLElement | null = null;
-    private collapsedEl: HTMLElement | null = null;
 
     constructor() {
       this.init();
@@ -551,7 +499,6 @@ const style = Astro.props.style;
       this.playerEl = document.getElementById("global-music-player");
       this.miniEl = document.getElementById("player-mini");
       this.fullEl = document.getElementById("player-full");
-      this.collapsedEl = document.getElementById("player-collapsed");
 
       if (!this.audio || !this.playerEl) return;
 
@@ -582,7 +529,6 @@ const style = Astro.props.style;
         localStorage.removeItem("music_is_minimized");
         localStorage.removeItem("music_is_collapsed");
         this.isMinimized = false;
-        this.isCollapsed = false;
         
         // 加载音质设置
         if (savedQuality) {
@@ -612,8 +558,6 @@ const style = Astro.props.style;
       this.playerEl.style.cssText = "";
       this.playerEl.classList.add("hidden");
       this.playerEl.classList.remove("pl-4", "animate-slide-up", "animate-collapse-out");
-      this.collapsedEl?.classList.add("hidden");
-      this.collapsedEl?.classList.remove("animate-arrow-in", "animate-arrow-out");
       this.miniEl?.classList.add("hidden");
       this.fullEl?.classList.remove("hidden");
     }
@@ -647,16 +591,6 @@ const style = Astro.props.style;
         this.expand();
       });
       this.miniEl?.addEventListener("click", () => this.expand());
-
-      // 收缩到侧边
-      document.getElementById("player-collapse-side-mini")?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this.collapse();
-      });
-      document.getElementById("player-collapse-side-full")?.addEventListener("click", () => this.collapse());
-      
-      // 从侧边展开
-      document.getElementById("player-expand-from-side")?.addEventListener("click", () => this.expandFromSide());
 
       // 进度条
       const progressInput = document.getElementById("player-progress") as HTMLInputElement;
@@ -728,91 +662,6 @@ const style = Astro.props.style;
           this.playNext();
         }
       });
-    }
-
-    private collapse() {
-      this.isCollapsed = true;
-      
-      // 添加退出动画
-      this.playerEl?.classList.add("animate-collapse-out");
-      
-      // 动画结束后隐藏播放器，显示箭头
-      setTimeout(() => {
-        this.playerEl?.classList.add("hidden");
-        this.playerEl?.classList.remove("animate-collapse-out");
-        this.collapsedEl?.classList.remove("hidden");
-        this.collapsedEl?.classList.add("animate-arrow-in");
-        
-        // 清理箭头动画类
-        setTimeout(() => {
-          this.collapsedEl?.classList.remove("animate-arrow-in");
-        }, 300);
-      }, 400);
-      
-      this.updateCollapsedIndicator();
-      this.saveState();
-    }
-
-    private expandFromSide() {
-      this.isCollapsed = false;
-      
-      // 箭头退出动画
-      this.collapsedEl?.classList.add("animate-arrow-out");
-      
-      // 动画结束后隐藏箭头，显示播放器
-      setTimeout(() => {
-        this.collapsedEl?.classList.add("hidden");
-        this.collapsedEl?.classList.remove("animate-arrow-out");
-        
-        // 先设置播放器初始位置在左侧屏幕外
-        if (this.playerEl) {
-          this.playerEl.style.transform = "translateX(-100%)";
-          this.playerEl.style.opacity = "0";
-        }
-        
-        this.playerEl?.classList.remove("hidden");
-        this.playerEl?.classList.add("pl-4");
-        
-        // 根据状态显示 mini 或 full
-        if (this.isMinimized) {
-          this.miniEl?.classList.remove("hidden");
-          this.fullEl?.classList.add("hidden");
-        } else {
-          this.miniEl?.classList.add("hidden");
-          this.fullEl?.classList.remove("hidden");
-        }
-        
-        // 使用 requestAnimationFrame 确保 DOM 更新后再开始动画
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            if (this.playerEl) {
-              this.playerEl.style.transition = "transform 0.4s ease-out, opacity 0.4s ease-out";
-              this.playerEl.style.transform = "translateX(0)";
-              this.playerEl.style.opacity = "1";
-            }
-            
-            // 清理样式
-            setTimeout(() => {
-              if (this.playerEl) {
-                this.playerEl.style.transition = "";
-                this.playerEl.style.transform = "";
-                this.playerEl.style.opacity = "";
-              }
-            }, 400);
-          });
-        });
-      }, 300);
-      
-      this.saveState();
-    }
-
-    private updateCollapsedIndicator() {
-      const indicator = document.getElementById("collapsed-playing-indicator");
-      if (this.isPlaying) {
-        indicator?.classList.remove("hidden");
-      } else {
-        indicator?.classList.add("hidden");
-      }
     }
 
     private minimize() {
@@ -1155,9 +1004,6 @@ const style = Astro.props.style;
         playerFull?.classList.remove("playing");
         playerMini?.classList.remove("playing");
       }
-      
-      // 更新收缩状态指示器
-      this.updateCollapsedIndicator();
     }
 
     private updateVolumeIcon() {

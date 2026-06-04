@@ -4,7 +4,7 @@
  */
 import { OverlayScrollbars } from "overlayscrollbars";
 
-export function initCustomScrollbar() {
+export function initCustomScrollbar(): void {
 	const bodyElement = document.querySelector("body");
 	if (!bodyElement) return;
 	OverlayScrollbars(
@@ -27,11 +27,11 @@ export function initCustomScrollbar() {
 	const katexElements = document.querySelectorAll(
 		".katex-display",
 	) as NodeListOf<HTMLElement>;
-	katexElements.forEach((ele) => {
+	for (const ele of katexElements) {
 		OverlayScrollbars(ele, {
 			scrollbars: {
 				theme: "scrollbar-base scrollbar-auto py-1",
 			},
 		});
-	});
+	}
 }

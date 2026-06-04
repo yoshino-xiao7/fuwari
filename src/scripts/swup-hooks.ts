@@ -6,7 +6,7 @@ import { BANNER_HEIGHT } from "../constants/constants";
 import { url, pathsEqual } from "../utils/url-utils";
 import { initCustomScrollbar } from "./scrollbar";
 
-export function setupSwupHooks() {
+export function setupSwupHooks(): void {
 	const bannerEnabled = !!document.getElementById("banner-wrapper");
 
 	window.swup.hooks.on("link:click", () => {
@@ -34,9 +34,9 @@ export function setupSwupHooks() {
 		// change banner height immediately when a link is clicked
 		const bodyElement = document.querySelector("body");
 		if (pathsEqual(visit.to.url, url("/"))) {
-			bodyElement!.classList.add("lg:is-home");
+			bodyElement?.classList.add("lg:is-home");
 		} else {
-			bodyElement!.classList.remove("lg:is-home");
+			bodyElement?.classList.remove("lg:is-home");
 		}
 
 		// increase the page height during page transition to prevent the scrolling animation from jumping
