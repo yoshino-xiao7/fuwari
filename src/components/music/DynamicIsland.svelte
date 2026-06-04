@@ -15,6 +15,7 @@ let playerPanelStyle = $state("");
 
 // Derived values
 let hasSong = $derived(musicStore.currentSong !== null);
+let isActive = $derived(musicStore.isPlaying && hasSong);
 let coverUrl = $derived(
 	musicStore.currentSong?.cover
 		? `${musicStore.currentSong.cover}?param=60y60`
@@ -24,7 +25,7 @@ let coverUrl = $derived(
 // Island CSS class
 let islandClass = $derived.by(() => {
 	if (musicStore.isExpanded) return "dynamic-island di-idle";
-	if (musicStore.isPlaying && hasSong) {
+	if (isActive) {
 		return "dynamic-island di-playing-pill with-lyric";
 	}
 	return "dynamic-island di-idle";
@@ -34,7 +35,7 @@ onMount(() => {
 	// Clock interval
 	clock = musicStore.formatClock();
 	const clockId = setInterval(() => {
-		if (!musicStore.isPlaying || !hasSong || musicStore.isExpanded) {
+		if (!isActive || musicStore.isExpanded) {
 			clock = musicStore.formatClock();
 		}
 	}, 1000);
@@ -108,29 +109,28 @@ function handleBackdropClick() {
 	role="button"
 	tabindex="0"
 >
-	<!-- Idle: clock -->
-	<div class="di-pill-idle" class:hidden={musicStore.isPlaying && hasSong && !musicStore.isExpanded}>
-		<span class="di-clock">{clock}</span>
-	</div>
-
-	<!-- Playing: cover + lyric + waveform -->
-	<div
-		class="di-pill-playing"
-		class:hidden={!musicStore.isPlaying || !hasSong || musicStore.isExpanded}
-	>
-		{#if coverUrl}
-			<img
-				src={coverUrl}
-				alt=""
-				class="di-cover cover-spin"
-				class:playing={musicStore.isPlaying}
-			/>
-		{/if}
-		<div class="di-lyric">{lyricText}</div>
-		<div class="di-waveform" class:active={musicStore.isPlaying}>
-			<span /><span /><span /><span />
+	{#if isActive && !musicStore.isExpanded}
+		<!-- Playing: cover + lyric + waveform -->
+		<div class="di-pill-playing">
+			{#if coverUrl}
+				<img
+					src={coverUrl}
+					alt=""
+					class="di-cover cover-spin"
+					class:playing={musicStore.isPlaying}
+				/>
+			{/if}
+			<div class="di-lyric">{lyricText}</div>
+			<div class="di-waveform active">
+				<span /><span /><span /><span />
+			</div>
 		</div>
-	</div>
+	{:else}
+		<!-- Idle: clock -->
+		<div class="di-pill-idle">
+			<span class="di-clock">{clock}</span>
+		</div>
+	{/if}
 </div>
 
 <!-- Expanded player panel -->
