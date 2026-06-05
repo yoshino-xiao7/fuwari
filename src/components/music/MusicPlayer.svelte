@@ -1,7 +1,7 @@
 <!--
   MusicPlayer.svelte — 顶层容器
   初始化 music store，组合 DynamicIsland 子组件。
-  在 Layout.astro 中以 <MusicPlayer client:load /> 挂载。
+  在 Layout.astro 中以 <MusicPlayer client:only="svelte" /> 挂载。
 -->
 <script lang="ts">
 import { onDestroy, onMount } from "svelte";

@@ -36,7 +36,7 @@ function handleVolumeInput(e: Event) {
 		<div
 			class="progress-fill"
 			style="width: {progressValue}%"
-		/>
+		></div>
 	</div>
 	<div class="time-row">
 		<span>{currentTimeStr}</span>

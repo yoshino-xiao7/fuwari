@@ -62,12 +62,12 @@ function handleChange(e: Event) {
 			135deg,
 			oklch(0.65 0.15 var(--hue) / 0.2),
 			oklch(0.65 0.15 var(--hue) / 0.08)
-		);
+		), var(--glass-control-bg, transparent);
 		color: oklch(0.45 0.1 var(--hue));
 		border: 1.5px solid oklch(0.65 0.15 var(--hue) / 0.3);
 		cursor: pointer;
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: var(--glass-control-filter, blur(8px));
+		backdrop-filter: var(--glass-control-filter, blur(8px));
 		transition: all 0.25s ease;
 		outline: none;
 	}
@@ -98,7 +98,7 @@ function handleChange(e: Event) {
 			135deg,
 			oklch(0.65 0.15 var(--hue) / 0.15),
 			oklch(0.65 0.15 var(--hue) / 0.05)
-		);
+		), var(--glass-control-bg, transparent);
 		color: oklch(0.8 0.12 var(--hue));
 		border-color: oklch(0.65 0.15 var(--hue) / 0.25);
 	}

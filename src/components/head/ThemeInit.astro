@@ -51,6 +51,21 @@ const configHue = siteConfig.themeColor.hue;
 
 	// Apply theme classes to <html>
 	var root = document.documentElement;
+	var ua = navigator.userAgent || '';
+	var platform = navigator.platform || '';
+	var maxTouchPoints = navigator.maxTouchPoints || 0;
+	var isIOS = /iPad|iPhone|iPod/.test(platform) || (platform === 'MacIntel' && maxTouchPoints > 1);
+	var isSafari = /Safari/i.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR|OPiOS|Android/i.test(ua);
+	var isWebKit = isIOS || isSafari;
+	var isCoarsePointer = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+	var hasReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	root.classList.toggle('ios', isIOS);
+	root.classList.toggle('safari', isSafari);
+	root.classList.toggle('webkit', isWebKit);
+	root.classList.toggle('coarse-pointer', isCoarsePointer);
+	root.classList.toggle('reduced-motion', hasReducedMotion);
+
 	if (themeMode === 'light') {
 		root.classList.remove('dark');
 		root.classList.remove('glass');

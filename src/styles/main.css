@@ -2,68 +2,215 @@
 
 @layer components {
     :root.glass {
-        --glass-card-bg: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.45) 0%,
-                rgba(255, 255, 255, 0.25) 50%,
-                rgba(255, 255, 255, 0.35) 100%);
-        --glass-panel-bg: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.5) 0%,
-                rgba(255, 255, 255, 0.3) 100%);
-        --glass-filter: blur(16px) saturate(180%);
-        --glass-panel-filter: blur(20px) saturate(180%);
-        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
-            0 2px 8px rgba(0, 0, 0, 0.06),
-            inset 0 0 0 0.5px rgba(255, 255, 255, 0.4),
-            inset 0 1px 3px rgba(255, 255, 255, 0.2);
-        --glass-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.15),
-            0 4px 12px rgba(0, 0, 0, 0.08),
-            inset 0 0 0 0.5px rgba(255, 255, 255, 0.5),
-            inset 0 1px 3px rgba(255, 255, 255, 0.25);
-        --glass-panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.12),
-            inset 0 0 0 0.5px rgba(255, 255, 255, 0.4);
+        --glass-blur: 14px;
+        --glass-panel-blur: 16px;
+        --glass-control-blur: 7px;
+        --glass-saturate: 170%;
+        --glass-panel-saturate: 180%;
+        --glass-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) contrast(1.04);
+        --glass-panel-filter: blur(var(--glass-panel-blur)) saturate(var(--glass-panel-saturate)) contrast(1.05);
+        --glass-control-filter: blur(var(--glass-control-blur)) saturate(150%);
+        --glass-tint: rgba(255, 255, 255, 0.18);
+        --glass-tint-strong: rgba(255, 255, 255, 0.28);
+        --glass-control-bg: rgba(255, 255, 255, 0.18);
+        --glass-control-bg-hover: rgba(255, 255, 255, 0.3);
+        --glass-control-border: rgba(255, 255, 255, 0.34);
+        --glass-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.36),
+            0 2px 8px rgba(0, 0, 0, 0.04);
+        --glass-surface-bg: linear-gradient(145deg,
+                rgba(255, 255, 255, 0.36) 0%,
+                rgba(255, 255, 255, 0.12) 42%,
+                rgba(255, 255, 255, 0.22) 100%),
+            var(--glass-tint);
+        --glass-panel-bg: linear-gradient(145deg,
+                rgba(255, 255, 255, 0.42) 0%,
+                rgba(255, 255, 255, 0.16) 48%,
+                rgba(255, 255, 255, 0.26) 100%),
+            var(--glass-tint-strong);
+        --glass-card-bg: var(--glass-surface-bg);
+        --glass-edge-gradient: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.72) 0%,
+                rgba(255, 255, 255, 0.18) 22%,
+                rgba(255, 255, 255, 0.08) 52%,
+                rgba(255, 255, 255, 0.5) 100%);
+        --glass-specular: radial-gradient(circle at var(--glass-x, 42%) var(--glass-y, 0%),
+                rgba(255, 255, 255, 0.75) 0%,
+                rgba(255, 255, 255, 0.28) 22%,
+                rgba(255, 255, 255, 0) 58%),
+            linear-gradient(115deg,
+                rgba(255, 255, 255, 0.34) 0%,
+                rgba(255, 255, 255, 0) 32%,
+                rgba(255, 255, 255, 0.2) 64%,
+                rgba(255, 255, 255, 0) 100%);
+        --glass-noise: linear-gradient(transparent, transparent);
+        --glass-edge-opacity: 0.72;
+        --glass-highlight-opacity: 0.24;
+        --glass-noise-opacity: 0;
+        --glass-shadow: 0 14px 40px rgba(0, 0, 0, 0.1),
+            0 3px 12px rgba(0, 0, 0, 0.06),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.44),
+            inset 0 1px 3px rgba(255, 255, 255, 0.28);
+        --glass-shadow-hover: 0 18px 56px rgba(0, 0, 0, 0.15),
+            0 5px 16px rgba(0, 0, 0, 0.08),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.56),
+            inset 0 1px 4px rgba(255, 255, 255, 0.34);
+        --glass-panel-shadow: 0 16px 48px rgba(0, 0, 0, 0.12),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.45),
+            inset 0 1px 4px rgba(255, 255, 255, 0.24);
         --glass-fallback-bg: rgba(235, 235, 240, 0.95);
         --glass-fallback-bg-hover: rgba(228, 228, 235, 0.97);
+        --glass-motion-strength: 1;
     }
 
     :root.dark.glass {
-        --glass-card-bg: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.08) 0%,
-                rgba(255, 255, 255, 0.03) 50%,
-                rgba(255, 255, 255, 0.06) 100%);
-        --glass-panel-bg: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.08) 0%,
-                rgba(255, 255, 255, 0.03) 100%);
-        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-            0 2px 8px rgba(0, 0, 0, 0.2),
+        --glass-tint: rgba(8, 8, 10, 0.12);
+        --glass-tint-strong: rgba(10, 10, 12, 0.18);
+        --glass-control-bg: rgba(255, 255, 255, 0.04);
+        --glass-control-bg-hover: rgba(255, 255, 255, 0.09);
+        --glass-control-border: rgba(255, 255, 255, 0.12);
+        --glass-control-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 2px 8px rgba(0, 0, 0, 0.18);
+        --glass-surface-bg: linear-gradient(145deg,
+                rgba(255, 255, 255, 0.075) 0%,
+                rgba(255, 255, 255, 0.018) 45%,
+                rgba(255, 255, 255, 0.045) 100%),
+            var(--glass-tint);
+        --glass-panel-bg: linear-gradient(145deg,
+                rgba(255, 255, 255, 0.09) 0%,
+                rgba(255, 255, 255, 0.025) 46%,
+                rgba(255, 255, 255, 0.055) 100%),
+            var(--glass-tint-strong);
+        --glass-card-bg: var(--glass-surface-bg);
+        --glass-edge-gradient: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.36) 0%,
+                rgba(255, 255, 255, 0.08) 26%,
+                rgba(255, 255, 255, 0.035) 58%,
+                rgba(255, 255, 255, 0.22) 100%);
+        --glass-specular: radial-gradient(circle at var(--glass-x, 42%) var(--glass-y, 0%),
+                rgba(255, 255, 255, 0.36) 0%,
+                rgba(255, 255, 255, 0.13) 24%,
+                rgba(255, 255, 255, 0) 62%),
+            linear-gradient(115deg,
+                rgba(255, 255, 255, 0.16) 0%,
+                rgba(255, 255, 255, 0) 34%,
+                rgba(255, 255, 255, 0.09) 66%,
+                rgba(255, 255, 255, 0) 100%);
+        --glass-noise: linear-gradient(transparent, transparent);
+        --glass-edge-opacity: 0.82;
+        --glass-highlight-opacity: 0.18;
+        --glass-noise-opacity: 0;
+        --glass-shadow: 0 14px 42px rgba(0, 0, 0, 0.34),
+            0 3px 12px rgba(0, 0, 0, 0.22),
             inset 0 0 0 0.5px rgba(255, 255, 255, 0.1),
-            inset 0 1px 3px rgba(255, 255, 255, 0.05);
-        --glass-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.4),
-            0 4px 12px rgba(0, 0, 0, 0.25),
-            inset 0 0 0 0.5px rgba(255, 255, 255, 0.15),
-            inset 0 1px 3px rgba(255, 255, 255, 0.08);
-        --glass-panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.35),
-            inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+            inset 0 1px 3px rgba(255, 255, 255, 0.06);
+        --glass-shadow-hover: 0 18px 58px rgba(0, 0, 0, 0.42),
+            0 5px 16px rgba(0, 0, 0, 0.26),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.16),
+            inset 0 1px 4px rgba(255, 255, 255, 0.08);
+        --glass-panel-shadow: 0 16px 50px rgba(0, 0, 0, 0.38),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.11),
+            inset 0 1px 4px rgba(255, 255, 255, 0.055);
         --glass-fallback-bg: rgba(26, 26, 30, 0.92);
         --glass-fallback-bg-hover: rgba(32, 32, 38, 0.95);
     }
 
-    @media (max-width: 768px), (hover: none) and (pointer: coarse) {
-        :root.glass {
-            --glass-filter: blur(10px) saturate(145%);
-            --glass-panel-filter: blur(12px) saturate(150%);
-            --glass-shadow: 0 6px 20px rgba(0, 0, 0, 0.14),
-                inset 0 0 0 0.5px rgba(255, 255, 255, 0.32);
-            --glass-shadow-hover: var(--glass-shadow);
-            --glass-panel-shadow: 0 8px 28px rgba(0, 0, 0, 0.16),
-                inset 0 0 0 0.5px rgba(255, 255, 255, 0.28);
-        }
+    :root.glass.webkit,
+    :root.glass.safari {
+        --glass-blur: 0px;
+        --glass-panel-blur: 0px;
+        --glass-control-blur: 0px;
+        --glass-saturate: 122%;
+        --glass-panel-saturate: 126%;
+        --glass-filter: saturate(var(--glass-saturate)) contrast(1.02);
+        --glass-panel-filter: saturate(var(--glass-panel-saturate)) contrast(1.03);
+        --glass-control-filter: saturate(120%);
+        --glass-tint: rgba(255, 255, 255, 0.08);
+        --glass-tint-strong: rgba(255, 255, 255, 0.12);
+        --glass-control-bg: rgba(255, 255, 255, 0.1);
+        --glass-control-bg-hover: rgba(255, 255, 255, 0.18);
+        --glass-surface-bg: linear-gradient(145deg,
+                rgba(255, 255, 255, 0.22) 0%,
+                rgba(255, 255, 255, 0.055) 42%,
+                rgba(255, 255, 255, 0.14) 100%),
+            var(--glass-tint);
+        --glass-panel-bg: linear-gradient(145deg,
+                rgba(255, 255, 255, 0.26) 0%,
+                rgba(255, 255, 255, 0.075) 48%,
+                rgba(255, 255, 255, 0.16) 100%),
+            var(--glass-tint-strong);
+        --glass-edge-opacity: 0.92;
+        --glass-highlight-opacity: 0.28;
+        --glass-noise-opacity: 0;
+        --glass-motion-strength: 0.72;
+    }
 
-        :root.dark.glass {
-            --glass-shadow: 0 6px 20px rgba(0, 0, 0, 0.32),
-                inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
-            --glass-shadow-hover: var(--glass-shadow);
-            --glass-panel-shadow: 0 8px 28px rgba(0, 0, 0, 0.34),
-                inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+    :root.dark.glass.webkit,
+    :root.dark.glass.safari {
+        --glass-tint: rgba(0, 0, 0, 0.035);
+        --glass-tint-strong: rgba(0, 0, 0, 0.08);
+        --glass-control-bg: rgba(255, 255, 255, 0.032);
+        --glass-control-bg-hover: rgba(255, 255, 255, 0.075);
+        --glass-surface-bg: linear-gradient(145deg,
+                rgba(255, 255, 255, 0.052) 0%,
+                rgba(255, 255, 255, 0.008) 45%,
+                rgba(255, 255, 255, 0.032) 100%),
+            var(--glass-tint);
+        --glass-panel-bg: linear-gradient(145deg,
+                rgba(255, 255, 255, 0.07) 0%,
+                rgba(255, 255, 255, 0.012) 46%,
+                rgba(255, 255, 255, 0.04) 100%),
+            var(--glass-tint-strong);
+        --glass-highlight-opacity: 0.18;
+    }
+
+    :root.glass.coarse-pointer {
+        --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.16),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.36),
+            inset 0 1px 3px rgba(255, 255, 255, 0.22);
+        --glass-shadow-hover: var(--glass-shadow);
+        --glass-panel-shadow: 0 10px 30px rgba(0, 0, 0, 0.18),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.3);
+        --glass-highlight-opacity: 0.32;
+        --glass-noise-opacity: 0;
+        --glass-motion-strength: 0.45;
+    }
+
+    :root.glass.coarse-pointer:not(.webkit):not(.safari):not(.ios) {
+        --glass-blur: 7px;
+        --glass-panel-blur: 9px;
+        --glass-control-blur: 4px;
+        --glass-saturate: 145%;
+        --glass-panel-saturate: 150%;
+    }
+
+    :root.glass.ios {
+        --glass-blur: 0px;
+        --glass-panel-blur: 0px;
+        --glass-control-blur: 0px;
+        --glass-filter: saturate(118%) contrast(1.02);
+        --glass-panel-filter: saturate(122%) contrast(1.03);
+        --glass-control-filter: saturate(116%);
+    }
+
+    :root.dark.glass.ios,
+    :root.dark.glass.coarse-pointer {
+        --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.34),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.085);
+        --glass-shadow-hover: var(--glass-shadow);
+        --glass-panel-shadow: 0 10px 30px rgba(0, 0, 0, 0.38),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+    }
+
+    :root.glass.reduced-motion {
+        --glass-motion-strength: 0;
+        --glass-highlight-opacity: 0.16;
+    }
+
+    @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+        :root.glass:not(.webkit):not(.safari):not(.ios) {
+            --glass-blur: 7px;
+            --glass-panel-blur: 9px;
+            --glass-control-blur: 4px;
         }
     }
 
@@ -77,12 +224,15 @@
     }
 
     /* ===== Liquid Glass mode — translucent glass cards ===== */
-    :root.glass .card-base {
-        position: relative;
-        background: var(--glass-card-bg);
+    :root.glass :where(.glass-surface, .card-base, .float-panel) {
+        background: var(--glass-surface-bg);
         -webkit-backdrop-filter: var(--glass-filter);
         backdrop-filter: var(--glass-filter);
         box-shadow: var(--glass-shadow);
+    }
+
+    :root.glass .card-base {
+        background: var(--glass-card-bg);
     }
 
     :root.glass .card-base:hover {
@@ -281,7 +431,8 @@
 
 @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
     :root.glass .card-base,
-    :root.glass .float-panel {
+    :root.glass .float-panel,
+    :root.glass .glass-surface {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
         background: var(--glass-fallback-bg);
@@ -290,11 +441,13 @@
     :root.glass .card-base:hover {
         background: var(--glass-fallback-bg-hover);
     }
+
 }
 
 @media (max-width: 768px), (hover: none) and (pointer: coarse) {
     :root.glass .card-base,
-    :root.glass .float-panel {
+    :root.glass .float-panel,
+    :root.glass .glass-surface {
         -webkit-transform: translateZ(0);
         transform: translateZ(0);
     }

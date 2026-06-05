@@ -15,7 +15,7 @@ let artist = $derived(musicStore.currentSong?.artist || "--");
 
 <div class="now-playing">
 	<!-- Cover background gradient -->
-	<div class="cover-bg" />
+	<div class="cover-bg"></div>
 
 	<div class="info-row">
 		{#if coverUrl}
@@ -26,7 +26,7 @@ let artist = $derived(musicStore.currentSong?.artist || "--");
 				class:playing={musicStore.isPlaying}
 			/>
 		{:else}
-			<div class="cover cover-placeholder" />
+			<div class="cover cover-placeholder"></div>
 		{/if}
 
 		<div class="text-info">
