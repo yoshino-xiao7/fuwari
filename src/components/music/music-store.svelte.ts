@@ -36,6 +36,7 @@ class MusicStore {
 	showPlaylist: boolean = $state(false);
 	isLoading: boolean = $state(false);
 	errorMessage: string = $state("");
+	isMuted: boolean = $state(false);
 	lastMusicInteractionAt: number = $state(0);
 	pausedVisibleUntil: number = $state(0);
 
@@ -60,6 +61,7 @@ class MusicStore {
 		if (this.audio) {
 			this.audio.preload = "metadata";
 			this.audio.volume = this.volume;
+			this.audio.muted = this.isMuted;
 		}
 	}
 
@@ -69,10 +71,6 @@ class MusicStore {
 		if (this.currentIndex < 0 || this.currentIndex >= this.playlist.length)
 			return null;
 		return this.playlist[this.currentIndex];
-	}
-
-	get isMuted(): boolean {
-		return this.audio?.muted || this.volume === 0;
 	}
 
 	get progressPercent(): number {
@@ -109,7 +107,7 @@ class MusicStore {
 		if (!this.audio) {
 			this.audio = new Audio();
 			this.audio.preload = "metadata";
-			this.audio.volume = this.volume;
+			this.applyAudioVolume();
 		}
 
 		this.setupAudioEvents();
@@ -123,6 +121,10 @@ class MusicStore {
 		});
 		this.audio.addEventListener("loadedmetadata", () => {
 			this.duration = this.audio.duration || 0;
+		});
+		this.audio.addEventListener("volumechange", () => {
+			this.volume = clampVolume(this.audio.volume);
+			this.isMuted = this.audio.muted || this.volume === 0;
 		});
 		this.audio.addEventListener("ended", () => {
 			this.next();
@@ -154,6 +156,7 @@ class MusicStore {
 			const savedPlaylist = localStorage.getItem("music_playlist");
 			const savedIndex = localStorage.getItem("music_current_index");
 			const savedVolume = localStorage.getItem("music_volume");
+			const savedMuted = localStorage.getItem("music_muted");
 			const savedQuality = localStorage.getItem(
 				"music_quality",
 			) as QualityLevel | null;
@@ -161,9 +164,10 @@ class MusicStore {
 			if (savedPlaylist) this.playlist = JSON.parse(savedPlaylist);
 			if (savedIndex) this.currentIndex = Number.parseInt(savedIndex, 10);
 			if (savedVolume) {
-				this.volume = Number.parseFloat(savedVolume);
-				this.audio.volume = this.volume;
+				this.volume = clampVolume(Number.parseFloat(savedVolume));
 			}
+			if (savedMuted) this.isMuted = savedMuted === "true";
+			this.applyAudioVolume();
 			if (savedQuality) this.quality = savedQuality;
 
 			// Clean up legacy keys
@@ -215,12 +219,14 @@ class MusicStore {
 
 			song.url = httpsUrl;
 			this.audio.src = httpsUrl;
+			this.applyAudioVolume();
 
 			const handleError = () => {
 				console.warn("HTTPS playback failed, falling back to HTTP");
 				if (httpsUrl !== httpUrl) {
 					this.audio.src = httpUrl;
 					song.url = httpUrl;
+					this.applyAudioVolume();
 					this.audio.play().catch(() => {
 						console.error("HTTP playback also failed");
 					});
@@ -338,20 +344,24 @@ class MusicStore {
 
 	setVolume(v: number) {
 		this.markMusicInteraction();
-		this.volume = v;
-		if (this.audio) {
-			this.audio.volume = v;
-			if (v > 0 && this.audio.muted) {
-				this.audio.muted = false;
-			}
-		}
+		this.volume = clampVolume(v);
+		this.isMuted = this.volume === 0;
+		this.applyAudioVolume();
 		this.persistState();
 	}
 
 	toggleMute() {
 		if (!this.audio) return;
 		this.markMusicInteraction();
-		this.audio.muted = !this.audio.muted;
+		this.isMuted = !this.isMuted;
+		this.applyAudioVolume();
+		this.persistState();
+	}
+
+	private applyAudioVolume() {
+		if (!this.audio) return;
+		this.audio.volume = clampVolume(this.volume);
+		this.audio.muted = this.isMuted || this.volume === 0;
 	}
 
 	// ===== Quality =====
@@ -456,6 +466,7 @@ class MusicStore {
 			localStorage.setItem("music_playlist", JSON.stringify(this.playlist));
 			localStorage.setItem("music_current_index", String(this.currentIndex));
 			localStorage.setItem("music_volume", String(this.volume));
+			localStorage.setItem("music_muted", String(this.isMuted));
 		} catch (e) {
 			console.error("Failed to save player state", e);
 		}
@@ -508,6 +519,11 @@ function parseLRC(lrc: string): LyricLine[] {
 		}
 	}
 	return result.sort((a, b) => a.time - b.time);
+}
+
+function clampVolume(value: number): number {
+	if (!Number.isFinite(value)) return 0.8;
+	return Math.min(1, Math.max(0, value));
 }
 
 // ===== Singleton export =====

@@ -9,6 +9,7 @@ let progressValue = $derived(musicStore.progressPercent);
 let currentTimeStr = $derived(musicStore.formatTime(musicStore.currentTime));
 let durationStr = $derived(musicStore.formatTime(musicStore.duration));
 let volumePercent = $derived(Math.round(musicStore.volume * 100));
+let displayedVolumePercent = $derived(musicStore.isMuted ? 0 : volumePercent);
 
 function handleProgressInput(e: Event) {
 	const target = e.target as HTMLInputElement;
@@ -117,7 +118,9 @@ function handleVolumeInput(e: Event) {
 			type="range"
 			min="0"
 			max="100"
-			value={volumePercent}
+			value={displayedVolumePercent}
+			aria-label="音量"
+			aria-valuetext={`${displayedVolumePercent}%`}
 			oninput={handleVolumeInput}
 			class="volume-range"
 		/>
