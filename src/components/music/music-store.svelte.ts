@@ -18,6 +18,9 @@ const MUSIC_API = isLocalhost
 	? "http://localhost:9898/blog/music"
 	: "https://api.yukiryou.icu/blog/music";
 
+const PAUSED_VISIBLE_MS = 5000;
+const ERROR_VISIBLE_MS = 4500;
+
 // ===== Store =====
 
 class MusicStore {
@@ -31,6 +34,10 @@ class MusicStore {
 	duration: number = $state(0);
 	isExpanded: boolean = $state(false);
 	showPlaylist: boolean = $state(false);
+	isLoading: boolean = $state(false);
+	errorMessage: string = $state("");
+	lastMusicInteractionAt: number = $state(0);
+	pausedVisibleUntil: number = $state(0);
 
 	// ---- Non-reactive internal state ----
 	lyrics: LyricLine[] = [];
@@ -39,6 +46,7 @@ class MusicStore {
 	// ---- Internal audio element ----
 	private audio: HTMLAudioElement;
 	private pauseTimer: ReturnType<typeof setTimeout> | null = null;
+	private errorTimer: ReturnType<typeof setTimeout> | null = null;
 	private clockInterval: ReturnType<typeof setInterval> | null = null;
 	private pollInterval: ReturnType<typeof setInterval> | null = null;
 	private initialized = false;
@@ -83,6 +91,14 @@ class MusicStore {
 			: "";
 	}
 
+	get isPausedVisible(): boolean {
+		return (
+			this.currentSong !== null &&
+			!this.isPlaying &&
+			Date.now() < this.pausedVisibleUntil
+		);
+	}
+
 	// ===== Initialization =====
 
 	init() {
@@ -112,13 +128,21 @@ class MusicStore {
 			this.next();
 		});
 		this.audio.addEventListener("play", () => {
+			this.isLoading = false;
+			this.errorMessage = "";
 			this.isPlaying = true;
+			this.markMusicInteraction();
 		});
 		this.audio.addEventListener("pause", () => {
 			this.isPlaying = false;
+			if (this.currentSong && !this.isLoading) {
+				this.showPausedBriefly();
+			}
 		});
 		this.audio.addEventListener("error", () => {
 			console.error("Audio load error");
+			this.isLoading = false;
+			this.setError("播放失败，已尝试切换歌曲");
 			if (this.playlist.length > 1) {
 				this.next();
 			}
@@ -173,6 +197,9 @@ class MusicStore {
 		if (!song) return;
 
 		try {
+			this.markMusicInteraction();
+			this.isLoading = true;
+			this.errorMessage = "";
 			const res = await fetch(
 				`${MUSIC_API}/url?id=${song.id}&level=${this.quality}`,
 			);
@@ -204,15 +231,19 @@ class MusicStore {
 			await this.audio.play().catch(() => {
 				// play() failure will trigger the error handler above
 			});
+			this.isLoading = false;
 
 			this.persistState();
 		} catch (e) {
 			console.error("Playback failed", e);
+			this.isLoading = false;
+			this.setError("播放失败，请稍后再试");
 		}
 	}
 
 	togglePlay() {
 		if (!this.audio) return;
+		this.markMusicInteraction();
 		if (this.isPlaying) {
 			this.audio.pause();
 		} else {
@@ -229,12 +260,14 @@ class MusicStore {
 
 	next() {
 		if (this.playlist.length === 0) return;
+		this.markMusicInteraction();
 		this.currentIndex = (this.currentIndex + 1) % this.playlist.length;
 		this.playCurrent();
 	}
 
 	prev() {
 		if (this.playlist.length === 0) return;
+		this.markMusicInteraction();
 		this.currentIndex =
 			(this.currentIndex - 1 + this.playlist.length) % this.playlist.length;
 		this.playCurrent();
@@ -242,17 +275,20 @@ class MusicStore {
 
 	seek(percent: number) {
 		if (!this.audio?.duration) return;
+		this.markMusicInteraction();
 		this.audio.currentTime = (percent / 100) * this.audio.duration;
 	}
 
 	seekTo(time: number) {
 		if (!this.audio) return;
+		this.markMusicInteraction();
 		this.audio.currentTime = time;
 	}
 
 	// ===== Playlist =====
 
 	addSong(song: Song, autoPlay = true) {
+		this.markMusicInteraction();
 		const existingIndex = this.playlist.findIndex((s) => s.id === song.id);
 		if (existingIndex === -1) {
 			this.playlist = [...this.playlist, song];
@@ -293,6 +329,7 @@ class MusicStore {
 	}
 
 	playAtIndex(index: number) {
+		this.markMusicInteraction();
 		this.currentIndex = index;
 		this.playCurrent();
 	}
@@ -300,6 +337,7 @@ class MusicStore {
 	// ===== Volume =====
 
 	setVolume(v: number) {
+		this.markMusicInteraction();
 		this.volume = v;
 		if (this.audio) {
 			this.audio.volume = v;
@@ -312,12 +350,14 @@ class MusicStore {
 
 	toggleMute() {
 		if (!this.audio) return;
+		this.markMusicInteraction();
 		this.audio.muted = !this.audio.muted;
 	}
 
 	// ===== Quality =====
 
 	setQuality(q: QualityLevel) {
+		this.markMusicInteraction();
 		this.quality = q;
 		localStorage.setItem("music_quality", q);
 		// Reload current song with new quality
@@ -338,6 +378,7 @@ class MusicStore {
 	// ===== UI =====
 
 	toggleExpanded() {
+		this.markMusicInteraction();
 		this.isExpanded = !this.isExpanded;
 		if (this.isExpanded) {
 			this.showPlaylist = false;
@@ -349,7 +390,32 @@ class MusicStore {
 	}
 
 	togglePlaylist() {
+		this.markMusicInteraction();
 		this.showPlaylist = !this.showPlaylist;
+	}
+
+	// ===== Island visibility hints =====
+
+	markMusicInteraction() {
+		this.lastMusicInteractionAt = Date.now();
+	}
+
+	showPausedBriefly(duration = PAUSED_VISIBLE_MS) {
+		this.markMusicInteraction();
+		this.pausedVisibleUntil = Date.now() + duration;
+		if (this.pauseTimer) clearTimeout(this.pauseTimer);
+		this.pauseTimer = setTimeout(() => {
+			this.pausedVisibleUntil = 0;
+		}, duration);
+	}
+
+	private setError(message: string) {
+		this.errorMessage = message;
+		this.pausedVisibleUntil = 0;
+		if (this.errorTimer) clearTimeout(this.errorTimer);
+		this.errorTimer = setTimeout(() => {
+			this.errorMessage = "";
+		}, ERROR_VISIBLE_MS);
 	}
 
 	// ===== Lyrics =====
@@ -422,6 +488,7 @@ class MusicStore {
 		if (this.clockInterval) clearInterval(this.clockInterval);
 		if (this.pollInterval) clearInterval(this.pollInterval);
 		if (this.pauseTimer) clearTimeout(this.pauseTimer);
+		if (this.errorTimer) clearTimeout(this.errorTimer);
 	}
 }
 
