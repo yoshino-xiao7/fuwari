@@ -210,23 +210,23 @@ function handleVolumeInput(e: Event) {
 		padding: 12px;
 		border-radius: 14px;
 		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.18)),
-			rgba(255, 255, 255, 0.2);
-		border: 1px solid rgba(255, 255, 255, 0.36);
-		-webkit-backdrop-filter: blur(14px) saturate(160%);
-		backdrop-filter: blur(14px) saturate(160%);
+			linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.12)),
+			rgba(255, 255, 255, 0.14);
+		border: 1px solid rgba(255, 255, 255, 0.34);
 		box-shadow:
-			0 1px 0 rgba(255, 255, 255, 0.48) inset,
-			0 8px 24px rgba(0, 0, 0, 0.08);
+			0 1px 0 rgba(255, 255, 255, 0.46) inset,
+			0 0 0 1px rgba(255, 255, 255, 0.08),
+			0 8px 20px rgba(0, 0, 0, 0.07);
 	}
 	:global(.dark) .control-dock {
 		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
-			rgba(10, 10, 14, 0.42);
-		border-color: rgba(255, 255, 255, 0.12);
+			linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+			rgba(10, 10, 14, 0.3);
+		border-color: rgba(255, 255, 255, 0.11);
 		box-shadow:
 			0 1px 0 rgba(255, 255, 255, 0.1) inset,
-			0 10px 28px rgba(0, 0, 0, 0.28);
+			0 0 0 1px rgba(255, 255, 255, 0.025),
+			0 10px 24px rgba(0, 0, 0, 0.22);
 	}
 
 	/* Progress bar */
@@ -313,8 +313,8 @@ function handleVolumeInput(e: Event) {
 			color 0.2s ease,
 			transform 0.2s ease;
 		color: oklch(0.38 0 0);
-		background: rgba(255, 255, 255, 0.24);
-		border: 1px solid rgba(255, 255, 255, 0.34);
+		background: rgba(255, 255, 255, 0.2);
+		border: 1px solid rgba(255, 255, 255, 0.3);
 		box-shadow:
 			0 1px 0 rgba(255, 255, 255, 0.35) inset,
 			0 4px 12px rgba(0, 0, 0, 0.06);
@@ -322,8 +322,8 @@ function handleVolumeInput(e: Event) {
 	}
 	.ctrl-btn:hover {
 		transform: translateY(-1px);
-		background: rgba(255, 255, 255, 0.42);
-		border-color: rgba(255, 255, 255, 0.55);
+		background: rgba(255, 255, 255, 0.34);
+		border-color: rgba(255, 255, 255, 0.48);
 	}
 	.ctrl-btn:focus-visible,
 	.play-btn:focus-visible,
@@ -334,14 +334,14 @@ function handleVolumeInput(e: Event) {
 	}
 	:global(.dark) .ctrl-btn {
 		color: oklch(0.82 0 0);
-		background: rgba(255, 255, 255, 0.08);
+		background: rgba(255, 255, 255, 0.065);
 		border-color: rgba(255, 255, 255, 0.1);
 		box-shadow:
 			0 1px 0 rgba(255, 255, 255, 0.08) inset,
 			0 6px 14px rgba(0, 0, 0, 0.2);
 	}
 	:global(.dark) .ctrl-btn:hover {
-		background: rgba(255, 255, 255, 0.14);
+		background: rgba(255, 255, 255, 0.12);
 		border-color: rgba(255, 255, 255, 0.18);
 	}
 
@@ -387,12 +387,12 @@ function handleVolumeInput(e: Event) {
 		max-width: 118px;
 		padding: 0 8px 0 4px;
 		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.18);
-		border: 1px solid rgba(255, 255, 255, 0.24);
+		background: rgba(255, 255, 255, 0.14);
+		border: 1px solid rgba(255, 255, 255, 0.22);
 		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.28) inset;
 	}
 	:global(.dark) .volume-group {
-		background: rgba(255, 255, 255, 0.06);
+		background: rgba(255, 255, 255, 0.045);
 		border-color: rgba(255, 255, 255, 0.09);
 		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
 	}
@@ -412,8 +412,8 @@ function handleVolumeInput(e: Event) {
 			transform 0.2s ease,
 			box-shadow 0.2s ease;
 		color: oklch(0.38 0 0);
-		background: rgba(255, 255, 255, 0.22);
-		border: 1px solid rgba(255, 255, 255, 0.26);
+		background: rgba(255, 255, 255, 0.18);
+		border: 1px solid rgba(255, 255, 255, 0.24);
 		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.24) inset;
 		cursor: pointer;
 	}
@@ -421,8 +421,8 @@ function handleVolumeInput(e: Event) {
 	.icon-btn:hover,
 	.icon-btn.active {
 		transform: translateY(-1px);
-		background: rgba(255, 255, 255, 0.42);
-		border-color: rgba(255, 255, 255, 0.5);
+		background: rgba(255, 255, 255, 0.32);
+		border-color: rgba(255, 255, 255, 0.42);
 	}
 	.icon-btn.active {
 		color: oklch(0.58 0.2 var(--hue));
@@ -435,14 +435,14 @@ function handleVolumeInput(e: Event) {
 	:global(.dark) .vol-btn,
 	:global(.dark) .icon-btn {
 		color: oklch(0.8 0 0);
-		background: rgba(255, 255, 255, 0.07);
+		background: rgba(255, 255, 255, 0.055);
 		border-color: rgba(255, 255, 255, 0.1);
 		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
 	}
 	:global(.dark) .vol-btn:hover,
 	:global(.dark) .icon-btn:hover,
 	:global(.dark) .icon-btn.active {
-		background: rgba(255, 255, 255, 0.14);
+		background: rgba(255, 255, 255, 0.12);
 		border-color: rgba(255, 255, 255, 0.18);
 	}
 	:global(.dark) .icon-btn.active {

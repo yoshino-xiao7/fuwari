@@ -65,12 +65,10 @@ function handleChange(e: Event) {
 				oklch(0.65 0.15 var(--hue) / 0.18),
 				oklch(0.65 0.15 var(--hue) / 0.08)
 			),
-			rgba(255, 255, 255, 0.24);
+			rgba(255, 255, 255, 0.18);
 		color: oklch(0.43 0.1 var(--hue));
 		border: 1px solid rgba(255, 255, 255, 0.32);
 		cursor: pointer;
-		-webkit-backdrop-filter: blur(10px) saturate(150%);
-		backdrop-filter: blur(10px) saturate(150%);
 		transition: all 0.25s ease;
 		outline: none;
 		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset;
@@ -81,7 +79,7 @@ function handleChange(e: Event) {
 				oklch(0.65 0.15 var(--hue) / 0.28),
 				oklch(0.65 0.15 var(--hue) / 0.12)
 			),
-			rgba(255, 255, 255, 0.38);
+			rgba(255, 255, 255, 0.3);
 		border-color: rgba(255, 255, 255, 0.48);
 		box-shadow:
 			0 1px 0 rgba(255, 255, 255, 0.38) inset,
@@ -117,7 +115,7 @@ function handleChange(e: Event) {
 				oklch(0.65 0.15 var(--hue) / 0.24),
 				oklch(0.65 0.15 var(--hue) / 0.1)
 			),
-			rgba(255, 255, 255, 0.12);
+			rgba(255, 255, 255, 0.1);
 		border-color: rgba(255, 255, 255, 0.18);
 	}
 	:global(.dark) .quality-select option {
