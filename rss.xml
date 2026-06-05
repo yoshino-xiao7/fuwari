@@ -1,0 +1,1978 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>扣扣空间</title><description>日常技术分享与实践</description><link>https://blog.yukiryou.top/</link><language>zh_CN</language><item><title>用 Svelte 5 重写了博客的音乐播放器系统：一次 8 阶段的全面重构</title><link>https://blog.yukiryou.top/posts/2026-06-04-fuwari-refactor/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/2026-06-04-fuwari-refactor/</guid><description>记录对 Fuwari 博客主题的 8 阶段全面重构，重点是用 Svelte 5 runes 替代 1400 行 DOM 操作的播放器系统，以及过程中发现的 CSS 外部化时序 bug 和灵动岛状态同步问题。</description><pubDate>Thu, 04 Jun 2026 17:49:33 GMT</pubDate><content:encoded>&lt;h2&gt;# 起因：1400 行的单文件组件&lt;/h2&gt;
+&lt;p&gt;这个博客用的是 Fuwari 主题，一套基于 Astro 的日系博客框架。功能够用，但代码积累久了，有些地方开始变得难以维护。&lt;/p&gt;
+&lt;p&gt;最让我头疼的是音乐播放器。&lt;code&gt;GlobalMusicPlayer.astro&lt;/code&gt; 一个文件塞了 1033 行——一个完整的 TypeScript class，用纯 DOM 操作管理播放、暂停、进度条、播放列表、音质切换。灵动岛 &lt;code&gt;DynamicIsland.astro&lt;/code&gt; 又是 383 行，靠 &lt;code&gt;setInterval&lt;/code&gt; 每 3 秒轮询同步播放状态。两个组件之间只通过 &lt;code&gt;CustomEvent&lt;/code&gt; 松散耦合，没有类型安全可言。&lt;/p&gt;
+&lt;p&gt;播放列表用 &lt;code&gt;innerHTML&lt;/code&gt; 拼接 HTML 字符串，SVG 图标全部硬编码在模板里，动画定义散落在两个组件的 &lt;code&gt;&amp;lt;style&amp;gt;&lt;/code&gt; 块中互相重复。每次想改个小功能，都得在一大堆 DOM 查询和事件绑定里小心翼翼。&lt;/p&gt;
+&lt;p&gt;于是我决定：既然项目已经装了 Svelte 5，不如彻底重写。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 不只是播放器：8 阶段重构计划&lt;/h2&gt;
+&lt;p&gt;在动手之前，我先梳理了整个博客的代码结构，发现需要重构的不止播放器。Layout.astro 承担了太多职责（859 行，包含主题初始化、分析注入、Cookie 同意、Swup 钩子、滚动处理），分析脚本配置写了两份，CSS 变量在 &lt;code&gt;:root&lt;/code&gt; 和 &lt;code&gt;body&lt;/code&gt; 上各声明了一遍，主题状态分散在三个文件里。&lt;/p&gt;
+&lt;p&gt;最终我制定了一个 8 阶段的计划：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;拆分 Layout.astro&lt;/strong&gt; — 从 859 行瘦身到 80 行骨架&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;分析脚本去重&lt;/strong&gt; — 五个分析服务配置集中到 &lt;code&gt;analytics.ts&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CSS 体系整理&lt;/strong&gt; — 统一 Liquid Glass 设计令牌，集中动画定义&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;主题系统修复&lt;/strong&gt; — 三态切换（暗黑/玻璃/明亮）统一为 &lt;code&gt;theme-manager.ts&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Svelte 重写播放器&lt;/strong&gt; — 本文重点&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;脚本模块化&lt;/strong&gt; — 内联 JS 迁移到 ES 模块&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;配置与死代码清理&lt;/strong&gt; — 类型修复、废弃代码移除&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;收尾验证&lt;/strong&gt; — type-check、lint、构建、死代码审计&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Phase 1-4 和 6-7 属于&quot;低风险高回报&quot;的清理工作，先做掉能降低后续的风险。Phase 5（Svelte 重写）是最大改动，放在中间单独做。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 核心设计：Svelte 5 Runes 单例 Store&lt;/h2&gt;
+&lt;p&gt;重写播放器的核心思路是&lt;strong&gt;用一个共享的响应式 store 替代所有 DOM 操作和事件轮询&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;Svelte 5 引入了 runes 语法——&lt;code&gt;$state&lt;/code&gt;、&lt;code&gt;$derived&lt;/code&gt;、&lt;code&gt;$effect&lt;/code&gt;——可以在 &lt;code&gt;.svelte.ts&lt;/code&gt; 文件里定义响应式状态。我把整个播放器的状态管理浓缩到了一个单例 class 里：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;class MusicStore {
+  playlist: Song[] = $state([]);
+  currentIndex: number = $state(-1);
+  isPlaying: boolean = $state(false);
+  volume: number = $state(0.8);
+  quality: QualityLevel = $state(&quot;exhigh&quot;);
+  currentTime: number = $state(0);
+  duration: number = $state(0);
+  // ...
+
+  get currentSong(): Song | null {
+    return this.playlist[this.currentIndex] ?? null;
+  }
+
+  get progressPercent(): number {
+    return this.duration &amp;gt; 0 ? (this.currentTime / this.duration) * 100 : 0;
+  }
+
+  async playCurrent() { /* 获取 URL → 播放 */ }
+  togglePlay() { /* 播放/暂停 */ }
+  next() { /* 下一首 */ }
+  addSong(song: Song, autoPlay = true) { /* 添加歌曲 */ }
+}
+
+export const musicStore = new MusicStore();
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;灵动岛和播放器面板都读取同一个 store。不再需要 &lt;code&gt;CustomEvent&lt;/code&gt; 传递状态，不再需要 &lt;code&gt;setInterval&lt;/code&gt; 轮询。&lt;code&gt;musicStore.isPlaying&lt;/code&gt; 变了，所有订阅它的组件自动更新。&lt;/p&gt;
+&lt;p&gt;组件拆成了 8 个文件：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;src/components/music/
+├── music-store.svelte.ts    # 状态管理（上面的 store）
+├── types.ts                 # Song, LyricLine, QualityLevel
+├── MusicPlayer.svelte       # 顶层容器（Astro client:load 挂载）
+├── DynamicIsland.svelte     # 灵动岛 + 展开面板
+├── PlayerFull.svelte        # 展开态 UI 容器
+├── NowPlayingInfo.svelte    # 封面 + 标题 + 歌手
+├── PlayerControls.svelte    # 播放控制 + 进度条 + 音量
+├── PlayerPlaylist.svelte    # 播放列表（Svelte {#each}）
+└── PlayerQualitySelect.svelte
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;播放列表从 &lt;code&gt;innerHTML&lt;/code&gt; 拼接变成了 Svelte 的 &lt;code&gt;{#each}&lt;/code&gt; 块，获得了完整的类型安全和响应式更新。灵动岛的展开动画用了 Svelte 内置的 &lt;code&gt;scale&lt;/code&gt; transition，比原来手动操作 &lt;code&gt;requestAnimationFrame&lt;/code&gt; 简洁得多。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 意外收获：CSS 外部化引发的时序 Bug&lt;/h2&gt;
+&lt;p&gt;重构过程中发现了一个很有意思的 bug。&lt;/p&gt;
+&lt;p&gt;原来的 &lt;code&gt;ThemeInit.astro&lt;/code&gt; 里有一段 &lt;code&gt;&amp;lt;script is:inline&amp;gt;&lt;/code&gt;，用来在页面加载时检测背景图是否加载成功，然后给 &lt;code&gt;#bg-layer&lt;/code&gt; 添加 &lt;code&gt;bg-loaded&lt;/code&gt; 类名让背景淡入。这段脚本通过 &lt;code&gt;getComputedStyle&lt;/code&gt; 读取 &lt;code&gt;--bg-url&lt;/code&gt; CSS 变量来获取背景图地址。&lt;/p&gt;
+&lt;p&gt;Phase 1 拆分 Layout 后，背景图在 Safari 上不显示了。&lt;/p&gt;
+&lt;p&gt;根因是 Astro 的 CSS 外部化行为：当 &lt;code&gt;&amp;lt;style define:vars&amp;gt;&lt;/code&gt; 从 Layout.astro 移到子组件 ThemeInit.astro 后，Astro 把 CSS 输出到了外部文件。&lt;code&gt;&amp;lt;script is:inline&amp;gt;&lt;/code&gt; 在 &lt;code&gt;&amp;lt;head&amp;gt;&lt;/code&gt; 中同步执行时，外部 CSS 还没加载完，&lt;code&gt;getComputedStyle&lt;/code&gt; 返回的是空值。&lt;/p&gt;
+&lt;p&gt;这个 bug 其实影响所有浏览器，只是 Safari 的 CSS 加载时序让它更容易暴露。&lt;/p&gt;
+&lt;p&gt;修复方案是三管齐下：把背景图 CSS 变量注入到 &lt;code&gt;&amp;lt;html&amp;gt;&lt;/code&gt; 元素的 inline style 上（确保立即可用），通过 &lt;code&gt;define:vars&lt;/code&gt; 把 &lt;code&gt;bgSrc&lt;/code&gt; 和 &lt;code&gt;bgEnable&lt;/code&gt; 直接传给 inline script（不再依赖 &lt;code&gt;getComputedStyle&lt;/code&gt;），以及给 ThemeInit 的 &lt;code&gt;&amp;lt;style&amp;gt;&lt;/code&gt; 加 &lt;code&gt;is:global&lt;/code&gt; 避免作用域属性不匹配。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 灵动岛的状态同步问题&lt;/h2&gt;
+&lt;p&gt;Svelte 重写上线后，灵动岛出了两个显示 bug。&lt;/p&gt;
+&lt;p&gt;第一个是&lt;strong&gt;没播放音乐也显示播放状态&lt;/strong&gt;。原因是灵动岛的播放视图用 &lt;code&gt;class:hidden&lt;/code&gt; 切换可见性，条件只检查了 &lt;code&gt;hasSong&lt;/code&gt;（播放列表有歌就为 true），没同时检查 &lt;code&gt;isPlaying&lt;/code&gt;。页面加载后如果之前有播放记录，播放列表不为空，播放视图就会错误地显示出来。&lt;/p&gt;
+&lt;p&gt;修复方案是引入 &lt;code&gt;isActive = isPlaying &amp;amp;&amp;amp; hasSong&lt;/code&gt; 派生变量，并把 &lt;code&gt;class:hidden&lt;/code&gt; 替换成 Svelte 的 &lt;code&gt;{#if}/{:else}&lt;/code&gt; 块——保证 idle 和 playing 两个视图互斥渲染，不依赖 CSS 类名切换。&lt;/p&gt;
+&lt;p&gt;第二个问题其实不算 bug——原来的代码里 &lt;code&gt;music:add&lt;/code&gt; 事件（点击&quot;+&quot;号添加歌曲）和 &lt;code&gt;music:play&lt;/code&gt; 事件（点击歌曲行播放）都传了 &lt;code&gt;autoPlay=true&lt;/code&gt;，意味着添加歌曲时也会自动播放。这是原有行为，我选择保持了一致。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 结果&lt;/h2&gt;
+&lt;p&gt;重构前后的对比：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Layout.astro&lt;/strong&gt;: 859 行 → ~80 行骨架 + 6 个职责单一的子组件&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;播放器系统&lt;/strong&gt;: 1416 行内联脚本 → 8 个 Svelte 组件 + 1 个 store，总计约 1000 行（含样式）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;主题管理&lt;/strong&gt;: 3 个文件各管一段 → &lt;code&gt;theme-manager.ts&lt;/code&gt; 统一处理&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;分析脚本&lt;/strong&gt;: 配置写了两份 → 集中到 &lt;code&gt;analytics.ts&lt;/code&gt; 一处&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;死代码&lt;/strong&gt;: 清理了废弃导入、未使用导出、注释代码块、无效 CSS 选择器&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;构建验证：&lt;code&gt;pnpm type-check&lt;/code&gt; 零错误（&lt;code&gt;--isolatedDeclarations&lt;/code&gt; 严格模式），&lt;code&gt;pnpm lint&lt;/code&gt; 87 个文件零问题，&lt;code&gt;pnpm build&lt;/code&gt; 50 页 8 秒完成。&lt;/p&gt;
+&lt;p&gt;如果你也在维护一个逐渐膨胀的 Astro 项目，我的建议是：先做低风险的结构清理（拆分大文件、去重配置），再动核心组件的重写。这样核心重写时面对的是一个干净、可预测的代码基，出问题时也容易定位。&lt;/p&gt;
+</content:encoded></item><item><title>五一星铁LAND嘉年华游玩体验：人很多，队很长，也很快乐</title><link>https://blog.yukiryou.top/posts/2026-05-05-star-rail-land-experience/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/2026-05-05-star-rail-land-experience/</guid><description>五一去了星铁LAND嘉年华，人多队长但很快乐，记录一下这次的游玩体验。</description><pubDate>Tue, 05 May 2026 20:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 五一去星铁LAND嘉年华了&lt;/h2&gt;
+&lt;p&gt;五一假期第一天，去了期待已久的星铁LAND嘉年华。&lt;/p&gt;
+&lt;p&gt;体验总结：&lt;strong&gt;人很多，队很长，也很快乐。&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 排队一小时起步&lt;/h2&gt;
+&lt;p&gt;早上很早就出发了，想着早点去能少排点队。结果到了现场才发现——&lt;strong&gt;想多了。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;现场的人比想象中多得多，从入口开始就排起了长队。进去之后发现，不管是玩项目、买周边还是吃饭，&lt;strong&gt;所有地方都在排队。&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;排队一小时起步，已经是常态。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2026-05-05-star-rail-entrance.BJREA7XC.png&quot; alt=&quot;星铁LAND嘉年华入口&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;项目排队、周边排队、连买瓶水都要排队。不过好在和朋友一起排队，边聊边等，时间也过得挺快。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 还原度很高的cos&lt;/h2&gt;
+&lt;p&gt;现场最亮眼的还是各种cos。&lt;/p&gt;
+&lt;p&gt;不得不说，很多cos的还原度真的很高。从服装到道具，能看得出来大家都很用心。在现场逛的时候，感觉就像游戏里的角色真的从屏幕里走出来了一样。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;看到喜欢的角色被用心还原，这种感觉真的很棒。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 走路真的很累&lt;/h2&gt;
+&lt;p&gt;嘉年华场地比想象中要大很多。&lt;/p&gt;
+&lt;p&gt;从一个区域走到另一个区域，再加上排队时的来回走动，一天下来步数直接破万。到了下午的时候，脚已经开始发酸了，每走一步都觉得累。&lt;/p&gt;
+&lt;p&gt;这时候才发现，&lt;strong&gt;选对搭子真的很重要。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;如果没有一个能一起坚持下来的朋友，估计早就想回去了。好搭子不仅能一起排队聊天，还能互相鼓励着走完这一天。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 总结：挺好玩的，也挺累的&lt;/h2&gt;
+&lt;p&gt;虽然人多、队长、走路累，但整体来说还是挺好玩的。&lt;/p&gt;
+&lt;p&gt;能在现场感受到那种热闹的氛围，看到喜欢的角色cos，和朋友一起度过一整天，这些经历都挺值得的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;下次如果还来，可能会提前做好更充分的准备——比如穿一双更舒服的鞋。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;总之，这趟五一星铁LAND嘉年华之旅，累是真的累，但快乐也是真的快乐。&lt;/p&gt;
+</content:encoded></item><item><title>把自己的角色雪涼做成 Codex 小宠物：YukiRyou</title><link>https://blog.yukiryou.top/posts/2026-05-05-making-codex-pet-yukiryou/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/2026-05-05-making-codex-pet-yukiryou/</guid><description>用 hatch-pet 把自己的角色雪涼（YukiRyou）做成 Codex 小宠物，从主形象、动作行、镜像、QA 到最终打包，顺便记录一下制作过程。</description><pubDate>Tue, 05 May 2026 13:40:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 先看成品：雪涼入住 Codex&lt;/h2&gt;
+&lt;p&gt;今天给 Codex 做了一只自己的小宠物，名字叫 &lt;strong&gt;YukiRyou&lt;/strong&gt;，中文名是 &lt;strong&gt;雪涼&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;先说明一下，YukiRyou 不是这次临时起的名字，而是我早就确认好的角色名。雪涼也是我专门找人设计过的原创角色，所以这次与其说是“随便生成一只宠物”，不如说是把自己的角色做成 Codex 里的小伙伴。&lt;/p&gt;
+&lt;p&gt;简单来说，就是把雪涼的角色头像参考图，转换成 Codex 可以识别的 8×9 动画宠物图集，最后安装到本地的 &lt;code&gt;~/.codex/pets/YukiRyou&lt;/code&gt; 里。&lt;/p&gt;
+&lt;p&gt;先放最终 QA 图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2026-05-05-yukiryou-pet-contact-sheet.xf6vjoZc.png&quot; alt=&quot;YukiRyou 动作预览&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;整体效果还挺满意的。&lt;/p&gt;
+&lt;p&gt;白发、蓝眼、浅蓝蝴蝶结这些属于雪涼的特征都保留下来了，而且没有变成太复杂的立绘，而是被压缩成了那种小小的、像素风偏 Codex 内置宠物的样子。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这下不只是 Codex 在陪我写代码了，连旁边的小宠物也变成自己的了。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 参考图：这是雪涼的形象&lt;/h2&gt;
+&lt;p&gt;这次用到的参考图是雪涼的头像：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2026-05-05-yukiryou-pet-reference.C3_ONsXE.jpeg&quot; alt=&quot;YukiRyou 参考图&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;这个角色本身的视觉特征很明确：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;白色长发&lt;/li&gt;
+&lt;li&gt;蓝色大眼睛&lt;/li&gt;
+&lt;li&gt;温柔一点的表情&lt;/li&gt;
+&lt;li&gt;浅蓝色装饰&lt;/li&gt;
+&lt;li&gt;整体偏安静、可爱&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;不过直接把头像图做成宠物是不行的。Codex 宠物需要的是小尺寸动画 sprite，不是高清头像，也不是完整二次元立绘。&lt;/p&gt;
+&lt;p&gt;所以第一步要做的不是“照着画一张更精致的图”，而是把它&lt;strong&gt;简化成一个能动的小型电子宠物形象&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;这一步我给它的方向大概是：在不丢掉雪涼识别点的前提下，把复杂角色设计简化成可动的小宠物。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;长白发、蓝眼睛、淡淡腮红、浅蓝蝴蝶结，小小一只，轮廓清楚，表情温和，适合放进 192×208 的格子里动起来。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 生成主形象：把雪涼压缩成小宠物&lt;/h2&gt;
+&lt;p&gt;生成主形象的时候，重点不是重新设计雪涼，而是做“宠物化”的转换。&lt;/p&gt;
+&lt;p&gt;换句话说，角色的名字、气质和关键特征都已经确定了，AI 需要做的是把它翻译成 Codex 小宠物能使用的视觉语言。&lt;/p&gt;
+&lt;p&gt;生成出来的主形象是这样的：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2026-05-05-yukiryou-pet-base.ClpOVYRK.png&quot; alt=&quot;YukiRyou 主形象&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;这个阶段最重要的是确定“本体设定”。&lt;/p&gt;
+&lt;p&gt;后面的所有动作都要以这张图为准，不能每一行都长得像不同角色。比如头发的轮廓、眼睛颜色、蝴蝶结、裙摆、整体比例，都要尽量锁死。&lt;/p&gt;
+&lt;p&gt;如果主形象阶段没定好，后面就会变成：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;idle 是一个人，running 是另一个人，failed 又突然换了发型。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;那就不是宠物动画了，那是角色池十连。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# hatch-pet 的工作流&lt;/h2&gt;
+&lt;p&gt;这次主要用的是刚装好的 &lt;code&gt;$hatch-pet&lt;/code&gt; 技能。&lt;/p&gt;
+&lt;p&gt;它的流程比普通生成一张图复杂很多，因为 Codex 宠物不是单图，而是一整套动画资源。&lt;/p&gt;
+&lt;p&gt;大概需要做这些东西：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;准备宠物 run 目录&lt;/li&gt;
+&lt;li&gt;根据参考图生成主形象&lt;/li&gt;
+&lt;li&gt;生成 9 行动作 strip&lt;/li&gt;
+&lt;li&gt;把每一行动作拆成单帧&lt;/li&gt;
+&lt;li&gt;合成最终 8×9 atlas&lt;/li&gt;
+&lt;li&gt;检查透明背景、帧数、空白格&lt;/li&gt;
+&lt;li&gt;生成 contact sheet 做人工检查&lt;/li&gt;
+&lt;li&gt;打包成 &lt;code&gt;pet.json&lt;/code&gt; + &lt;code&gt;spritesheet.webp&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;最终 Codex 需要的是这样的文件结构：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;~/.codex/pets/YukiRyou/
+  pet.json
+  spritesheet.webp
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;其中 &lt;code&gt;spritesheet.webp&lt;/code&gt; 是真正的动画图集，&lt;code&gt;pet.json&lt;/code&gt; 则告诉 Codex 这个宠物叫什么、描述是什么、图集文件在哪里。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 动作生成：不是一张图，是九行动画&lt;/h2&gt;
+&lt;p&gt;Codex 宠物的动作不是随便摆几个姿势就完事了，它有固定的状态行：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;idle&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;running-right&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;running-left&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;waving&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;jumping&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;failed&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;waiting&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;running&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;review&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;每一行还要求不同的帧数，比如 &lt;code&gt;running-right&lt;/code&gt; 是 8 帧，&lt;code&gt;waving&lt;/code&gt; 是 4 帧，&lt;code&gt;jumping&lt;/code&gt; 是 5 帧。&lt;/p&gt;
+&lt;p&gt;这一步我先让子代理生成了 &lt;code&gt;idle&lt;/code&gt; 和 &lt;code&gt;running-right&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;为什么先做这两个？&lt;/p&gt;
+&lt;p&gt;因为 &lt;code&gt;idle&lt;/code&gt; 能看出主形象稳不稳，&lt;code&gt;running-right&lt;/code&gt; 能看出动态的时候会不会变形。如果这两行都跑偏，后面一次性生成更多动作只会把问题扩大。&lt;/p&gt;
+&lt;p&gt;结果还不错：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;idle&lt;/code&gt;：6 帧，眨眼和呼吸都比较自然&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;running-right&lt;/code&gt;：8 帧，跑动方向明确，没有速度线、阴影、尘土这些多余效果&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;之后检查了一下 &lt;code&gt;running-right&lt;/code&gt;，发现 YukiRyou 没有文字、单侧标记、手持道具之类不能镜像的元素，所以 &lt;code&gt;running-left&lt;/code&gt; 就直接由右跑镜像生成了。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;能镜像就镜像，这种地方稳定比“重新发挥”更重要。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 子代理分工：让动作并行孵化&lt;/h2&gt;
+&lt;p&gt;后面的动作行就交给子代理并行做了。&lt;/p&gt;
+&lt;p&gt;这次一共委派了这些动作：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;idle&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;running-right&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;waving&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;jumping&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;failed&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;waiting&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;running&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;review&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;running-left&lt;/code&gt; 是我检查后从 &lt;code&gt;running-right&lt;/code&gt; 镜像出来的。&lt;/p&gt;
+&lt;p&gt;子代理每个只负责一件事：根据 prompt 和参考图生成对应的一行动作，然后返回原始生成图路径。真正登记到 run、修改 manifest、合成图集、打包这些操作，还是由主流程统一处理。&lt;/p&gt;
+&lt;p&gt;这样做的好处是不会让多个代理同时改同一个 &lt;code&gt;imagegen-jobs.json&lt;/code&gt;，否则很容易出现状态打架。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;并行可以，但 manifest 不能群聊。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;中间还遇到一个小插曲：我一开始并行登记 &lt;code&gt;idle&lt;/code&gt; 和 &lt;code&gt;running-right&lt;/code&gt;，结果 &lt;code&gt;running-right&lt;/code&gt; 成功了，&lt;code&gt;idle&lt;/code&gt; 那条没正常回传，看起来像是卡住了。后来改成单条命令依次登记，立刻就稳了。&lt;/p&gt;
+&lt;p&gt;果然，有些事情还是得慢慢来。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 最终图集：8×9 的 spritesheet&lt;/h2&gt;
+&lt;p&gt;所有动作完成之后，就进入最终孵化阶段。&lt;/p&gt;
+&lt;p&gt;脚本会把每一行动作拆成单帧，再合成一张 &lt;code&gt;1536×1872&lt;/code&gt; 的图集。每个格子是 &lt;code&gt;192×208&lt;/code&gt;，刚好 8 列、9 行。&lt;/p&gt;
+&lt;p&gt;最终图集长这样：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2026-05-05-yukiryou-pet-spritesheet.BP5XHvaY.webp&quot; alt=&quot;YukiRyou spritesheet&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;这张图看起来密密麻麻，但对 Codex 来说它就是 YukiRyou 的全部动作来源。&lt;/p&gt;
+&lt;p&gt;QA 检查结果也过了：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;spritesheet.webp&lt;/code&gt;：&lt;code&gt;1536×1872&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;格式：&lt;code&gt;WEBP&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;模式：&lt;code&gt;RGBA&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;validation.json&lt;/code&gt;：无 errors、无 warnings&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;review.json&lt;/code&gt;：无 errors、无 warnings&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;也就是说，透明背景、已使用格子、空白格、帧数这些都没问题。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 踩坑记录&lt;/h2&gt;
+&lt;p&gt;这次制作过程里也不是一路丝滑。&lt;/p&gt;
+&lt;h3&gt;1. 系统 Python 没有 Pillow&lt;/h3&gt;
+&lt;p&gt;一开始直接跑脚本，结果系统里的 &lt;code&gt;python&lt;/code&gt; 不存在，换成 &lt;code&gt;python3&lt;/code&gt; 之后又提示没有 &lt;code&gt;PIL&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;最后用 Codex 自带的 workspace runtime 解决了：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/Users/yukiryou/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这个 runtime 里有脚本需要的依赖，所以后续准备 run、抽帧、合成、校验都正常跑起来了。&lt;/p&gt;
+&lt;h3&gt;2. 绿底有轻微不均匀&lt;/h3&gt;
+&lt;p&gt;有几行动作生成时，子代理都提到绿色 chroma-key 背景有轻微 banding。&lt;/p&gt;
+&lt;p&gt;好在最终透明处理和 QA 没有报错，contact sheet 里也没有看到明显残留。这个问题算是有惊无险。&lt;/p&gt;
+&lt;h3&gt;3. 没有 ffmpeg&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;finalize_pet_run.py&lt;/code&gt; 默认会生成 mp4 预览视频，但本机环境里没有 &lt;code&gt;ffmpeg&lt;/code&gt;，所以第一次 finalize 在视频阶段失败了。&lt;/p&gt;
+&lt;p&gt;解决办法也很简单：加 &lt;code&gt;--skip-videos&lt;/code&gt; 重新跑。&lt;/p&gt;
+&lt;p&gt;contact sheet 已经能完整检查每一行动画，所以这次就先不强求 mp4 预览了。&lt;/p&gt;
+&lt;h3&gt;4. 写入 pets 目录需要权限&lt;/h3&gt;
+&lt;p&gt;最后一步要写入：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;~/.codex/pets/YukiRyou
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这个目录在当前 workspace 沙箱外，所以需要额外授权。授权之后就成功生成了：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/Users/yukiryou/.codex/pets/YukiRyou/pet.json
+/Users/yukiryou/.codex/pets/YukiRyou/spritesheet.webp
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 最终安装结果&lt;/h2&gt;
+&lt;p&gt;现在本地宠物目录里已经有了：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{
+  &quot;id&quot;: &quot;yukiryou&quot;,
+  &quot;displayName&quot;: &quot;YukiRyou&quot;,
+  &quot;description&quot;: &quot;Codex pet version of 雪涼 / YukiRyou, my original white-haired blue-eyed character.&quot;,
+  &quot;spritesheetPath&quot;: &quot;spritesheet.webp&quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这里的 &lt;code&gt;id&lt;/code&gt; 是内部使用的 slug，真正显示出来的名字还是 &lt;code&gt;YukiRyou&lt;/code&gt;。这意味着雪涼已经不只是停留在头像参考图里，而是变成了一个完整的 Codex 宠物包。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 碎碎念&lt;/h2&gt;
+&lt;p&gt;这次做下来最大的感受是：做宠物比想象中更像做一个小型游戏素材管线。&lt;/p&gt;
+&lt;p&gt;它不是“生成一张可爱图片”这么简单，而是要考虑：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;角色身份是否统一&lt;/li&gt;
+&lt;li&gt;每行动画帧数是否正确&lt;/li&gt;
+&lt;li&gt;背景能不能干净抠掉&lt;/li&gt;
+&lt;li&gt;透明格子是不是完全透明&lt;/li&gt;
+&lt;li&gt;动作有没有越界&lt;/li&gt;
+&lt;li&gt;最终图集能不能被 Codex 正确读取&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;不过最后看到 contact sheet 的时候还是挺开心的。&lt;/p&gt;
+&lt;p&gt;一排排小小的 YukiRyou 站在那里，会眨眼、会跑、会挥手、会等待、会失败趴下，突然就有一种“啊，真的做出来了”的感觉。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;以后写代码的时候旁边蹲着自己的小宠物，这事听起来就很有精神安慰。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;总之，YukiRyou 正式入住 Codex。&lt;/p&gt;
+&lt;p&gt;欢迎来到我的工作区。&lt;/p&gt;
+</content:encoded></item><item><title>五一准备去星铁 LAND 嘉年华：票是抢到了，人也快出发了</title><link>https://blog.yukiryou.top/posts/2026-04-30-star-rail-land-carnival/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/2026-04-30-star-rail-land-carnival/</guid><description>4 月 24 日抢到了星铁 LAND 嘉年华的票，五一准备去线下看看。至于为什么今天才更新，答案很简单：懒。</description><pubDate>Thu, 30 Apr 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 先说结论：五一去星铁 LAND 嘉年华&lt;/h2&gt;
+&lt;p&gt;五一假期终于要来了。&lt;/p&gt;
+&lt;p&gt;这次的计划也很简单：&lt;strong&gt;去星铁 LAND 嘉年华&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;作为一个平时就会被各种游戏活动、联动周边、线下展会吸引过去的人，看到星铁这次搞嘉年华，说完全不心动肯定是假的。毕竟平时在游戏里跑列车、刷材料、看剧情，突然有机会去线下看看，总感觉还是挺有仪式感的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;从屏幕里走到现实里，多少还是有点「开拓者线下集合」的感觉。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;当然，去之前最重要的一步不是查路线，也不是看攻略，而是——&lt;strong&gt;抢票&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 票是 4 月 24 日抢的&lt;/h2&gt;
+&lt;p&gt;票是在 &lt;strong&gt;4 月 24 日&lt;/strong&gt; 抢到的。&lt;/p&gt;
+&lt;p&gt;抢票这种事情，懂的都懂。打开页面之前想着「应该还好吧」，真到开抢的时候手指就开始不受控制地刷新，生怕慢一秒就只剩下空气。&lt;/p&gt;
+&lt;p&gt;好在最后还是顺利抢到了。&lt;/p&gt;
+&lt;p&gt;而且不是一张，是 &lt;strong&gt;2 张&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2026-04-30-star-rail-land-ticket.BGN1fqzp.jpeg&quot; alt=&quot;星铁 LAND 嘉年华订单截图&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;看到「恭喜你购买成功！」这几个字的时候，整个人都踏实了。&lt;/p&gt;
+&lt;p&gt;上海 · 星铁 LAND 2026，5 月 1 日，普通票，两张。&lt;/p&gt;
+&lt;p&gt;这不得浅浅炫耀一下？&lt;/p&gt;
+&lt;p&gt;抢到票那一刻的心情大概是：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;好，五一有地方去了。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;然后下一秒：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;等等，我是不是还得规划路线、查时间、准备东西？&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;于是这件事就被我非常自然地放进了「之后再说」文件夹里。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 为什么今天才更新？&lt;/h2&gt;
+&lt;p&gt;这个问题其实没有什么复杂原因。&lt;/p&gt;
+&lt;p&gt;不是因为忙到没时间写，也不是因为要憋一篇特别大的文章，更不是因为有什么神秘计划。&lt;/p&gt;
+&lt;p&gt;单纯就是——&lt;strong&gt;懒&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;4 月 24 日抢完票之后，本来当天就该写一篇「我抢到票了」的小记录。结果想着「明天再写吧」，明天又想着「反正离五一还早」，然后一拖就拖到了今天。&lt;/p&gt;
+&lt;p&gt;这种事情发生在我身上一点都不奇怪。&lt;/p&gt;
+&lt;p&gt;毕竟博客更新这件事，很多时候不是没有内容，而是内容已经在脑子里写完了，手还没开始动。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;大脑：这篇已经写好了。&lt;/p&gt;
+&lt;p&gt;键盘：我怎么不知道？&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;所以今天趁着假期前夕，还是把这篇补上。再不写，估计就要直接变成「游玩归来总结」了。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 出发前的小期待&lt;/h2&gt;
+&lt;p&gt;目前还没正式去现场，所以这篇先算是一个出发前记录。&lt;/p&gt;
+&lt;p&gt;我对这次嘉年华最期待的，大概有几件事：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;看看现场布置到底做得怎么样&lt;/li&gt;
+&lt;li&gt;拍点照片，留个纪念&lt;/li&gt;
+&lt;li&gt;看看有没有好玩的互动区域&lt;/li&gt;
+&lt;li&gt;如果有周边的话，顺手看看能不能带点什么回来&lt;/li&gt;
+&lt;li&gt;感受一下线下同好聚在一起的氛围&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;说实话，游戏线下活动最有意思的地方，有时候不只是官方准备了什么，而是你能在现场看到很多同样喜欢这个作品的人。&lt;/p&gt;
+&lt;p&gt;平时大家都隔着屏幕聊天、刷动态、看二创，线下活动就像是短暂地把这些热闹实体化了一下。&lt;/p&gt;
+&lt;p&gt;如果现场体验不错，应该会拍不少图。&lt;/p&gt;
+&lt;p&gt;如果现场体验一般，那也会写。&lt;/p&gt;
+&lt;p&gt;反正都去了，总得给这趟五一留点记录。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 后续会更新游玩后的文章&lt;/h2&gt;
+&lt;p&gt;这篇就先写到这里。&lt;/p&gt;
+&lt;p&gt;等五一实际去完星铁 LAND 嘉年华之后，会再单独写一篇游玩后的记录，到时候再聊聊现场体验、排队情况、活动内容、周边，以及有没有什么意外收获。&lt;/p&gt;
+&lt;p&gt;希望到时候不是一篇「排队排到怀疑人生」。&lt;/p&gt;
+&lt;p&gt;当然，就算真的排队排到怀疑人生，应该也挺有节目效果的。&lt;/p&gt;
+&lt;p&gt;总之，票已经有了，人也差不多该准备出发了。&lt;/p&gt;
+&lt;p&gt;五一见，星铁 LAND。&lt;/p&gt;
+</content:encoded></item><item><title>苹果 Apple Store 异环联动周边 &amp; 终末地插件近况</title><link>https://blog.yukiryou.top/posts/2026-04-08-endfield-daily/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/2026-04-08-endfield-daily/</guid><description>去 Apple Store 薅到了异环联动周边徽章，顺便聊聊最近终末地插件的开发近况和一些感想。</description><pubDate>Wed, 08 Apr 2026 20:30:00 GMT</pubDate><content:encoded>&lt;h2&gt;# Apple Store × 异环：周边到手了&lt;/h2&gt;
+&lt;p&gt;今天去 Apple Store 逛了一圈，顺手薅到了 &lt;strong&gt;异环（Hotta Studio）&lt;/strong&gt; 的联动周边——&lt;strong&gt;两枚角色徽章&lt;/strong&gt;！&lt;/p&gt;
+&lt;p&gt;异环是 Hotta Studio（就是做幻塔的那家）正在开发的新作，目前还没正式上线，但已经开始跟 Apple 搞线下联动了。不得不说宣发这块确实可以，游戏还在预热阶段就先把周边铺出来了，这波属于&lt;strong&gt;先用周边把你拿下，上线之后你不玩都不好意思&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;拿到手的是两枚圆形亚克力徽章，包装是黑色底卡配上「异环」的 logo，简洁利落。&lt;/p&gt;
+&lt;p&gt;徽章的印刷质量不错，闪粉底纹在光线下会微微反光，不是那种廉价感的平涂。边缘一圈英文字母环绕设计也挺有巧思的，整体观感比预期好。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;虽然游戏还没上线，但周边已经先入坑了。这算不算一种「超前消费」？&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;说实话对异环这款游戏还是挺好奇的。Hotta Studio 在幻塔上积累了不少经验（和教训），异环能做成什么样确实让人期待。至少从美术风格来看，角色设计的水准是在线的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;先收着，等游戏上了看看质量再决定要不要入坑。不过按照我的历史记录，大概率到时候还是会忍不住下载的。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 终末地插件近况：一个 issue 引发的连锁更新&lt;/h2&gt;
+&lt;p&gt;说完快乐的周边开箱，来聊一下终末地插件最近的开发进展。&lt;/p&gt;
+&lt;p&gt;插件发布之后用的人其实不算多，但前几天收到了&lt;strong&gt;一个 issue&lt;/strong&gt;——有人反馈 &lt;code&gt;#终末地帝江号&lt;/code&gt; 指令直接报错用不了。&lt;/p&gt;
+&lt;p&gt;一查才发现是 API 那边&lt;strong&gt;悄悄改了角色 ID 的格式&lt;/strong&gt;，从纯数字 ID 变成了 &lt;code&gt;chr_xxxx_name&lt;/code&gt; 这种前缀格式，老映射表直接废了，所有角色头像和名字都对不上号。花了一整个下午重写了 ID 映射系统，同时兼容新旧两种格式，房间排序和命名逻辑也顺手修了。&lt;/p&gt;
+&lt;p&gt;修完 bug 之后顺手看了一眼之前写的那些 UI……怎么说呢，越看越不满意。&lt;/p&gt;
+&lt;h3&gt;自己动手重构 UI&lt;/h3&gt;
+&lt;p&gt;说实话，我一直知道自己在 UI 设计这块是短板。v1.0 的渲染卡片基本就是&quot;数据罗列+能看就行&quot;的水平——功能是没问题，但视觉上真的很素，跟别的插件一比就显得特别「毛坯房」。&lt;/p&gt;
+&lt;p&gt;之前一直安慰自己&quot;功能优先，UI 以后再说&quot;，但既然都在改帝江号了，索性就趁这个机会把所有渲染模板&lt;strong&gt;全部推翻重做&lt;/strong&gt;了一遍。&lt;/p&gt;
+&lt;p&gt;重新搭了一套统一的视觉语言：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;深色背景 &lt;code&gt;#1a1d2e&lt;/code&gt; + 卡片 &lt;code&gt;#242840&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;网格布局、进度条、颜色判定系统&lt;/li&gt;
+&lt;li&gt;信息卡改成六段式：Header 标识栏、理智恢复进度条、4×2 统计网格、领地详情、活跃度进度条、干员展示网格&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;改完之后确实好看了不少——至少我自己觉得从「毛坯房」升级到了「简装房」的水平。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;但终究不是专业做 UI 的，怎么调都感觉差点意思。如果有&lt;strong&gt;擅长 UI 设计的朋友愿意来帮忙&lt;/strong&gt;，那真是太好了。一个人又写逻辑又调样式，实在是有点分身乏术。欢迎感兴趣的朋友来聊聊！&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;抽卡同步 524&lt;/h3&gt;
+&lt;p&gt;另外还修了一个比较隐蔽的问题。部分用户首次同步抽卡记录时会碰到 &lt;strong&gt;HTTP 524 超时&lt;/strong&gt;，排查之后发现是大数据量串行请求导致 API 网关超时。优化了请求策略和超时阈值之后基本解决了。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;自己测试的时候数据量太少、网络太好，&lt;strong&gt;永远测不出真实环境的问题。&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# v1.1 已发布&lt;/h2&gt;
+&lt;p&gt;总结一下这次更新的内容：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;✅ 修复帝江号角色 ID 映射崩溃&lt;/li&gt;
+&lt;li&gt;✅ 全部渲染模板 UI 重构&lt;/li&gt;
+&lt;li&gt;✅ &lt;code&gt;#终末地信息&lt;/code&gt; 指令增强（理智恢复计算、领地详情、干员网格等）&lt;/li&gt;
+&lt;li&gt;✅ 修复抽卡同步 524 超时&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;虽然用的人不多，但既然有人在用，那就得对得起这份信任。后续会继续慢慢迭代的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;当然速度可能取决于当天有没有在拉电线。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 碎碎念&lt;/h2&gt;
+&lt;p&gt;今天的写照就是：跑 Apple Store 薅异环周边，顺便改了插件 UI，还修了 bug。&lt;/p&gt;
+&lt;p&gt;看着桌上新到的徽章，再看看终端里刚跑通的新版渲染卡片，觉得这一天过得还挺充实的。&lt;/p&gt;
+&lt;p&gt;&lt;s&gt;异环上线之后大概率又要写一套新插件……到时候又是新一轮的循环。&lt;/s&gt;&lt;/p&gt;
+&lt;p&gt;&lt;s&gt;希望有人帮我做 UI。&lt;/s&gt;&lt;/p&gt;
+&lt;p&gt;晚安！🌙&lt;/p&gt;
+</content:encoded></item><item><title>新年开工：收收心该干活了</title><link>https://blog.yukiryou.top/posts/2026-03-05-back-to-work/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/2026-03-05-back-to-work/</guid><description>年后第一篇，聊聊最近的更新和接下来的计划，以及那些拖了好久的坑终于要填了。</description><pubDate>Thu, 05 Mar 2026 17:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：假期？什么假期？&lt;/h2&gt;
+&lt;p&gt;各位好，我回来了。&lt;/p&gt;
+&lt;p&gt;说起来这个&quot;新年假期&quot;过得是真的快。感觉前两天还在研究怎么让终末地的电线走得更整齐，一转眼就已经三月了。期间虽然嘴上说着&quot;放假要好好休息&quot;，但实际上手一直没停——只不过从拉电线变成了敲代码。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;所以到底算不算放过假？我自己也说不清。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;不过正经事还是要做的。趁着这篇文章，简单回顾一下最近折腾了些什么，以及接下来打算干什么。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 最近更新了什么&lt;/h2&gt;
+&lt;h3&gt;博客全站 Liquid Glass 效果&lt;/h3&gt;
+&lt;p&gt;这大概是最近最大的视觉变化了。&lt;/p&gt;
+&lt;p&gt;之前一直觉得博客的卡片样式太&quot;素&quot;了，就是普通的白色/深色背景卡片，放在那里中规中矩但毫无新意。刚好最近看到 Apple 在推 &lt;strong&gt;Liquid Glass&lt;/strong&gt; 的设计语言，那种透明毛玻璃的质感实在太好看了，于是就动手改了。&lt;/p&gt;
+&lt;p&gt;具体做了什么呢：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;全局 card-base 改造&lt;/strong&gt;：所有文章卡片、Profile 卡片、导航栏、归档面板统一换成半透明毛玻璃背景 + &lt;code&gt;backdrop-filter: blur(16px) saturate(180%)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;侧边栏组件&lt;/strong&gt;：音乐搜索、图片抽卡等小组件全部替换成了自制的 &lt;code&gt;LiquidGlassLayout&lt;/code&gt; 组件，带有鼠标响应式渐变边框和弹性缩放动画&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;全局音乐播放器&lt;/strong&gt;：迷你播放器、展开播放器、侧边收缩按钮三种状态都做了毛玻璃适配&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;字体可读性&lt;/strong&gt;：加了 &lt;code&gt;text-shadow&lt;/code&gt; 规则和强制文字颜色，确保在半透明背景上文字还是看得清的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;效果自己还是挺满意的，整个站点现在看起来通透了很多，有一种&quot;悬浮在背景上&quot;的感觉。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;当然代价是写 CSS 写到头秃。&lt;code&gt;backdrop-filter&lt;/code&gt; 的兼容性、暗色模式的颜色调整、文字在各种背景色下的可读性……每一个都够折腾半天的。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;Endfield Cloud 持续迭代&lt;/h3&gt;
+&lt;p&gt;年前的终末地助手一直在小幅更新：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;抽卡记录分析&lt;/strong&gt;：新增了抽卡记录同步和统计分析功能，可以看到 UP 命中率、平均抽数、总花费等数据。当时写这个功能的时候连 API 数据格式都要自己摸索，不过好在最终效果还不错&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;并发爬取修复&lt;/strong&gt;：之前发现多个爬取任务会同时运行导致 API 过载，加了任务锁机制确保同一时间只有一个爬取任务在跑&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Umami 统计修复&lt;/strong&gt;：博客的浏览量统计一直报&quot;统计不可用&quot;，排查了半天发现是 Umami Cloud API 偷偷改了 &lt;code&gt;compare&lt;/code&gt; 参数的格式，从 &lt;code&gt;false&lt;/code&gt; 变成了 &lt;code&gt;prev&lt;/code&gt;……&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;永远不要相信第三方 API 的向后兼容性。&lt;/strong&gt; 这是我今年学到的第一个教训。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;Yunzai Bot 终末地插件&lt;/h3&gt;
+&lt;p&gt;年前写的 QQ 机器人插件也在持续维护中，主要是跟着游戏版本更新做一些适配。群友用得还挺开心的，偶尔能收到&quot;签到提醒好评&quot;的反馈，也算是值了。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 接下来的计划&lt;/h2&gt;
+&lt;p&gt;说完&quot;做了什么&quot;，该聊聊&quot;打算做什么&quot;了。下面是我脑子里排队等着的项目/想法，按优先级排序：&lt;/p&gt;
+&lt;h3&gt;1. Setu Cloud v3 大重构&lt;/h3&gt;
+&lt;p&gt;这个是优先级最高的。&lt;/p&gt;
+&lt;p&gt;v2 系列已经运行了快四个月了，功能上虽然够用，但代码质量嘛……当时赶工写的，自己回头看都觉得有点头疼。v3 打算做一次比较彻底的重构：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;后端&lt;/strong&gt;：考虑从 Java 迁移到更轻量的方案（Cloudflare Workers 或者 Hono），降低服务器成本&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;前端&lt;/strong&gt;：UI 全面升级，可能会引入类似 Liquid Glass 的设计风格&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;图库系统&lt;/strong&gt;：增加标签搜索、图片分类、质量评分等功能&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;开放 API v3&lt;/strong&gt;：重新设计 API 接口，更规范、更灵活&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;2. 短链服务优化&lt;/h3&gt;
+&lt;p&gt;之前搭的 ki1.mom 短链服务基本功能已经齐了，但总觉得还能更好：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;加一个简单的统计面板，能看到各短链的访问趋势图&lt;/li&gt;
+&lt;li&gt;支持自定义短码（比如 ki1.mom/blog 直接跳到博客）&lt;/li&gt;
+&lt;li&gt;二维码生成功能&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;3. 博客功能完善&lt;/h3&gt;
+&lt;p&gt;这个博客本身也有一些想做的事情：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;搜索优化&lt;/strong&gt;：全文搜索体验还可以改进&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;国际化&lt;/strong&gt;：虽然大概率不会写英文文章，但万一呢？&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;性能优化&lt;/strong&gt;：背景图 + 毛玻璃效果在老设备上可能会比较吃力，需要做降级方案&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;4. 新项目？也许吧&lt;/h3&gt;
+&lt;p&gt;脑子里还有几个不太成熟的想法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;一个面向开发者的在线工具集合站（JSON 格式化、正则测试、颜色转换之类的）&lt;/li&gt;
+&lt;li&gt;给终末地做一个更完善的 Wiki 或数据库站点&lt;/li&gt;
+&lt;li&gt;&lt;s&gt;或者干脆写个自己的音乐播放器后端，不再依赖网易云 API&lt;/s&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;不过这些都是&quot;想法&quot;阶段，能不能动手还要看时间和精力。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;每次写计划的时候都豪情万丈，回头一看去年的计划，完成率大概 30%。希望今年能提高到 35%。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 碎碎念&lt;/h2&gt;
+&lt;p&gt;新的一年，除了写代码，也想在生活上做一些调整：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;少熬夜（每次都立这个 flag，然后每次都破功）&lt;/li&gt;
+&lt;li&gt;多运动（键盘手要保护好颈椎）&lt;/li&gt;
+&lt;li&gt;保持博客更新频率（争取每周至少一篇）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;总之，2026 年的折腾之旅正式开始了。既然假期已经结束，那就收收心，回到正轨上来吧。&lt;/p&gt;
+&lt;p&gt;感谢一直关注的各位！如果你有什么想看的内容或者想聊的话题，欢迎留言告诉我～&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;不过如果你找到我的时候我没回复，那我大概率在睡觉。&lt;/p&gt;
+&lt;/blockquote&gt;
+</content:encoded></item><item><title>给终末地写了个 QQ 机器人插件：踩坑实录</title><link>https://blog.yukiryou.top/posts/endfield-yunzai-plugin/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/endfield-yunzai-plugin/</guid><description>为 Yunzai Bot 开发终末地插件，对接自建后端 API，实现游戏数据查询、自动签到、体力提醒等功能。顺便记录一下开发过程中踩过的各种坑。</description><pubDate>Wed, 11 Feb 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：助手做完了，机器人也得安排上&lt;/h2&gt;
+&lt;p&gt;上一篇文章聊了 Endfield Cloud 网页端助手的开发进度，但光有网页版总觉得差点意思——毕竟大家平时泡在 QQ 群里的时间明显更多。&lt;/p&gt;
+&lt;p&gt;于是就有了这个想法：&lt;strong&gt;给 Yunzai Bot 写个终末地插件&lt;/strong&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;目标很简单：在群里发一条指令就能查角色、看体力、自动签到，不用打开浏览器也不用登录网页。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;说干就干，花了几天时间，插件的核心功能算是搓出来了。不过开发过程嘛……怎么说呢，&lt;strong&gt;踩的坑比写的代码还多&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 1. 功能一览：群里发条消息就能查&lt;/h2&gt;
+&lt;p&gt;先说成果。下面这张图是在 QQ 群里实际使用的效果——群友发了 &lt;code&gt;#终末地信息&lt;/code&gt;，机器人就会自动渲染并回复一张资料卡片：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/QQ_1770817585583.CRPTMZIp.png&quot; alt=&quot;QQ 群内实际使用效果&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;可以看到卡片里包含了等级、世界等级、干员数量、武器数量、理智、每日任务进度等关键数据，&lt;strong&gt;一条消息全搞定&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3&gt;账号绑定&lt;/h3&gt;
+&lt;p&gt;绑定是一切的基础。为了照顾不同用户的习惯，做了两种绑定方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Token 绑定&lt;/strong&gt;：&lt;code&gt;#终末地绑定 &amp;lt;token&amp;gt;&lt;/code&gt;，一步到位，适合会抓 Token 的玩家&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;手机验证码绑定&lt;/strong&gt;：&lt;code&gt;#终末地手机绑定 &amp;lt;手机号&amp;gt;&lt;/code&gt;，两步验证，小白也能用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;安全方面也做了考虑——群聊中自动提示去私聊绑定，万一有人不小心在群里发了 Token，插件会&lt;strong&gt;自动撤回消息&lt;/strong&gt;。毕竟 Token 泄露可不是闹着玩的。&lt;/p&gt;
+&lt;h3&gt;个人资料卡片&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;#终末地角色&lt;/code&gt; 会生成一张精美的个人概览卡片：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/002cbe3316a11b7cc951ad423eb07da7.H7uEWMvT.jpg&quot; alt=&quot;个人资料卡片&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;世界等级、干员数量、武器数量、文档数量、活跃天数、主线进度……该有的都有了。所有内容通过 &lt;strong&gt;Puppeteer 渲染成图片&lt;/strong&gt;，不是那种纯文本糊脸的效果。&lt;/p&gt;
+&lt;p&gt;当然，也支持 &lt;code&gt;#终末地角色 &amp;lt;名字&amp;gt;&lt;/code&gt; 查看指定角色的详细信息卡片（等级、专精、技能等）。&lt;/p&gt;
+&lt;h3&gt;帝江号（飞船基建）&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;#终末地帝江号&lt;/code&gt; 可以查看飞船的各房间状态：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/ffa855be68d688c485e5a183f9160132.DLUXvuhZ.jpg&quot; alt=&quot;帝江号基建总览&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;培养仓、线索交换、会客厅、制造仓、总控中枢——每个房间的&lt;strong&gt;等级和驻守角色&lt;/strong&gt;一目了然。谁在哪个房间摸鱼一眼就能看出来。&lt;/p&gt;
+&lt;h3&gt;领地基建&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;#终末地基建&lt;/code&gt; 展示领地采集进度与资源产出：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/5e9331306b14ed91dc5adcef740ea10c.DZuj699l.jpg&quot; alt=&quot;领地基建数据&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;各区域的定居点信息、收集进度（谜题、宝箱、殿质、黑箱）都做了可视化展示。不用进游戏就能掌握领地运营状况。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;⚠️ 顺便说一句，由于游戏内部分道具的数据结构还没有完全理解透，少部分数据的对应关系&lt;strong&gt;可能存在偏差&lt;/strong&gt;，不过绝大部分信息是准确的。后续随着对游戏数据的深入挖掘会持续修正。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;自动签到 &amp;amp; 提醒&lt;/h3&gt;
+&lt;p&gt;作为一个懒人，自动化才是核心竞争力：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;#终末地签到&lt;/code&gt;&lt;/strong&gt;：手动签到（虽然叫手动，但其实只是发条消息的事）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;自动签到&lt;/strong&gt;：每天定时自动为所有绑定用户签到，真正的&lt;strong&gt;躺平式签到&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;体力提醒&lt;/strong&gt;：每 30 分钟检查一次，体力快满了会私聊提醒你，再也不怕溢出&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;每日任务提醒&lt;/strong&gt;：每天晚上 9 点检查，活还没干完的会收到温馨催促&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;说实话，有了这套东西之后，打开游戏的频率反而更高了——因为被提醒得太勤了。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;管理与配置&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;支持 &lt;strong&gt;Guoba 面板&lt;/strong&gt;配置（API Key、API 地址、自动签到时间、体力阈值等）&lt;/li&gt;
+&lt;li&gt;自带&lt;strong&gt;自动更新&lt;/strong&gt;功能，不用手动 &lt;code&gt;git pull&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;#终末地帮助&lt;/code&gt;&lt;/strong&gt;：列出所有可用命令，防止忘记&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 2. 踩坑实录：开发血泪史&lt;/h2&gt;
+&lt;p&gt;功能做出来了是好事，但过程嘛……真的是一路踩坑。下面来盘点几个印象最深的。&lt;/p&gt;
+&lt;h3&gt;坑 1：Node.js 版本兼容性&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;症状&lt;/strong&gt;：插件一启动就报错，&lt;code&gt;import.meta.dirname&lt;/code&gt; 是 &lt;code&gt;undefined&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;我一开始用了 &lt;code&gt;import.meta.dirname&lt;/code&gt; 来获取当前目录路径，写起来确实很爽。但这玩意是 &lt;strong&gt;Node.js 21.2+ 才有的新特性&lt;/strong&gt;，问题是大部分跑 Yunzai Bot 的服务器都是老版本 Node……&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;教训&lt;/strong&gt;：写插件就别用太新的语法了，老老实实用兼容写法：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// ❌ 看起来很优雅，但跑不起来
+const dir = import.meta.dirname
+
+// ✅ 虽然丑了点，但到处都能跑
+import { fileURLToPath } from &apos;url&apos;
+import path from &apos;path&apos;
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这一改，&lt;code&gt;api.js&lt;/code&gt;、&lt;code&gt;data.js&lt;/code&gt;、&lt;code&gt;index.js&lt;/code&gt;、&lt;code&gt;apps/update.js&lt;/code&gt;、&lt;code&gt;guoba.support.js&lt;/code&gt; 全都得跟着改。&lt;/p&gt;
+&lt;h3&gt;坑 2：Puppeteer 渲染图片全裂了&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;症状&lt;/strong&gt;：渲染出来的卡片，角色头像、技能图标全是碎图标。&lt;/p&gt;
+&lt;p&gt;排查了半天，发现是图片 URL 带了&lt;strong&gt;阿里云 OSS 的图片处理参数&lt;/strong&gt; &lt;code&gt;x-oss-process=image/...&lt;/code&gt;，Puppeteer 加载这种处理后的 URL 会翻车。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决&lt;/strong&gt;：简单粗暴，直接返回原始 URL，不让 OSS 瞎处理：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;static resize(url) {
+    return url  // 就这么一行，问题就没了
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;有时候最简单的方案就是最好的方案。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;坑 3：CSS 样式时有时无&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;症状&lt;/strong&gt;：渲染出的图片&lt;strong&gt;有时候好好的，有时候就是纯白底+默认字体&lt;/strong&gt;，玄学问题。&lt;/p&gt;
+&lt;p&gt;这个坑排查了很久。最终发现是 &lt;code&gt;page.addStyleTag({ path: &apos;xxx.css&apos; })&lt;/code&gt; 的锅——这种注入外部 CSS 的方式存在&lt;strong&gt;时序问题&lt;/strong&gt;，页面可能在 CSS 加载完成前就渲染了。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决&lt;/strong&gt;：把所有 CSS 内联到 HTML 里，用 &lt;code&gt;&amp;lt;style&amp;gt;&lt;/code&gt; 标签直接嵌进去：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;const css = fs.readFileSync(&apos;resources/profile.css&apos;, &apos;utf8&apos;)
+const html = `&amp;lt;style&amp;gt;${css}&amp;lt;/style&amp;gt;&amp;lt;div class=&quot;card&quot;&amp;gt;...&amp;lt;/div&amp;gt;`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;从此以后再也没出过玄学样式问题。&lt;/p&gt;
+&lt;h3&gt;坑 4：并发刷新凭证的竞态条件&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;症状&lt;/strong&gt;：两个用户同时查询的时候，其中一个必定失败，报「凭证已失效」。&lt;/p&gt;
+&lt;p&gt;这是一个经典的&lt;strong&gt;竞态条件 (Race Condition)&lt;/strong&gt; 问题。两个用户的请求同时返回 401，触发两次并发的凭证刷新。第二次刷新会覆盖第一次的结果，导致第一个用户拿到的凭证其实已经被废掉了。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决&lt;/strong&gt;：实现了一个 &lt;strong&gt;per-bindingId 的刷新锁&lt;/strong&gt;，同一个 bindingId 的并发刷新只会执行一次，后续请求等待已有刷新完成即可：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;async requestWithAutoRefresh(path, method, body, bindingId) {
+    // 请求失败需要刷新时...
+    if (this._refreshLocks.has(bindingId)) {
+        // 已经有人在刷新了，排队等着就好
+        await this._refreshLocks.get(bindingId)
+    } else {
+        // 我先来！注册刷新任务
+        const p = this.refreshCred(bindingId)
+            .finally(() =&amp;gt; this._refreshLocks.delete(bindingId))
+        this._refreshLocks.set(bindingId, p)
+        await p
+    }
+    // 重试请求...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这个 bug 花了不少时间才定位到，但修好之后非常有成就感。&lt;/p&gt;
+&lt;h3&gt;坑 5：多账号查询数据窜台&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;症状&lt;/strong&gt;：用户 A 查自己的角色，看到的却是用户 B 的数据。这可太恐怖了。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：请求 API 的时候没传 &lt;code&gt;bindingId&lt;/code&gt; 参数。后端的 fallback 逻辑按 &lt;code&gt;external_user_id&lt;/code&gt; 查询，结果因为该字段都是 null，就按创建时间倒序返回了最新绑定的那个人的数据——也就是说&lt;strong&gt;永远返回最后一个绑定的用户的数据&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决&lt;/strong&gt;：所有 API 请求都显式带上 &lt;code&gt;bindingId&lt;/code&gt;：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// 修复前：你猜你看到的是谁的数据？
+api.requestWithAutoRefresh(&apos;/skland/endfield/card&apos;, &apos;GET&apos;)
+
+// 修复后：明确告诉后端我要谁的数据
+api.requestWithAutoRefresh(
+    `/skland/endfield/card?bindingId=${bindingId}`,
+    &apos;GET&apos;, null, bindingId
+)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;card.js&lt;/code&gt;、&lt;code&gt;spaceship.js&lt;/code&gt;、&lt;code&gt;domain.js&lt;/code&gt;、&lt;code&gt;reminder.js&lt;/code&gt;、&lt;code&gt;signin.js&lt;/code&gt; 全都得改。这种低级错误只能说&lt;strong&gt;测试不够充分&lt;/strong&gt;，引以为戒。&lt;/p&gt;
+&lt;h3&gt;坑 6：签到结果解析爆炸&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;症状&lt;/strong&gt;：签到其实成功了，但消息显示不正确；重复签到也没有正确提示。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：后端偷偷更新了返回格式，签到结果从嵌套对象 &lt;code&gt;{ award: [...] }&lt;/code&gt; 变成了直接返回字符串。客户端还在老实巴交地解析老格式，自然就炸了。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决&lt;/strong&gt;：兼容新格式，顺便做了下容错：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;const signinData = result.data
+if (typeof signinData === &apos;string&apos; &amp;amp;&amp;amp; signinData.includes(&apos;已签到&apos;)) {
+    return e.reply(&apos;📋 今日已签到&apos;)
+}
+let msg = `✅ ${signinData || &apos;签到成功！&apos;}`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;前后端联调最大的敌人不是 bug，是「接口改了但没告诉你」。&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 3. 技术栈&lt;/h2&gt;
+&lt;p&gt;简单列一下，方便感兴趣的朋友参考：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;模块&lt;/th&gt;
+&lt;th&gt;技术&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;运行环境&lt;/td&gt;
+&lt;td&gt;Yunzai Bot v3（Node.js）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;后端&lt;/td&gt;
+&lt;td&gt;自建 Endfield Cloud API（Spring Boot）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;渲染&lt;/td&gt;
+&lt;td&gt;Puppeteer（HTML/CSS → 图片）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;数据存储&lt;/td&gt;
+&lt;td&gt;JSON 文件（bindings.json）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;配置&lt;/td&gt;
+&lt;td&gt;YAML（config.yaml）+ Guoba 面板&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;依赖&lt;/td&gt;
+&lt;td&gt;node-fetch、yaml、puppeteer&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 总结&lt;/h2&gt;
+&lt;p&gt;回过头看，这个插件的功能其实不算复杂，但开发过程中踩的坑真的不少。&lt;strong&gt;Node.js 版本兼容、Puppeteer 渲染玄学、并发竞态、数据窜台&lt;/strong&gt;……每一个都够喝一壶的。&lt;/p&gt;
+&lt;p&gt;不过也正因为这些坑，才让我对 Yunzai Bot 插件开发有了更深的理解。尤其是并发刷新锁那个，感觉以后在别的项目里也能用上。&lt;/p&gt;
+&lt;p&gt;插件已经开源了，感兴趣的可以去 GitHub 看看：&lt;/p&gt;
+&lt;p&gt;::github{repo=&quot;yoshino-xiao7/endfield-suzuki-plugin&quot;}&lt;/p&gt;
+&lt;p&gt;如果你也在玩终末地，欢迎来试试。有 bug 或者建议直接提 issue 就好，虽然我修 bug 的速度可能取决于&lt;strong&gt;当天有没有在拉电线&lt;/strong&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;电线要拉，插件也要写。工业党的快乐，就是这么朴实无华且枯燥。&lt;/p&gt;
+&lt;/blockquote&gt;
+</content:encoded></item><item><title>手搓一个终末地助手：开发碎碎念与功能总结</title><link>https://blog.yukiryou.top/posts/endfield-cloud-dev/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/endfield-cloud-dev/</guid><description>既然沉迷终末地拉电线，不如顺手写个助手？深度解析 Endfield Cloud 目前的开发进度与功能亮点。</description><pubDate>Sun, 08 Feb 2026 12:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：当工业党开始写代码&lt;/h2&gt;
+&lt;p&gt;前段时间我也说过，自从《明日方舟：终末地》上线后，我就彻底沉迷于&lt;strong&gt;拉电线&lt;/strong&gt;不可自拔。每天醒来第一件事就是规划电力布局，研究怎么让生产线跑得更顺畅。&lt;/p&gt;
+&lt;p&gt;但这几天，我把这股劲头转移到了另一个地方——&lt;strong&gt;搓代码&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;既然官方的助手还有提升空间，不如自己动手丰衣足食？经过一番折腾，基于项目代码结构的深度分析，&lt;strong&gt;终末地云 (Endfield Cloud)&lt;/strong&gt; 的核心功能模块终于算是有了个样子。今天就来盘点一下，这个&quot;副业&quot;到底实现了哪些功能。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 1. 终末地游戏助手：核心业务&lt;/h2&gt;
+&lt;p&gt;这是本项目的重头戏，毕竟写在这个助手就是为了更舒服地看数据。目前的完成度已经非常高了，基本实现了与游戏数据的深度打通。&lt;/p&gt;
+&lt;h3&gt;沉浸式角色详情&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/268c65d5bb9e92b61f014ce634a1ff32.awUB032q.png&quot; alt=&quot;Endfield Cloud 角色详情与数据概览&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;我一直觉得，看角色数据不应该只是盯着冷冰冰的表格。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;全屏体验&lt;/strong&gt;：采用了单页面滚动设计，左侧是老婆（划掉）干员的精美立绘固定展示，右侧则是海量的数据面板。滑动的过程非常丝滑，体验感拉满。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;深度数值&lt;/strong&gt;：从等级、属性到潜能，基础数值一目了然。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;技能解析&lt;/strong&gt;：技能描述不再是纯文本，而是经过富文本渲染的，动态数值会有高亮显示，看起来非常直观。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/93d084c0a269575fe8aaf02b5c4868e3.cZbpo1gA.png&quot; alt=&quot;技能解析与数值面板&quot; /&gt;&lt;/p&gt;
+&lt;h3&gt;武器与装备系统&lt;/h3&gt;
+&lt;p&gt;这一块我花了挺多心思去还原游戏内的体验：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;武器&lt;/strong&gt;：不仅仅是看个名字，稀有度、精炼/突破等级、详细描述及武器技能全都做了展示。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;装备&lt;/strong&gt;：完整还原了游戏里的装备栏（护甲、护手、饰品）。最重要的是，&lt;strong&gt;套装效果&lt;/strong&gt;和属性加成也能直接看到，不用再凭记忆去凑套装了。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;战术道具&lt;/strong&gt;：展示携带的战术道具及其主动/被动效果，细节拉满。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;日常运营工具&lt;/h3&gt;
+&lt;p&gt;作为一个&quot;懒人&quot;，自动化工具是必不可少的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;一键签到&lt;/strong&gt;：支持森空岛自动签到功能，每日获取游戏奖励（这才是最实用的！）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;资源监控&lt;/strong&gt;：实时查看体力值 (Stamina)、战令等级 (Battle Pass) 和每日活跃度，不用上游戏也能知道体力溢出没。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;数据概览&lt;/strong&gt;：干员、武器和成就的收集统计，看着进度条一点点涨满，强迫症表示很舒适。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 2. 森空岛账号管理：连接一切&lt;/h2&gt;
+&lt;p&gt;为了拿到上面的数据，和 Eagle/Hypergryph 账号体系的连接与鉴权是基础。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;多方式绑定&lt;/strong&gt;：支持密码、验证码、Token 等多种方式进行森空岛账号绑定，总有一种适合你。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;凭证维护&lt;/strong&gt;：为了实现&quot;长期免登录&quot;，系统支持自动刷新 Credential。绑定一次，之后就不用管了，确确实实的&quot;无感体验&quot;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;状态监控&lt;/strong&gt;：实时展示绑定状态 (UID、绑定时间、凭证有效性)，出了问题也能第一时间知道。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;多角色支持&lt;/strong&gt;：自动识别账号下绑定的所有游戏角色（终末地、明日方舟等），不用切号切来切去。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 3. 用户体验：要硬核也要好看&lt;/h2&gt;
+&lt;p&gt;在 UI/UX 上，我还是坚持了自己的审美标准。&lt;/p&gt;
+&lt;h3&gt;视觉风格&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;终末地主题&lt;/strong&gt;：既然是终末地的助手，风格自然要统一。全站采用&lt;strong&gt;深色科技风 (Sci-Fi Dark Mode)&lt;/strong&gt;，大量运用&lt;strong&gt;玻璃拟态 (Glassmorphism)&lt;/strong&gt; 和霓虹光效。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;动态稀有度&lt;/strong&gt;：所有游戏物品（武器、装备）均带有基于稀有度的动态边框光效（金/紫/蓝等）。看着那一圈金光，心情都变好了。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;交互细节&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;响应式设计&lt;/strong&gt;：针对手机端专门优化了布局。比如装备栏在手机上是单列展示，模态框也是全屏的，操作体验跟原生 App 没什么区别。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Loading 状态&lt;/strong&gt;：全站关键数据加载均带有优雅的 Loading 状态和过渡动画，拒绝生硬的白屏等待。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 4. 用户中心与基础服务&lt;/h2&gt;
+&lt;p&gt;这部分虽然枯燥，但却是系统稳定运行的基石。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;个性化&lt;/strong&gt;：集成了一个好用的头像裁剪工具，支持缩放、旋转，想怎么截就怎么截。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;API 开放&lt;/strong&gt;：甚至还做了一个 &lt;code&gt;ApiKeysPage&lt;/code&gt;，提供开发者 API Key 的生成与管理功能。虽然现在可能只有我自己在用，但梦想还是要有的嘛。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;基础服务&lt;/strong&gt;：完整的注册登录流程，加上 Toast 消息提示系统，操作成功还是失败都有即时反馈。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 总结&lt;/h2&gt;
+&lt;p&gt;总的来说，目前的 Endfield Cloud 已经具备了一个成熟游戏助手的所有关键要素。从账号绑定到深度的游戏数据展示，再到移动端体验，基本达到了我预期的效果。&lt;/p&gt;
+&lt;p&gt;接下来？也许会继续优化一下性能，或者看看能不能挖掘出更多有趣的数据玩法。&lt;/p&gt;
+&lt;p&gt;反正，&lt;strong&gt;电线要拉，代码也要写&lt;/strong&gt;。工业党的快乐，就是这么朴实无华。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;(本文图片均为开发中截图，实际效果以上线版本为准)&lt;/em&gt;&lt;/p&gt;
+</content:encoded></item><item><title>拉电线上瘾与备案二号：一周碎碎念</title><link>https://blog.yukiryou.top/posts/2026-02-04-daily/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/2026-02-04-daily/</guid><description>最近沉迷明日方舟终末地拉电线，顺便聊聊第二个备案域名 suzuki.ink 下来了。</description><pubDate>Wed, 04 Feb 2026 23:52:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 拉电线上瘾了&lt;/h2&gt;
+&lt;p&gt;最近日子过得比较&quot;充实&quot;——充实在《明日方舟：终末地》里。&lt;/p&gt;
+&lt;p&gt;自从终末地上线之后，我就沉迷于一件事：&lt;strong&gt;拉电线&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;不知道有没有人和我一样，在游戏里可以花几个小时规划电力布局，研究怎么让电线走得最省材料、最整齐、最合理。虽然说游戏本身内容很丰富，但我偏偏对这种&quot;基建规划&quot;类的玩法有一种近乎变态的执念。&lt;/p&gt;
+&lt;p&gt;于是这周的生活就是这样的：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;起床 → 拉电线&lt;/li&gt;
+&lt;li&gt;吃饭 → 拉电线&lt;/li&gt;
+&lt;li&gt;睡前 → 再拉一会儿电线&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;结果就是&lt;strong&gt;这周完全没做什么新鲜事&lt;/strong&gt;，博客也鸽了好几天，代码也没怎么写。&lt;/p&gt;
+&lt;p&gt;但是快乐就完事了，不是吗？（心虚）&lt;/p&gt;
+&lt;p&gt;放几张最近的游戏截图，感受一下我的&quot;基建成果&quot;：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/c013b1e6a7132cb6335979c75e66a818.BkDYTZOj.jpg&quot; alt=&quot;武陵城主界面&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/9d86b85df16f857c04b303a61cbfd496.CEnsi7dX.jpg&quot; alt=&quot;四号谷地 - 地区建设等级12&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/53923c1d3b3c9208be3f0de58fb3f3aa.giR47E-e.jpg&quot; alt=&quot;武陵 - 地区建设等级6&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 备案二号：suzuki.ink&lt;/h2&gt;
+&lt;p&gt;说点正经事。&lt;/p&gt;
+&lt;p&gt;之前提交的第二个备案域名终于下来了：&lt;strong&gt;suzuki.ink&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;说实话，当初申请这个域名纯粹是看它便宜，而且 &lt;code&gt;.ink&lt;/code&gt; 后缀挺有意思的。但真正到手之后，我反而开始犯愁了——&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这域名……用来干啥好？&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;目前脑子里有几个想法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;做一个纯静态的个人主页？&lt;/li&gt;
+&lt;li&gt;搞一个小工具站点？&lt;/li&gt;
+&lt;li&gt;或者就挂个&quot;施工中&quot;页面，等想好了再动工？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;暂时还没想出来特别满意的方案，如果你们有什么建议，欢迎在评论区告诉我！&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 新手办到货！&lt;/h2&gt;
+&lt;p&gt;最近还到了一个新手办——&lt;strong&gt;遐蝶&lt;/strong&gt;！&lt;/p&gt;
+&lt;p&gt;这是崩铁里超美的角色，紫色的长发配上优雅的竖琴造型真的太仙了。手办的做工非常精致，竖琴的细节、裙摆的飘逸感都很到位。&lt;/p&gt;
+&lt;p&gt;放一张实拍：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2b6077827e8668f433b379fed70af269.BxehEzKh.png&quot; alt=&quot;遐蝶手办&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;摆在桌上看着心情都变好了～&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 碎碎念&lt;/h2&gt;
+&lt;p&gt;农历新年快过完了，感觉假期还没开始就要结束了。&lt;/p&gt;
+&lt;p&gt;明天开始可能需要收收心，把拉电线的时间分一点出来写代码、更新博客。&lt;/p&gt;
+&lt;p&gt;不过也可能……&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;再拉一会儿电线也不是不行。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;就这样，今天的流水账到此结束。各位晚安！🌙&lt;/p&gt;
+</content:encoded></item><item><title>从零构建短链服务：Cloudflare Worker + D1 实践</title><link>https://blog.yukiryou.top/posts/shortener/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/shortener/</guid><description>使用 Cloudflare Serverless 技术栈打造低成本、高性能的短链服务</description><pubDate>Wed, 21 Jan 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;起因&lt;/h1&gt;
+&lt;p&gt;一直想拥有自己的短链服务，像 bit.ly 那样简洁的链接看起来既专业又美观。正好最近在探索 Cloudflare 的 Serverless 生态，发现 Worker + D1 的组合简直是天作之合——边缘计算 + SQLite 数据库，零服务器成本就能搞定！&lt;/p&gt;
+&lt;p&gt;于是花了几天时间，从零撸了一个完整的短链服务，支持公开创建、管理后台、访问统计等功能。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;在线体验：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;短链服务：&lt;a href=&quot;https://ki1.mom&quot;&gt;ki1.mom&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;管理后台：&lt;a href=&quot;https://dl.yukiryou.icu&quot;&gt;dl.yukiryou.icu&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h1&gt;功能一览&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;公开创建&lt;/strong&gt; - 无需注册，输入长链接即可生成短链&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;管理后台&lt;/strong&gt; - 管理员可查看、编辑、删除所有链接&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;访问统计&lt;/strong&gt; - 记录访问 IP、来源、地区等信息&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;过期设置&lt;/strong&gt; - 支持为短链设置有效期&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;自动部署&lt;/strong&gt; - GitHub Actions + EdgeOne Pages 全自动 CI/CD&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h1&gt;技术架构&lt;/h1&gt;
+&lt;p&gt;整体架构非常简洁：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;用户访问 ki1.mom/abc
+        ↓
+  Cloudflare Worker
+        ↓
+    Cloudflare D1
+        ↓
+  301 重定向到目标
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;技术选型&lt;/h3&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;技术&lt;/th&gt;
+&lt;th&gt;选型理由&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Cloudflare Worker&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;全球边缘节点、冷启动 &amp;lt;5ms、免费额度慷慨&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Cloudflare D1&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;原生集成、SQLite 语法、无需额外配置&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Vue 3 + Vite&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;开发体验好、构建速度快&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;EdgeOne Pages&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;国内访问快、自动 CI/CD&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr /&gt;
+&lt;h1&gt;数据库设计&lt;/h1&gt;
+&lt;p&gt;D1 使用 SQLite 语法，设计了两张表：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;-- 短链表
+CREATE TABLE links (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT UNIQUE NOT NULL,        -- 短码
+    original_url TEXT NOT NULL,       -- 原始 URL
+    title TEXT,                        -- 链接标题
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME,              -- 过期时间
+    is_active INTEGER DEFAULT 1       -- 是否启用
+);
+
+-- 访问记录表
+CREATE TABLE visits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    link_id INTEGER NOT NULL,
+    ip_address TEXT,
+    user_agent TEXT,
+    referer TEXT,
+    country TEXT,
+    visited_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (link_id) REFERENCES links(id)
+);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;加了几个索引优化查询性能：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;CREATE INDEX idx_links_code ON links(code);
+CREATE INDEX idx_visits_link_id ON visits(link_id);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h1&gt;核心实现&lt;/h1&gt;
+&lt;h3&gt;路由设计&lt;/h3&gt;
+&lt;p&gt;Worker 的路由分为三层：API 接口、短链跳转、根路径重定向。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;export async function handleRequest(request: Request, env: Env): Promise&amp;lt;Response&amp;gt; {
+    const url = new URL(request.url);
+    const path = url.pathname;
+
+    // API 路由
+    if (path.startsWith(&apos;/api/&apos;)) {
+        return handleApi(request, env, path);
+    }
+
+    // 根路径 → 管理后台
+    if (path === &apos;/&apos;) {
+        return Response.redirect(&apos;https://dl.yukiryou.icu&apos;, 302);
+    }
+
+    // 短链跳转
+    const code = path.slice(1);
+    if (code &amp;amp;&amp;amp; !code.includes(&apos;/&apos;)) {
+        return handleRedirect(code, request, env);
+    }
+
+    return new Response(&apos;Not Found&apos;, { status: 404 });
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;短链跳转&lt;/h3&gt;
+&lt;p&gt;跳转逻辑很简单：查数据库 → 检查过期 → 记录访问 → 301 重定向。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;export async function handleRedirect(code: string, request: Request, env: Env, ctx: ExecutionContext): Promise&amp;lt;Response&amp;gt; {
+    const link = await env.DB.prepare(
+        &apos;SELECT * FROM links WHERE code = ? AND is_active = 1&apos;
+    ).bind(code).first&amp;lt;Link&amp;gt;();
+
+    if (!link) {
+        return new Response(&apos;Link not found&apos;, { status: 404 });
+    }
+
+    if (link.expires_at &amp;amp;&amp;amp; new Date(link.expires_at) &amp;lt; new Date()) {
+        return new Response(&apos;Link expired&apos;, { status: 410 });
+    }
+
+    // 异步记录访问，不阻塞响应
+    ctx.waitUntil(recordVisit(link.id, request, env));
+
+    return Response.redirect(link.original_url, 301);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;关键点是用 &lt;code&gt;ctx.waitUntil()&lt;/code&gt; 异步记录访问，不影响跳转速度。&lt;/p&gt;
+&lt;h3&gt;访问统计&lt;/h3&gt;
+&lt;p&gt;利用 Cloudflare 自带的请求头获取地理信息：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;async function recordVisit(linkId: number, request: Request, env: Env): Promise&amp;lt;void&amp;gt; {
+    const ip = request.headers.get(&apos;CF-Connecting-IP&apos;) || &apos;&apos;;
+    const country = request.headers.get(&apos;CF-IPCountry&apos;) || &apos;&apos;;
+    const userAgent = request.headers.get(&apos;User-Agent&apos;) || &apos;&apos;;
+    const referer = request.headers.get(&apos;Referer&apos;) || &apos;&apos;;
+
+    await env.DB.prepare(`
+        INSERT INTO visits (link_id, ip_address, user_agent, referer, country)
+        VALUES (?, ?, ?, ?, ?)
+    `).bind(linkId, ip, userAgent, referer, country).run();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h1&gt;前端界面&lt;/h1&gt;
+&lt;p&gt;采用了粉色玻璃态（Glassmorphism）设计，配合随机图片背景：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;:root {
+  --primary: #f472b6;
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.18);
+}
+
+.card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 1rem;
+}
+
+body {
+  background: url(&apos;https://img.yukiryou.icu/pic?img=ua&apos;) no-repeat center center fixed;
+  background-size: cover;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;效果挺好看的，配合我的随机图 API，每次刷新都是不同的背景图～&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1&gt;CI/CD 配置&lt;/h1&gt;
+&lt;h3&gt;Worker 自动部署&lt;/h3&gt;
+&lt;p&gt;使用 GitHub Actions + Wrangler 自动部署：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;name: Deploy Worker
+
+on:
+  push:
+    branches: [main]
+    paths: [&apos;worker/**&apos;]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: &apos;20&apos;
+      - run: npm install
+        working-directory: ./worker
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: ./worker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;前端自动部署&lt;/h3&gt;
+&lt;p&gt;前端托管在 EdgeOne Pages，绑定 GitHub 仓库后会自动监听推送并部署，无需额外配置。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1&gt;踩坑记录&lt;/h1&gt;
+&lt;h3&gt;CORS 跨域&lt;/h3&gt;
+&lt;p&gt;前端调 API 时遇到 CORS 错误，在 Worker 里加响应头解决：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;const corsHeaders = {
+    &apos;Access-Control-Allow-Origin&apos;: &apos;*&apos;,
+    &apos;Access-Control-Allow-Methods&apos;: &apos;GET, POST, PUT, DELETE, OPTIONS&apos;,
+    &apos;Access-Control-Allow-Headers&apos;: &apos;Content-Type, Authorization&apos;,
+};
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;D1 表不存在&lt;/h3&gt;
+&lt;p&gt;首次部署后发现表不存在，需要手动执行迁移：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npx wrangler d1 execute url-shortener-db --remote --file=./schema.sql
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;生产环境 API 地址&lt;/h3&gt;
+&lt;p&gt;开发时用的代理，生产环境要用真实地址，用 Vite 环境变量区分：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;const API_URL = import.meta.env.PROD ? &apos;https://ki1.mom&apos; : &apos;&apos;;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h1&gt;性能数据&lt;/h1&gt;
+&lt;p&gt;简单测了一下，性能非常满意：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;指标&lt;/th&gt;
+&lt;th&gt;数值&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;冷启动时间&lt;/td&gt;
+&lt;td&gt;&amp;lt; 5ms&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;跳转响应时间&lt;/td&gt;
+&lt;td&gt;&amp;lt; 50ms&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;D1 查询延迟&lt;/td&gt;
+&lt;td&gt;&amp;lt; 10ms&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr /&gt;
+&lt;h1&gt;总结&lt;/h1&gt;
+&lt;p&gt;这个项目让我对 Cloudflare 的 Serverless 生态有了更深的理解：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Worker&lt;/strong&gt; 冷启动极快，全球边缘节点意味着用户无论在哪都能快速访问&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;D1&lt;/strong&gt; 原生集成 Worker，SQLite 语法上手无门槛&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;成本为零&lt;/strong&gt; - 在免费额度内实现了企业级功能&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;整体来说是个非常适合个人开发者的技术栈，推荐给大家！&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;strong&gt;相关链接：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;项目地址：&lt;a href=&quot;https://github.com/yoshino-xiao7/url-shortener&quot;&gt;GitHub&lt;/a&gt;（Fork 仓库后按照 README.md 进行修改部署即可食用）&lt;/li&gt;
+&lt;li&gt;短链服务：&lt;a href=&quot;https://ki1.mom&quot;&gt;ki1.mom&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;管理后台：&lt;a href=&quot;https://dl.yukiryou.icu&quot;&gt;dl.yukiryou.icu&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content:encoded></item><item><title>安卓换苹果：iPhone 17 标准版入坑实录</title><link>https://blog.yukiryou.top/posts/iphone17/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/iphone17/</guid><description>最近换了iPhone 17标准版，感觉苹果和安卓还是有很大区别的，聊聊真心话。</description><pubDate>Tue, 13 Jan 2026 23:11:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 序：拖延症晚期的开箱&lt;/h2&gt;
+&lt;p&gt;手机其实已经到手用了两三周了，因为有点懒，这篇文章一直拖到现在才动笔。毕竟是第一台苹果，还是想留点文字记录一下。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 为什么选了 iPhone 17？&lt;/h2&gt;
+&lt;p&gt;作为一直以来的安卓老用户，这次换机主要盯上了这几点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;标准版终于等到了 120Hz 高刷&lt;/strong&gt;
+这对有些人来说可能无所谓，但对我来说是“刚需”。我一直用安卓，习惯了常驻高刷，回头看 60Hz 的屏幕真的觉得卡得不行。小时候玩手机觉得 60 帧很顺、30 帧才卡，现在眼睛被养刁了，对帧率的要求是越来越高。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;256G 存储起售，不再挤牙膏&lt;/strong&gt;
+比起去年的 16 标准版，17 这次起步就是 256G，而且首发价格跟 16 Pro 的 128G 现价差不多。秉承着“买新不买旧”的原则，冲了。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;想给苹果相机“祛祛魅”&lt;/strong&gt;
+网上老说苹果相机怎么怎么好、怎么怎么真实。我以前用的安卓也不是那种顶级旗舰，总觉得拍照表现忽好忽坏的，所以这次干脆亲身试试，看看 iPhone 到底有没有传说中那么神。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 深度体验：不叠甲，直接说槽点&lt;/h2&gt;
+&lt;p&gt;既然现在我是苹果、安卓双持（手头三台机子，苹果当主力），我觉得我有资格评价一下了，这里就不叠甲了，直接说真话。&lt;/p&gt;
+&lt;h3&gt;1. 系统真的没想象中那么好用&lt;/h3&gt;
+&lt;p&gt;首先就是&lt;strong&gt;不方便&lt;/strong&gt;。游戏数据不互通、页面没有小窗模式、应用不能分身……这些安卓标配的功能在 iOS 上全都没有。
+硬要说的话，苹果给我的感觉更多是“&lt;strong&gt;轻便感&lt;/strong&gt;” ，而不是功能上的强大。&lt;/p&gt;
+&lt;h3&gt;2. 灵动岛：安卓“徒弟”反而做得更好？&lt;/h3&gt;
+&lt;p&gt;我之前一直用 vivo，说实话，我知道 vivo 很多地方在借鉴苹果。但就拿“灵动岛”来说，vivo 这种国产厂商做得更细致。比如验证码可以直接上岛提醒，交互做得比苹果本尊还要顺手。&lt;/p&gt;
+&lt;h3&gt;3. 输入法：一言难尽&lt;/h3&gt;
+&lt;p&gt;苹果的原生输入法真的不好用。而且最难受的是，如果你习惯了安卓的逻辑，即便你在 iPhone 上装了第三方输入法，也会被系统“同化”得奇奇怪怪，变得不那么好用。&lt;/p&gt;
+&lt;h3&gt;4. 关于相机：神话破灭？&lt;/h3&gt;
+&lt;p&gt;这是我最想弄明白的一点。这段时间用下来，我的结论是：&lt;strong&gt;比安卓中低端机强，但没那么惊艳。&lt;/strong&gt;
+至于比起安卓高端旗舰，我只能说没感觉到别人吹的那种领先感。苹果的原相机非常“素”，不够专业，甚至得下一些第三方 App 来辅助拍照。对于日常随手拍的人来说，和安卓没啥区别；想拍大片的话，感觉也就那样。不过我只评价标准版，我知道标准版是阉割镜头。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 随手拍拍&lt;/h2&gt;
+&lt;p&gt;这里放两张最近拍的照片，大家可以自己感受一下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/e5f143ebf52a62354452227b4d37e56c.DkDJ62aa.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/df47bfb496974fa5fa6933b68b33b502.Dahmp-5G.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;过多的就不说了，想到什么说什么。总的来说，iPhone 17 是好用的，但也没必要把它神话。&lt;/p&gt;
+</content:encoded></item><item><title>Setu Cloud v2.5 音乐功能重磅上线！</title><link>https://blog.yukiryou.top/posts/setu_cloud_v25/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/setu_cloud_v25/</guid><description>全新网易云音乐集成功能，打造一站式娱乐控制台</description><pubDate>Sat, 27 Dec 2025 22:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;序言&lt;/h1&gt;
+&lt;p&gt;距离 Setu Cloud v2 正式上线已经过去两周了，这段时间收到了很多小伙伴的反馈和建议。在保持原有图片 API 服务稳定运行的基础上，我们决定做一些&quot;不务正业&quot;的事情——给控制台加入音乐播放功能！&lt;/p&gt;
+&lt;p&gt;没错，现在你可以一边管理 API Key，一边听着网易云音乐放松心情了。这次更新不仅仅是简单的功能堆砌，而是从用户体验出发，打造了一套完整的音乐管理系统。&lt;/p&gt;
+&lt;p&gt;Setu Cloud 地址: &lt;a href=&quot;https://cloud.yukiryou.icu/&quot;&gt;https://cloud.yukiryou.icu/&lt;/a&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1&gt;核心更新&lt;/h1&gt;
+&lt;h3&gt;1. 全局音乐播放器&lt;/h3&gt;
+&lt;p&gt;我们在控制台底部集成了一个&lt;strong&gt;全局音乐播放器&lt;/strong&gt;，无论你切换到哪个页面，音乐都不会停止。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;主要特性：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;固定底部设计&lt;/strong&gt;：采用毛玻璃效果，与整体 UI 风格完美融合&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;展开/收缩模式&lt;/strong&gt;：可一键切换简洁/完整模式，节省屏幕空间&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;完整播放控制&lt;/strong&gt;：上一曲、播放/暂停、下一曲、播放模式切换&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;实时进度条&lt;/strong&gt;：可拖拽跳转到任意时间点&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;音量调节&lt;/strong&gt;：支持静音和音量滑块控制&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;歌词展示&lt;/strong&gt;：点击展开歌词面板，支持点击跳转、自动滚动跟踪&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;预览&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2025-12-27-22-05-32-image.4ZbK4EV4.png&quot; alt=&quot;播放器&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3&gt;2. 音乐搜索与播放&lt;/h3&gt;
+&lt;p&gt;集成了网易云音乐 API，可以搜索海量曲库并在线播放。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;核心功能：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;智能搜索&lt;/strong&gt;：支持歌曲名、歌手、专辑全文检索&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;快速操作&lt;/strong&gt;：每首歌提供 4 个快捷按钮
+&lt;ul&gt;
+&lt;li&gt;🎵 &lt;strong&gt;播放&lt;/strong&gt;：立即播放并加入播放列表&lt;/li&gt;
+&lt;li&gt;📋 &lt;strong&gt;添加到播放列表&lt;/strong&gt;：仅添加不播放，适合批量收藏&lt;/li&gt;
+&lt;li&gt;➕ &lt;strong&gt;添加到歌单&lt;/strong&gt;：保存到自定义歌单&lt;/li&gt;
+&lt;li&gt;⬇️ &lt;strong&gt;下载&lt;/strong&gt;：一键下载高品质音频&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;字段映射优化&lt;/strong&gt;：完美适配网易云 API 返回格式&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;超时处理&lt;/strong&gt;：30 秒超时配置，避免长时间等待&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;预览&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2025-12-27-22-06-11-image.BBijBQIT.png&quot; alt=&quot;音乐搜索&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3&gt;3. 我的歌单&lt;/h3&gt;
+&lt;p&gt;支持创建自定义歌单，管理你的音乐收藏。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;歌单管理功能：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;创建歌单&lt;/strong&gt;：自定义名称、描述、封面 URL&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;编辑歌单&lt;/strong&gt;：随时修改歌单信息&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;播放模式&lt;/strong&gt;：支持 4 种播放模式
+&lt;ul&gt;
+&lt;li&gt;顺序播放：按顺序播放到最后停止&lt;/li&gt;
+&lt;li&gt;随机播放：随机选择下一首&lt;/li&gt;
+&lt;li&gt;列表循环：播放完自动回到第一首&lt;/li&gt;
+&lt;li&gt;单曲循环：重复播放当前歌曲&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;歌曲排序&lt;/strong&gt;：拖拽调整播放顺序&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;一键播放&lt;/strong&gt;：直接播放整个歌单&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;公开/私密&lt;/strong&gt;：控制歌单是否对外可见&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;预览&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2025-12-27-22-06-33-image.Dt0Kk-vO.png&quot; alt=&quot;我的歌单&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3&gt;4. 播放历史&lt;/h3&gt;
+&lt;p&gt;自动记录播放历史，最多保留 50 条记录。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;历史功能亮点：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;智能时间显示&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;1 分钟内 → &quot;刚刚&quot;&lt;/li&gt;
+&lt;li&gt;1 小时内 → &quot;5 分钟前&quot;&lt;/li&gt;
+&lt;li&gt;今天 → &quot;今天 14:30&quot;&lt;/li&gt;
+&lt;li&gt;昨天 → &quot;昨天 20:15&quot;&lt;/li&gt;
+&lt;li&gt;其他 → &quot;12 月 25 日 18:00&quot;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;分页浏览&lt;/strong&gt;：支持 10/20/50 条每页&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;快速播放&lt;/strong&gt;：点击历史记录直接播放&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;清空历史&lt;/strong&gt;：一键清空所有记录&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;预览&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2025-12-27-22-08-03-image.WB4qNZUT.png&quot; alt=&quot;播放历史&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3&gt;5. 播放列表管理&lt;/h3&gt;
+&lt;p&gt;类似网易云音乐的播放队列功能。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;列表特性：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;实时队列&lt;/strong&gt;：显示当前播放列表&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;音波动画&lt;/strong&gt;：正在播放的歌曲有动态指示器&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;快速操作&lt;/strong&gt;：点击播放、移除歌曲、清空列表&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;数字徽章&lt;/strong&gt;：显示列表中的歌曲数量&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;抽屉设计&lt;/strong&gt;：侧边滑出，不遮挡主要内容&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h1&gt;技术实现细节&lt;/h1&gt;
+&lt;p&gt;这次音乐功能的实现，涉及了不少技术挑战：&lt;/p&gt;
+&lt;h3&gt;前端架构&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;全局状态管理&lt;/strong&gt;：使用 Pinia 管理音乐播放状态、歌单、历史记录&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;HTML5 Audio API&lt;/strong&gt;：原生 audio 元素控制播放&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;自动播放优化&lt;/strong&gt;：监听 &lt;code&gt;canplay&lt;/code&gt; 事件，确保音频加载完成后再播放&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;歌词解析&lt;/strong&gt;：正则表达式解析 LRC 格式歌词 &lt;code&gt;[mm:ss.xx]歌词内容&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;播放模式逻辑&lt;/strong&gt;：根据不同模式计算下一曲索引&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;后端集成&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;网易云 Token 管理&lt;/strong&gt;：管理员可配置多个 Cookie，自动轮换使用&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;播放历史存储&lt;/strong&gt;：每次播放自动调用后端 API 记录&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;字段映射&lt;/strong&gt;：前端转换网易云 API 字段 (ar→artists, al→album, dt→duration)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;用户体验优化&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;请求超时&lt;/strong&gt;：默认 30 秒超时，搜索结果限制 10 条避免卡顿&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;毛玻璃效果&lt;/strong&gt;：backdrop-filter: blur(20px) 打造视觉统一性&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;响应式设计&lt;/strong&gt;：移动端自动隐藏部分信息，保持界面简洁&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;平滑动画&lt;/strong&gt;：过渡动画让交互更流畅&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h1&gt;快速上手指南&lt;/h1&gt;
+&lt;p&gt;想要体验音乐功能？只需两步：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第一步：登录控制台&lt;/strong&gt;
+访问 Setu Cloud 官网并登录你的账号。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第二步：开始听歌&lt;/strong&gt;
+在左侧菜单点击 &lt;strong&gt;「音乐搜索」&lt;/strong&gt;，输入你想听的歌曲，点击播放按钮即可。底部会出现全局播放器，切换页面也不会停止播放！&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;可选：创建歌单&lt;/strong&gt;
+点击 &lt;strong&gt;「我的歌单」&lt;/strong&gt; -&amp;gt; &lt;strong&gt;「创建新歌单」&lt;/strong&gt;，输入歌单名称和描述，然后从搜索页面添加歌曲到歌单。下次可以直接播放整个歌单。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;可选：查看历史&lt;/strong&gt;
+点击 &lt;strong&gt;「播放历史」&lt;/strong&gt;，可以看到最近播放的 50 首歌曲，点击即可重新播放。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1&gt;技术栈更新&lt;/h1&gt;
+&lt;p&gt;音乐功能基于以下技术实现：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;前端：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Vue 3 Composition API (script setup)&lt;/li&gt;
+&lt;li&gt;Pinia 状态管理 (音乐 store)&lt;/li&gt;
+&lt;li&gt;HTML5 Audio API&lt;/li&gt;
+&lt;li&gt;Naive UI (NModal, NDrawer, NBadge 等组件)&lt;/li&gt;
+&lt;li&gt;TypeScript 严格类型检查&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;后端集成：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;网易云音乐 API 代理&lt;/li&gt;
+&lt;li&gt;Cookie 池管理与轮换&lt;/li&gt;
+&lt;li&gt;播放历史持久化存储&lt;/li&gt;
+&lt;li&gt;歌单 CRUD 接口&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;优化细节：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;音频预加载与缓冲处理&lt;/li&gt;
+&lt;li&gt;歌词实时滚动算法&lt;/li&gt;
+&lt;li&gt;播放模式状态机&lt;/li&gt;
+&lt;li&gt;全局播放器生命周期管理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h1&gt;已知问题 &amp;amp; 后续计划&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;已知问题：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;部分歌曲因版权原因无法播放（网易云 API 限制）&lt;/li&gt;
+&lt;li&gt;歌词可能存在时间轴不准的情况（取决于网易云数据质量）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;后续计划：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[ ] 支持歌单分享功能&lt;/li&gt;
+&lt;li&gt;[ ] 添加歌词翻译显示&lt;/li&gt;
+&lt;li&gt;[ ] 引入歌手/专辑详情页&lt;/li&gt;
+&lt;li&gt;[ ] 支持本地上传音乐&lt;/li&gt;
+&lt;li&gt;[ ] 添加音乐可视化效果&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h1&gt;结语&lt;/h1&gt;
+&lt;p&gt;Setu Cloud 从一个简单的图片 API 服务，逐渐演变成了一个多功能的娱乐控制台。音乐功能的加入，让开发者在管理 API 的同时也能享受片刻的放松。&lt;/p&gt;
+&lt;p&gt;这次更新耗时约一周，从需求设计到功能实现，再到 UI 打磨，每一个细节都经过了反复推敲。虽然&quot;不务正业&quot;，但确实提升了使用控制台的幸福感😊&lt;/p&gt;
+&lt;p&gt;欢迎大家登录体验，如果有任何建议或遇到 BUG，欢迎通过邮件或 QQ 反馈！&lt;/p&gt;
+&lt;p&gt;说个题外话，一边写代码一边循环播放《昔涟》真的很上头，崩铁的音乐制作真的绝了！推荐大家搜索试试这首歌～&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;strong&gt;相关链接：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Setu Cloud: &lt;a href=&quot;https://cloud.yukiryou.icu/&quot;&gt;https://cloud.yukiryou.icu/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;反馈邮箱: yuki@yukiryou.online&lt;/li&gt;
+&lt;/ul&gt;
+</content:encoded></item><item><title>Setu Cloud v2正式上线！</title><link>https://blog.yukiryou.top/posts/setu_cloud-v2/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/setu_cloud-v2/</guid><description>setu_cloud用户端正式上线，主要还是以学习为目的</description><pubDate>Sat, 13 Dec 2025 22:30:00 GMT</pubDate><content:encoded>&lt;h1&gt;序言&lt;/h1&gt;
+&lt;p&gt;最近一段时间没有更新博客了主要原因就是在写需求文档然后空闲时间在给setu_api完善好并写一个用户端和管理端。时间紧每天太累了，懒得更新了就。不过现在也是正式完工了。不过写什么都是以学习为目的，以交流为主，有问题希望锐评我。&lt;/p&gt;
+&lt;p&gt;Setu Cloud地址:&lt;a href=&quot;https://cloud.yukiryou.icu/&quot;&gt;https://cloud.yukiryou.icu/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;相比于 v1 版本，v2 不仅仅是一次简单的版本号迭代，更是从交互体验到底层架构的一次全面升级。引入了全新的设计语言，重写了 API 管理逻辑，旨在为开发者提供更稳定、更美观、更易用的图片 API 服务。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1&gt;核心更新&lt;/h1&gt;
+&lt;h3&gt;1.UI设计&lt;/h3&gt;
+&lt;p&gt;我们抛弃了传统枯燥的后台管理界面，基于 &lt;strong&gt;Naive UI&lt;/strong&gt; 打造了一套全新的“极光毛玻璃”设计系统。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;沉浸式体验&lt;/strong&gt;：全站背景采用动态模糊与半透明卡片设计，视觉层次丰富。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;响应式布局&lt;/strong&gt;：无论是桌面大屏还是移动端，控制台都能完美适配，随时随地管理你的服务。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;预览&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2025-12-13-23-14-59-image.CXooTaJC.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3&gt;2. 更加灵活的 API Key 管理&lt;/h3&gt;
+&lt;p&gt;在 v2 版本中，我们引入了更完善的鉴权机制。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;自主创建&lt;/strong&gt;：用户登录控制台后，可自助创建多个 API Key，用于区分不同的项目或环境。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;配额可视化&lt;/strong&gt;：在仪表盘中，你可以实时查看每个 Key 的&lt;code&gt;今日调用&lt;/code&gt;、&lt;code&gt;总调用&lt;/code&gt;以及&lt;code&gt;剩余配额&lt;/code&gt;，用量一目了然。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;安全可控&lt;/strong&gt;：支持随时重命名、禁用或删除泄露的 Key，保障账户安全。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;预览&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2025-12-13-23-18-53-image.MkgMVZcE.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h3&gt;3. 服务稳定性提升&lt;/h3&gt;
+&lt;p&gt;后端架构进行了优化，引入了更完善的 IP 频率限制与黑名单防御机制，有效防止恶意刷接口导致的服务波动，确保正常用户的请求更加极速、稳定。&lt;/p&gt;
+&lt;h3&gt;看板娘预览&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.top/_astro/2025-12-13-23-22-00-image.DN6azugU.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1&gt;快速上手指南&lt;/h1&gt;
+&lt;p&gt;想要使用 Setu Cloud v2 的服务非常简单，只需三步：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第一步：注册与登录&lt;/strong&gt; 访问 Setu Cloud 官网，使用邮箱注册账号。登录后，你将直接进入全新的用户仪表盘。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第二步：获取 API Key&lt;/strong&gt; 在左侧菜单点击 &lt;strong&gt;「API Key 管理」&lt;/strong&gt; -&amp;gt; &lt;strong&gt;「新建 API Key」&lt;/strong&gt;。 输入一个备注名称（例如 &quot;My Blog&quot;），点击创建。系统会生成一串密钥，请务必立即复制并保存。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第三步：发起调用&lt;/strong&gt; 现在，你可以使用任何 HTTP 客户端调用接口了。记得在 Header 中带上你的 Key：&lt;/p&gt;
+&lt;p&gt;Bash&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# 示例：使用 cURL 调用
+curl -X GET &quot;https://api.yukiryou.icu/setu/v2&quot; \
+     -H &quot;X-API-Key: sk-你的密钥&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1&gt;技术栈一览&lt;/h1&gt;
+&lt;p&gt;对于感兴趣的开发者，Setu Cloud v2 的前端构建于以下现代技术栈之上：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;核心框架&lt;/strong&gt;：Vue 3 (Script Setup)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;构建工具&lt;/strong&gt;：Vite 5&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;UI 组件库&lt;/strong&gt;：Naive UI&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;状态管理&lt;/strong&gt;：Pinia&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;语言&lt;/strong&gt;：TypeScript&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;结语&lt;/h1&gt;
+&lt;p&gt;Setu Cloud 的初衷是提供简单、好用的二次元图片接口服务。v2 的上线是一个新的开始，未来我们将持续引入更多实用的功能（如更多维度的图片筛选、图库搜索等）。&lt;/p&gt;
+&lt;p&gt;欢迎大家注册体验，如果有任何建议或遇到 BUG，欢迎通过邮件或 QQ 提交反馈！&lt;/p&gt;
+&lt;p&gt;说个题外话，今天打一下午未许之地突袭8，谁能告诉我这玩意到底怎么过，越打越破防。
+&lt;img src=&quot;https://blog.yukiryou.top/_astro/987f5c8f6b10836f7f3c05ac51e0bcbb.lVS1t2i0.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+</content:encoded></item><item><title>二次元随机美图api</title><link>https://blog.yukiryou.top/posts/setu_api/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/setu_api/</guid><description>把pixiv的图片信息存储在数据库中，并提供代理服务</description><pubDate>Thu, 04 Dec 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h1&gt;起因&lt;/h1&gt;
+&lt;p&gt;一直以来总想根据自己的性趣去部署一个图片api，最近购置了阿里云服务器进行备案，就干脆把阿里云的服务器拿来搭建好了。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1&gt;API v2&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.pixiv.net/&quot;&gt;https://api.yukiryou.icu/setu/v2&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;接口地址（GET / POST 通用）&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;
+/setu/v2
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;返回格式：JSON&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h1&gt;请求参数说明&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;参数名&lt;/th&gt;
+&lt;th&gt;数据类型&lt;/th&gt;
+&lt;th&gt;默认值&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;r18&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0 非 R18，1 R18，2 混合&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;num&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;int&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;返回数量，范围 1–20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;uid&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;int[]&lt;/td&gt;
+&lt;td&gt;无&lt;/td&gt;
+&lt;td&gt;按作者 UID 过滤（最多 20 个）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;keyword&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;string&lt;/td&gt;
+&lt;td&gt;无&lt;/td&gt;
+&lt;td&gt;标题 / 作者 / 标签模糊匹配&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;tag&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;string[]&lt;/td&gt;
+&lt;td&gt;无&lt;/td&gt;
+&lt;td&gt;标签 AND / OR 组合匹配&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;size&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;string[]&lt;/td&gt;
+&lt;td&gt;[&quot;original&quot;]&lt;/td&gt;
+&lt;td&gt;返回图片尺寸（可多选）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;proxy&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;string&lt;/td&gt;
+&lt;td&gt;i.pixiv.re&lt;/td&gt;
+&lt;td&gt;替换图片 URL 域名&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;dateAfter&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;long&lt;/td&gt;
+&lt;td&gt;无&lt;/td&gt;
+&lt;td&gt;上传时间 ≥ 此时间（毫秒）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;dateBefore&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;long&lt;/td&gt;
+&lt;td&gt;无&lt;/td&gt;
+&lt;td&gt;上传时间 ≤ 此时间（毫秒）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;dsc&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;boolean&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;td&gt;禁用自动缩写转换&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;excludeAI&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;boolean&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;td&gt;排除 AI 作品（aiType = 2）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;aspectRatio&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;string&lt;/td&gt;
+&lt;td&gt;无&lt;/td&gt;
+&lt;td&gt;图片宽高比过滤&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr /&gt;
+&lt;h1&gt;标签（tag）高级匹配规则&lt;/h1&gt;
+&lt;p&gt;标签匹配支持 AND / OR 组合，大小写不敏感。&lt;/p&gt;
+&lt;h2&gt;AND 规则（数组之间）&lt;/h2&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+tag=萝莉|少女
+
+tag=黑丝|白丝
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这代表：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+(萝莉 OR 少女) AND (黑丝 OR 白丝)
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;OR 规则（同一个字符串内用 &lt;code&gt;|&lt;/code&gt; 分隔）&lt;/h2&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+tag=巨乳|おっぱい
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;表示匹配其中任意一个即可。&lt;/p&gt;
+&lt;h2&gt;匹配范围：&lt;/h2&gt;
+&lt;p&gt;| 字段 | 是否参与匹配 |&lt;/p&gt;
+&lt;p&gt;|------|-------------|&lt;/p&gt;
+&lt;p&gt;| 标签（tags） | ✔ |&lt;/p&gt;
+&lt;p&gt;| 标题（title） | ✔ |&lt;/p&gt;
+&lt;p&gt;| 作者（author） | ✔ |&lt;/p&gt;
+&lt;p&gt;全部以 &lt;strong&gt;小写&lt;/strong&gt; + &lt;strong&gt;包含（contains）匹配&lt;/strong&gt;方式处理。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1&gt;GET 示例&lt;/h1&gt;
+&lt;h2&gt;1️⃣ 获取 1 个非 R18 的随机图（默认 original 尺寸）&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+GET https://api.yukiryou.icu/setu/v2
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;2️⃣ 获取 5 张 original + regular 尺寸图片&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+GET https://api.yukiryou.icu/setu/v2?num=5&amp;amp;size=original&amp;amp;size=regular
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;3️⃣ 标签高级匹配示例&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+GET https://api.yukiryou.icu/setu/v2?tag=萝莉|少女&amp;amp;tag=白丝|黑丝
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;即：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+(萝莉 OR 少女) AND (白丝 OR 黑丝)
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;4️⃣ 按关键字模糊搜索&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+GET https://api.yukiryou.icu/setu/v2?keyword=碧蓝航线
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;5️⃣ 按作者 uid 搜索&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+GET https://api.yukiryou.icu/setu/v2?uid=12345&amp;amp;uid=67890
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;6️⃣ 限制长宽比&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+GET https://api.yukiryou.icu/setu/v2?aspectRatio=1.6-1.8
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;7️⃣ 过滤 AI 图&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+GET https://api.yukiryou.icu/setu/v2?excludeAI=true
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h1&gt;📨 POST 示例&lt;/h1&gt;
+&lt;p&gt;POST 支持 JSON 的二维 tag：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+{
+
+  &quot;num&quot;: 5,
+
+  &quot;r18&quot;: 0,
+
+  &quot;tag&quot;: [
+
+    [&quot;萝莉&quot;, &quot;少女&quot;],
+
+    [&quot;黑丝&quot;, &quot;白丝&quot;]
+
+  ],
+
+  &quot;size&quot;: [&quot;original&quot;, &quot;regular&quot;, &quot;small&quot;],
+
+  &quot;excludeAI&quot;: false
+
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;就是：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+tag=萝莉|少女
+
+tag=黑丝|白丝
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h1&gt;返回格式&lt;/h1&gt;
+&lt;p&gt;示例：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+{
+
+  &quot;error&quot;: &quot;&quot;,
+
+  &quot;data&quot;: [
+
+    {
+
+      &quot;pid&quot;: 82675630,
+
+      &quot;p&quot;: 0,
+
+      &quot;uid&quot;: 8244461,
+
+      &quot;title&quot;: &quot;水着ル・マラン&quot;,
+
+      &quot;author&quot;: &quot;Vldjm13&quot;,
+
+      &quot;r18&quot;: false,
+
+      &quot;width&quot;: 3360,
+
+      &quot;height&quot;: 3960,
+
+      &quot;tags&quot;: [&quot;アズールレーン&quot;,&quot;碧蓝航线&quot;,&quot;水着&quot;],
+
+      &quot;ext&quot;: &quot;png&quot;,
+
+      &quot;aiType&quot;: 0,
+
+      &quot;uploadDate&quot;: 1593535904000,
+
+      &quot;urls&quot;: {
+
+        &quot;original&quot;: &quot;https://i.yukiryou.top/img-original/...png&quot;,
+
+        &quot;regular&quot;: &quot;https://i.yukiryou.top/img-master/..._master1200.jpg&quot;,
+
+        &quot;small&quot;: &quot;/c/540x540_70/img-master/..._master1200.jpg&quot;,
+
+        &quot;thumb&quot;: &quot;/c/250x250_80_a2/img-master/..._square1200.jpg&quot;,
+
+        &quot;mini&quot;: &quot;/c/48x48/img-master/..._square1200.jpg&quot;
+
+      }
+
+    }
+
+  ]
+
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h1&gt;🔄 图片 URL 自动生成逻辑&lt;/h1&gt;
+&lt;p&gt;你只需要 original，即：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/img-original/.../90551655_p0.jpg
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;API 会自动生成：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;size&lt;/th&gt;
+&lt;th&gt;URL 规则&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;original&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;/img-original/.../90551655_p0.jpg&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;regular&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;/img-master/.../p0_master1200.jpg&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;small&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;/c/540x540_70/img-master/..._master1200.jpg&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;thumb&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;/c/250x250_80_a2/img-master/..._square1200.jpg&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;mini&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;/c/48x48/img-master/..._square1200.jpg&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr /&gt;
+&lt;h1&gt;⚠️ 注意事项&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;num 最大为 20&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;original 为唯一保证存在的尺寸&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;PNG 原图不一定有 regular/small/thumb/mini&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;标签大小写不敏感&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;tag 与 keyword 组合可能降低性能&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+&lt;h1&gt;其他服务&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&quot;https://yukiryou.icu/posts/api_plugin/&quot;&gt;QQ Bot&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;后续可能优化一下并公开插件&lt;/p&gt;
+</content:encoded></item><item><title>QQbot插件优化</title><link>https://blog.yukiryou.top/posts/api_plugin/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/api_plugin/</guid><description>通过pixiv官方refresh_token去获取图片</description><pubDate>Tue, 02 Dec 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h1&gt;起因&lt;/h1&gt;
+&lt;p&gt;最近一直在做p站的api，目前进度只有6000+的图片信息，数据库部分信息类似下图
+&lt;img src=&quot;https://blog.yukiryou.top/_astro/2025-12-02-21-25-14-image.K1QwrchD.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;所有图片均来自 &lt;a href=&quot;https://www.pixiv.net/&quot;&gt;Pixiv&lt;/a&gt;，版权也归作品的作者所有，API 仅储存了作品的基本信息，不提供图片的储存服务&lt;/li&gt;
+&lt;li&gt;为保证质量的话，所有图片信息都是根据本人xp来的，这里不过多解释了
+总之就是任务还没完成，只能偷工减料了。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1&gt;QQ Bot&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;qq号:2830323446&lt;/strong&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1&gt;成果一览&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;发图插件&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;- &lt;code&gt;setu&lt;/code&gt; 随机仅从 &lt;strong&gt;外部 API + 数据库&lt;/strong&gt; 取图；&lt;/p&gt;
+&lt;p&gt;- &lt;code&gt;setu pid=... / uid=... / tag=...&lt;/code&gt;：&lt;strong&gt;官方优先&lt;/strong&gt;→失败自动回退 &lt;strong&gt;API → DB&lt;/strong&gt;，并 **通知主人 ；&lt;/p&gt;
+&lt;p&gt;- 随机策略：&lt;strong&gt;随机跳页 + 水库采样&lt;/strong&gt;，避免“第一页偏置”；&lt;/p&gt;
+&lt;h1&gt;优化过程&lt;/h1&gt;
+&lt;p&gt;::github{repo=&quot;Tsuk1ko/pxder&quot;}
+通过以上项目可以获取到你自己账号的refresh_token，然后就可以愉快的获取pixiv的信息了。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h1&gt;具体实现（可直接复用的核心函数）&lt;/h1&gt;
+&lt;h2&gt;1) Pixiv 官方认证（refresh_token → access_token）&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+import requests
+
+from pixivpy3 import AppPixivAPI
+
+  
+
+_OAUTH_TOKEN_URL = &quot;https://oauth.secure.pixiv.net/auth/token&quot;
+
+_CLIENT_ID = &quot;MOBrBDS8blbauoSck0ZfDbtuzpyT&quot;
+
+_CLIENT_SECRET = &quot;lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj&quot;
+
+_UA = &quot;PixivAndroidApp/5.0.234 (Android 11; Pixel 5)&quot;
+
+  
+
+def exchange_by_refresh_token(refresh_token: str):
+
+    headers = {
+
+        &quot;User-Agent&quot;: _UA,
+
+        &quot;Referer&quot;: &quot;https://app-api.pixiv.net/&quot;,
+
+        &quot;App-OS&quot;: &quot;android&quot;,
+
+        &quot;App-OS-Version&quot;: &quot;11&quot;,
+
+        &quot;App-Version&quot;: &quot;5.0.234&quot;,
+
+    }
+
+    data = {
+
+        &quot;client_id&quot;: _CLIENT_ID,
+
+        &quot;client_secret&quot;: _CLIENT_SECRET,
+
+        &quot;grant_type&quot;: &quot;refresh_token&quot;,
+
+        &quot;refresh_token&quot;: refresh_token,
+
+        &quot;include_policy&quot;: &quot;true&quot;,
+
+    }
+
+    r = requests.post(_OAUTH_TOKEN_URL, headers=headers, data=data, timeout=30)
+
+    r.raise_for_status()
+
+    j = r.json()
+
+    if &quot;access_token&quot; not in j:
+
+        raise RuntimeError(f&quot;token 交换失败：{j}&quot;)
+
+    return j[&quot;access_token&quot;], j.get(&quot;refresh_token&quot;, refresh_token)
+
+  
+
+def make_aapi(refresh_token: str) -&amp;gt; AppPixivAPI:
+
+    at, rt = exchange_by_refresh_token(refresh_token)
+
+    aapi = AppPixivAPI(timeout=30)
+
+    aapi.set_auth(at, rt)
+
+    try: aapi.set_accept_language(&quot;zh-CN&quot;)
+
+    except: pass
+
+    return aapi
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;2) 随机策略：随机跳页 + 水库采样&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+import random
+
+  
+
+def extract_pages(ill: dict) -&amp;gt; list[str]:
+
+    out = []
+
+    if ill.get(&quot;meta_pages&quot;):
+
+        for p in ill[&quot;meta_pages&quot;]:
+
+            img = p.get(&quot;image_urls&quot;) or {}
+
+            u = img.get(&quot;original&quot;) or img.get(&quot;large&quot;) or img.get(&quot;medium&quot;)
+
+            if u: out.append(u)
+
+    if not out:
+
+        if ill.get(&quot;meta_single_page&quot;, {}).get(&quot;original_image_url&quot;):
+
+            out.append(ill[&quot;meta_single_page&quot;][&quot;original_image_url&quot;])
+
+        else:
+
+            img = ill.get(&quot;image_urls&quot;) or {}
+
+            u = img.get(&quot;original&quot;) or img.get(&quot;large&quot;) or img.get(&quot;medium&quot;)
+
+            if u: out.append(u)
+
+    return out
+
+  
+
+def random_one_from_uid(aapi, uid: int, max_jumps: int = 30) -&amp;gt; str | None:
+
+    res = aapi.user_illusts(uid)
+
+    if not res or not getattr(res, &quot;illusts&quot;, None): return None
+
+    jumps = random.randint(0, max_jumps)
+
+    cur = res
+
+    for _ in range(jumps):
+
+        if not getattr(cur, &quot;next_url&quot;, None): break
+
+        qs = aapi.parse_qs(cur.next_url)
+
+        cur = aapi.user_illusts(**qs)
+
+        if not cur or not getattr(cur, &quot;illusts&quot;, None): break
+
+    cand = getattr(cur, &quot;illusts&quot;, []) or []
+
+    if not cand: return None
+
+    pages = extract_pages(random.choice(cand))
+
+    return random.choice(pages) if pages else None
+
+  
+
+def random_one_from_tag(aapi, tag: str, max_jumps: int = 30) -&amp;gt; str | None:
+
+    res = aapi.search_illust(tag, search_target=&quot;partial_match_for_tags&quot;)
+
+    if not res or not getattr(res, &quot;illusts&quot;, None): return None
+
+    jumps = random.randint(0, max_jumps)
+
+    cur = res
+
+    for _ in range(jumps):
+
+        if not getattr(cur, &quot;next_url&quot;, None): break
+
+        qs = aapi.parse_qs(cur.next_url)
+
+        cur = aapi.search_illust(**qs)
+
+        if not cur or not getattr(cur, &quot;illusts&quot;, None): break
+
+    cand = getattr(cur, &quot;illusts&quot;, []) or []
+
+    if not cand: return None
+
+    pages = extract_pages(random.choice(cand))
+
+    return random.choice(pages) if pages else None
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;3) 官方→API→DB 回退链路&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+async def notify_owner(bot, owner_qq: int, text: str, event=None):
+
+    try:
+
+        if hasattr(bot, &quot;send_private&quot;):
+
+            await bot.send_private(owner_qq, f&quot;[setu告警] {text}&quot;); return
+
+    except Exception:
+
+        pass
+
+    if event is not None:
+
+        await bot.send(event, f&quot;[setu告警] @{owner_qq} {text}&quot;)
+
+  
+
+async def get_by_pid_uid_tag_with_fallback(session, bot, event, owner_qq, refresh_token,
+
+                                           pid: int|None, uid: int|None, tag: str|None,
+
+                                           fetch_from_api, fetch_from_db):
+
+    try:
+
+        aapi = await asyncio.to_thread(make_aapi, refresh_token)
+
+        if pid is not None:
+
+            det = await asyncio.to_thread(aapi.illust_detail, pid)
+
+            ill = det.illust
+
+            urls = extract_pages(ill) if ill else []
+
+        elif uid is not None:
+
+            u = await asyncio.to_thread(random_one_from_uid, aapi, uid)
+
+            urls = [u] if u else []
+
+        elif tag:
+
+            u = await asyncio.to_thread(random_one_from_tag, aapi, tag)
+
+            urls = [u] if u else []
+
+        else:
+
+            urls = []
+
+        if urls: return urls
+
+        await notify_owner(bot, owner_qq, &quot;官方为空，回退 API&quot;, event)
+
+    except Exception as e:
+
+        await notify_owner(bot, owner_qq, f&quot;官方异常：{e}，回退 API&quot;, event)
+
+  
+
+    # API
+
+    try:
+
+        api_urls = await fetch_from_api(session, [] if pid or uid else ([f&quot;tag={tag}&quot;] if tag else []))
+
+        if api_urls: return api_urls[:1]
+
+        await notify_owner(bot, owner_qq, &quot;API 为空，回退 DB&quot;, event)
+
+    except Exception as e:
+
+        await notify_owner(bot, owner_qq, f&quot;API 异常：{e}，回退 DB&quot;, event)
+
+  
+
+    # DB
+
+    try:
+
+        db_urls = await fetch_from_db(1, None, tag, uid)
+
+        return db_urls[:1] if db_urls else []
+
+    except Exception as e:
+
+        await notify_owner(bot, owner_qq, f&quot;DB 异常：{e}，最终失败&quot;, event)
+
+        return []
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h1&gt;结果&lt;/h1&gt;
+&lt;p&gt;结果就是我发现标签查询效果更好了，标签匹配更吻合了，非常满意
+&lt;img src=&quot;https://blog.yukiryou.top/_astro/2025-12-02-21-59-34-image.DqpsqFib.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+</content:encoded></item><item><title>首次提交备案</title><link>https://blog.yukiryou.top/posts/icp/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/icp/</guid><description>第一次备案，分享一下</description><pubDate>Sat, 29 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h1&gt;准备工作&lt;/h1&gt;
+&lt;p&gt;我们都知道国内服务器是需要备案的，但备案需要准备些什么呢？&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;首先选择一家合适的域名服务商进行代备案，我选择的是阿里云。&lt;/li&gt;
+&lt;li&gt;其次我们需要准备一个可备案域名和国内云服务器。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1&gt;开始&lt;/h1&gt;
+&lt;p&gt;准备好之后就可以申请备案了，我本以为备案会很复杂，但我提交申请到阿里云提交到管局审核也没花很长时间，不过我申请的时间是在周末，我想应该需要下周六才能通过了吧。&lt;/p&gt;
+&lt;h1&gt;结束&lt;/h1&gt;
+&lt;p&gt;附一张申请记录做为纪念
+&lt;img src=&quot;https://blog.yukiryou.top/_astro/2025-11-29-17-12-11-image.DbOeRBQI.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+</content:encoded></item><item><title>关于我对“赞助”的思考</title><link>https://blog.yukiryou.top/posts/sponsor/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/sponsor/</guid><description>对于自己喜欢的文章、博客、游戏mod，会给予赞助，突然就有了一个思考</description><pubDate>Fri, 28 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h1&gt;开始&lt;/h1&gt;
+&lt;p&gt;首先我们要弄明白什么叫赞助。在我的常识里，赞助就是用户为了某个活动、某个项目、某篇文章(具体来说就是某件事或物)提供经济支持。当我对别人赞助时，我不禁在思考，别人收到我的赞助会有什么心情和想法。虽然我知道我赞助的不算多，也并不是为了什么而去选择赞助。我仅仅是因为看到某些对我有帮助的文章，才会选择赞助对方，也希望对方能够提供更多有趣有帮助的文章。&lt;/p&gt;
+</content:encoded></item><item><title>Ciallo～ (∠・ω&lt; )⌒★，搭建博客，重新开始</title><link>https://blog.yukiryou.top/posts/admin/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/admin/</guid><description>发现自己一直以来还是没有好好搭建一个自己的博客，就重新搞一下</description><pubDate>Wed, 26 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h1&gt;开始&lt;/h1&gt;
+&lt;p&gt;闲着没事做，就想着好好搭建一个博客玩一下，正好觉得平时比较喜欢的&lt;a href=&quot;https://2x.nz&quot;&gt;博主:2x树树&lt;/a&gt;魔改的博客网站还不错，自己也部署一个试试。不过我也没啥文笔，没什么说的就这样吧。&lt;/p&gt;
+</content:encoded></item></channel></rss>

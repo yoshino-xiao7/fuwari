@@ -1,0 +1,1 @@
+function r(){const e="250",t=document.getElementById("config-carrier");return Number.parseInt(t?.dataset.hue||e)}function n(){const e=localStorage.getItem("hue");return e?Number.parseInt(e):r()}function o(e){localStorage.setItem("hue",String(e));const t=document.querySelector(":root");t&&t.style.setProperty("--hue",String(e))}export{r as a,n as g,o as s};
