@@ -15,7 +15,37 @@ export function setupScrollHandler(): void {
 	const toc = document.getElementById("toc-wrapper");
 	const navbar = document.getElementById("navbar-wrapper");
 
+	function updateReadingProgress() {
+		const progress = document.getElementById("reading-progress");
+		const article = document.querySelector<HTMLElement>(".markdown-content");
+		if (!progress || !article) {
+			progress?.classList.add("opacity-0");
+			document.documentElement.style.setProperty("--reading-progress", "0");
+			return;
+		}
+
+		const scrollTop =
+			window.scrollY ||
+			document.documentElement.scrollTop ||
+			document.body.scrollTop ||
+			0;
+		const articleTop = article.getBoundingClientRect().top + scrollTop;
+		const articleHeight = article.scrollHeight;
+		const start = articleTop - 96;
+		const end = articleTop + articleHeight - window.innerHeight * 0.72;
+		const range = Math.max(end - start, 1);
+		const value = Math.min(Math.max((scrollTop - start) / range, 0), 1);
+
+		progress.classList.toggle("opacity-0", value <= 0);
+		document.documentElement.style.setProperty(
+			"--reading-progress",
+			value.toFixed(4),
+		);
+	}
+
 	function onScroll() {
+		updateReadingProgress();
+
 		const bannerHeightPx = window.innerHeight * (BANNER_HEIGHT / 100);
 
 		// Back to top button
@@ -81,5 +111,20 @@ export function setupScrollHandler(): void {
 			"--banner-height-extend",
 			`${offset}px`,
 		);
+		onScroll();
 	};
+
+	onScroll();
+	document.addEventListener("astro:page-load", onScroll);
+	if (window?.swup?.hooks) {
+		window.swup.hooks.on("content:replace", () =>
+			requestAnimationFrame(onScroll),
+		);
+	} else {
+		document.addEventListener("swup:enable", () => {
+			window.swup?.hooks?.on("content:replace", () =>
+				requestAnimationFrame(onScroll),
+			);
+		});
+	}
 }

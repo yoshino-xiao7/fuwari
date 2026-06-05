@@ -1,0 +1,275 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { getSortedPosts } from "../../utils/content-utils";
+import { getPostUrlBySlug } from "../../utils/url-utils";
+import LiquidGlassLayout from "./LiquidGlassLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+
+const className = Astro.props.class;
+const style = Astro.props.style;
+
+const posts = (await getSortedPosts()).map((post) => ({
+	title: post.data.title,
+	url: getPostUrlBySlug(post.slug),
+	date: post.data.published.toLocaleDateString("zh-CN", {
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+	}),
+	description:
+		post.data.description || "这篇没有写摘要，像一张没署名的小纸条。",
+	tags: post.data.tags.slice(0, 2),
+}));
+
+const firstPost = posts[0];
+const oldestPost = posts.at(-1);
+---
+
+{firstPost && (
+	<LiquidGlassLayout
+		name="随便看看"
+		icon="✨"
+		id="blog-explorer"
+		class={className}
+		style={style}
+	>
+		<div class="blog-explorer flex flex-col gap-3" data-posts={JSON.stringify(posts)}>
+			<a
+				id="explorer-featured-link"
+				href={firstPost.url}
+				class="explorer-featured group"
+				aria-label={`阅读 ${firstPost.title}`}
+			>
+				<div class="flex items-start justify-between gap-3">
+					<div class="min-w-0">
+						<div
+							id="explorer-featured-date"
+							class="mb-1 text-[0.68rem] font-semibold text-[oklch(0.68_0.16_var(--hue))]"
+						>
+							{firstPost.date}
+						</div>
+						<div
+							id="explorer-featured-title"
+							class="line-clamp-2 text-sm font-bold leading-snug text-neutral-900 transition group-hover:text-[var(--primary)] dark:text-neutral-100"
+						>
+							{firstPost.title}
+						</div>
+					</div>
+					<Icon
+						name="material-symbols:arrow-outward-rounded"
+						class="mt-0.5 shrink-0 text-xl text-neutral-400 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[var(--primary)]"
+					/>
+				</div>
+				<p
+					id="explorer-featured-desc"
+					class="mt-2 line-clamp-2 text-xs leading-relaxed text-neutral-600 dark:text-neutral-400"
+				>
+					{firstPost.description}
+				</p>
+				<div id="explorer-featured-tags" class="mt-2 flex flex-wrap gap-1.5">
+					{firstPost.tags.map((tag) => (
+						<span class="explorer-tag">#{tag}</span>
+					))}
+				</div>
+			</a>
+
+			<div class="grid grid-cols-[1fr_auto] gap-2">
+				<button
+					id="explorer-shuffle"
+					type="button"
+					class="explorer-action"
+					aria-label="随机换一篇文章"
+				>
+					<Icon name="material-symbols:shuffle-rounded" class="text-lg" />
+					<span>换一篇</span>
+				</button>
+				<a
+					id="explorer-read"
+					href={firstPost.url}
+					class="explorer-read"
+					aria-label={`阅读 ${firstPost.title}`}
+				>
+					<Icon name="material-symbols:menu-book-rounded" class="text-lg" />
+				</a>
+			</div>
+
+			{oldestPost && oldestPost.url !== firstPost.url && (
+				<a href={oldestPost.url} class="explorer-old-post">
+					<span class="text-neutral-400">旧文入口</span>
+					<span class="line-clamp-1 min-w-0 font-semibold text-neutral-700 dark:text-neutral-200">
+						{oldestPost.title}
+					</span>
+				</a>
+			)}
+		</div>
+	</LiquidGlassLayout>
+)}
+
+<style>
+	.explorer-featured {
+		display: block;
+		border-radius: 14px;
+		padding: 12px;
+		background:
+			linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.32)),
+			rgba(255, 255, 255, 0.12);
+		border: 1px solid rgba(255, 255, 255, 0.36);
+		text-decoration: none;
+		transition:
+			transform 0.2s ease,
+			border-color 0.2s ease,
+			background 0.2s ease;
+	}
+
+	:global(.dark) .explorer-featured {
+		background:
+			linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05)),
+			rgba(0, 0, 0, 0.12);
+		border-color: rgba(255, 255, 255, 0.12);
+	}
+
+	.explorer-featured:hover {
+		transform: translateY(-1px);
+		border-color: oklch(0.72 0.16 var(--hue) / 0.55);
+	}
+
+	.explorer-tag {
+		border-radius: 999px;
+		background: oklch(0.9 0.08 var(--hue) / 0.5);
+		color: oklch(0.48 0.14 var(--hue));
+		font-size: 0.68rem;
+		font-weight: 700;
+		line-height: 1;
+		padding: 5px 7px;
+	}
+
+	:global(.dark) .explorer-tag {
+		background: oklch(0.32 0.08 var(--hue) / 0.65);
+		color: oklch(0.82 0.1 var(--hue));
+	}
+
+	.explorer-action,
+	.explorer-read {
+		align-items: center;
+		background: rgba(128, 128, 128, 0.12);
+		border: 1px solid rgba(128, 128, 128, 0.14);
+		border-radius: 12px;
+		color: inherit;
+		display: flex;
+		font-size: 0.78rem;
+		font-weight: 700;
+		gap: 6px;
+		justify-content: center;
+		min-height: 38px;
+		text-decoration: none;
+		transition:
+			background 0.2s ease,
+			color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.explorer-action:hover,
+	.explorer-read:hover {
+		background: oklch(0.9 0.08 var(--hue) / 0.48);
+		color: oklch(0.5 0.16 var(--hue));
+		transform: translateY(-1px);
+	}
+
+	:global(.dark) .explorer-action:hover,
+	:global(.dark) .explorer-read:hover {
+		background: oklch(0.32 0.08 var(--hue) / 0.65);
+		color: oklch(0.82 0.1 var(--hue));
+	}
+
+	.explorer-old-post {
+		align-items: center;
+		display: grid;
+		gap: 8px;
+		grid-template-columns: auto minmax(0, 1fr);
+		text-decoration: none;
+		font-size: 0.74rem;
+		line-height: 1.3;
+	}
+
+	.explorer-old-post:hover span:last-child {
+		color: var(--primary);
+	}
+</style>
+
+<script>
+	function initBlogExplorer() {
+		const root = document.querySelector(".blog-explorer");
+		if (!(root instanceof HTMLElement)) return;
+		if (root.dataset.explorerReady === "true") return;
+
+		const posts = JSON.parse(root.dataset.posts || "[]");
+		if (posts.length === 0) return;
+
+		const featuredLink = document.getElementById("explorer-featured-link");
+		const readLink = document.getElementById("explorer-read");
+		const titleEl = document.getElementById("explorer-featured-title");
+		const dateEl = document.getElementById("explorer-featured-date");
+		const descEl = document.getElementById("explorer-featured-desc");
+		const tagsEl = document.getElementById("explorer-featured-tags");
+		const shuffleBtn = document.getElementById("explorer-shuffle");
+		if (
+			!(featuredLink instanceof HTMLAnchorElement) ||
+			!(readLink instanceof HTMLAnchorElement) ||
+			!titleEl ||
+			!dateEl ||
+			!descEl ||
+			!tagsEl ||
+			!shuffleBtn
+		) {
+			return;
+		}
+
+		root.dataset.explorerReady = "true";
+		let currentIndex = 0;
+
+		function renderPost(index) {
+			const post = posts[index];
+			currentIndex = index;
+			featuredLink.href = post.url;
+			featuredLink.setAttribute("aria-label", `阅读 ${post.title}`);
+			readLink.href = post.url;
+			readLink.setAttribute("aria-label", `阅读 ${post.title}`);
+			titleEl.textContent = post.title;
+			dateEl.textContent = post.date;
+			descEl.textContent = post.description;
+			tagsEl.replaceChildren(
+				...post.tags.map((tag) => {
+					const tagEl = document.createElement("span");
+					tagEl.className = "explorer-tag";
+					tagEl.textContent = `#${tag}`;
+					return tagEl;
+				}),
+			);
+		}
+
+		root.addEventListener("click", (event) => {
+			const target = event.target;
+			if (!(target instanceof Element)) return;
+			if (!target.closest("#explorer-shuffle")) return;
+			if (posts.length < 2) return;
+
+			let nextIndex = currentIndex;
+			while (nextIndex === currentIndex) {
+				nextIndex = Math.floor(Math.random() * posts.length);
+			}
+			renderPost(nextIndex);
+		});
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initBlogExplorer);
+	} else {
+		initBlogExplorer();
+	}
+	document.addEventListener("astro:page-load", initBlogExplorer);
+</script>

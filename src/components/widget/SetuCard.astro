@@ -4,13 +4,23 @@ import LiquidGlassLayout from "./LiquidGlassLayout.astro";
 interface Props {
 	class?: string;
 	style?: string;
+	embedded?: boolean;
 }
 
 const className = Astro.props.class;
 const style = Astro.props.style;
+const embedded = Astro.props.embedded ?? false;
+const Wrapper = embedded ? "div" : LiquidGlassLayout;
+const wrapperProps = embedded
+	? {
+			id: "setu-card",
+			class: ["service-embedded", className].filter(Boolean).join(" "),
+			style,
+		}
+	: { name: "图片抽卡", icon: "", id: "setu-card", class: className, style };
 ---
 
-<LiquidGlassLayout name="图片抽卡" icon="" id="setu-card" class={className} style={style}>
+<Wrapper {...wrapperProps}>
   <div class="flex flex-col gap-3 text-sm">
     <div class="flex justify-between items-center text-xs text-black/60 dark:text-white/70 gap-2">
       <span id="setu-status-text">点击右侧按钮抽一张图</span>
@@ -68,7 +78,7 @@ const style = Astro.props.style;
 
     <p id="setu-error" class="text-xs text-red-500 hidden"></p>
   </div>
-</LiquidGlassLayout>
+</Wrapper>
 
 <div
   id="setu-preview"

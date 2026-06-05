@@ -1,0 +1,179 @@
+---
+import { Icon } from "astro-icon/components";
+
+import LiquidGlassLayout from "./LiquidGlassLayout.astro";
+import MusicSearch from "./MusicSearch.astro";
+import SetuCard from "./SetuCard.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+
+const className = Astro.props.class;
+const style = Astro.props.style;
+---
+
+<LiquidGlassLayout
+	name="雪涼小服务"
+	icon="✦"
+	id="yuki-services"
+	class={className}
+	style={style}
+>
+	<div class="service-shell">
+		<div class="service-tabs" role="tablist" aria-label="雪涼小服务">
+			<button
+				id="service-tab-music"
+				type="button"
+				class="service-tab is-active"
+				role="tab"
+				aria-selected="true"
+				aria-controls="service-panel-music"
+				data-service-tab="music"
+			>
+				<Icon name="material-symbols:music-note-rounded" class="text-base" />
+				<span>音乐</span>
+			</button>
+			<button
+				id="service-tab-setu"
+				type="button"
+				class="service-tab"
+				role="tab"
+				aria-selected="false"
+				aria-controls="service-panel-setu"
+				data-service-tab="setu"
+			>
+				<Icon name="material-symbols:image-rounded" class="text-base" />
+				<span>抽图</span>
+			</button>
+		</div>
+
+		<div
+			id="service-panel-music"
+			class="service-panel"
+			role="tabpanel"
+			aria-labelledby="service-tab-music"
+			data-service-panel="music"
+		>
+			<MusicSearch embedded={true} />
+		</div>
+
+		<div
+			id="service-panel-setu"
+			class="service-panel hidden"
+			role="tabpanel"
+			aria-labelledby="service-tab-setu"
+			data-service-panel="setu"
+		>
+			<SetuCard embedded={true} />
+		</div>
+	</div>
+</LiquidGlassLayout>
+
+<style>
+	.service-shell {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.service-tabs {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 6px;
+		padding: 4px;
+		border-radius: 14px;
+		background: rgba(128, 128, 128, 0.12);
+		border: 1px solid rgba(128, 128, 128, 0.12);
+	}
+
+	.service-tab {
+		align-items: center;
+		border: 0;
+		border-radius: 10px;
+		color: rgba(0, 0, 0, 0.52);
+		display: flex;
+		gap: 6px;
+		justify-content: center;
+		min-height: 32px;
+		font-size: 0.78rem;
+		font-weight: 700;
+		transition:
+			background 0.2s ease,
+			color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.service-tab:hover {
+		color: rgba(0, 0, 0, 0.76);
+	}
+
+	.service-tab.is-active {
+		background: oklch(0.9 0.08 var(--hue) / 0.58);
+		color: oklch(0.48 0.14 var(--hue));
+		box-shadow: inset 0 0 0 1px oklch(0.74 0.12 var(--hue) / 0.18);
+	}
+
+	.service-tab:active {
+		transform: scale(0.98);
+	}
+
+	:global(.dark) .service-tabs {
+		background: rgba(255, 255, 255, 0.06);
+		border-color: rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .service-tab {
+		color: rgba(255, 255, 255, 0.55);
+	}
+
+	:global(.dark) .service-tab:hover {
+		color: rgba(255, 255, 255, 0.82);
+	}
+
+	:global(.dark) .service-tab.is-active {
+		background: oklch(0.32 0.08 var(--hue) / 0.72);
+		color: oklch(0.82 0.1 var(--hue));
+		box-shadow: inset 0 0 0 1px oklch(0.68 0.12 var(--hue) / 0.2);
+	}
+</style>
+
+<script>
+	function initYukiServices() {
+		const root = document.getElementById("yuki-services");
+		if (!root || root.dataset.serviceReady === "true") return;
+
+		const tabs = root.querySelectorAll<HTMLElement>("[data-service-tab]");
+		const panels = root.querySelectorAll<HTMLElement>("[data-service-panel]");
+		if (tabs.length === 0 || panels.length === 0) return;
+
+		root.dataset.serviceReady = "true";
+
+		function activateService(service: string) {
+			tabs.forEach((tab) => {
+				const isActive = tab.dataset.serviceTab === service;
+				tab.classList.toggle("is-active", isActive);
+				tab.setAttribute("aria-selected", String(isActive));
+			});
+
+			panels.forEach((panel) => {
+				panel.classList.toggle("hidden", panel.dataset.servicePanel !== service);
+			});
+		}
+
+		tabs.forEach((tab) => {
+			tab.addEventListener("click", () => {
+				const service = tab.dataset.serviceTab;
+				if (service) activateService(service);
+			});
+		});
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initYukiServices);
+	} else {
+		initYukiServices();
+	}
+	document.addEventListener("astro:page-load", initYukiServices);
+</script>
