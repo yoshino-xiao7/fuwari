@@ -122,7 +122,7 @@ function handleBackdropClick() {
 			{/if}
 			<div class="di-lyric">{lyricText}</div>
 			<div class="di-waveform active">
-				<span /><span /><span /><span />
+				<span></span><span></span><span></span><span></span>
 			</div>
 		</div>
 	{:else}
@@ -135,8 +135,12 @@ function handleBackdropClick() {
 
 <!-- Expanded player panel -->
 {#if musicStore.isExpanded}
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="di-backdrop" onclick={handleBackdropClick}></div>
+	<button
+		type="button"
+		class="di-backdrop"
+		aria-label="关闭播放器"
+		onclick={handleBackdropClick}
+	></button>
 	<div class="player-panel" style={playerPanelStyle}>
 		<div
 			class="player-full"
@@ -145,10 +149,10 @@ function handleBackdropClick() {
 			out:scale={{ duration: 250, opacity: 0, easing: (t) => t * t }}
 		>
 			<!-- Liquid Glass layers -->
-			<div class="player-lg-backdrop" />
-			<div class="player-lg-border player-lg-border-screen" />
-			<div class="player-lg-border player-lg-border-overlay" />
-			<div class="player-lg-hover-glow" />
+			<div class="player-lg-backdrop"></div>
+			<div class="player-lg-border player-lg-border-screen"></div>
+			<div class="player-lg-border player-lg-border-overlay"></div>
+			<div class="player-lg-hover-glow"></div>
 
 			<PlayerFull />
 		</div>
@@ -285,6 +289,8 @@ function handleBackdropClick() {
 		inset: 0;
 		z-index: 95;
 		background: transparent;
+		border: 0;
+		padding: 0;
 	}
 
 	/* Player panel container */
@@ -298,50 +304,50 @@ function handleBackdropClick() {
 		width: 320px;
 		border-radius: 16px;
 		overflow: hidden;
-		box-shadow:
-			0 8px 32px rgba(0, 0, 0, 0.1),
-			0 2px 8px rgba(0, 0, 0, 0.06);
+		isolation: isolate;
+		box-shadow: var(--glass-panel-shadow, 0 8px 32px rgba(0, 0, 0, 0.1));
 		transition:
 			transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
 			box-shadow 0.35s ease;
 	}
 	.player-full:hover {
-		box-shadow:
-			0 12px 48px rgba(0, 0, 0, 0.15),
-			0 4px 12px rgba(0, 0, 0, 0.08);
+		box-shadow: var(--glass-shadow-hover, 0 12px 48px rgba(0, 0, 0, 0.15));
 	}
 	:global(.dark) .player-full {
-		box-shadow:
-			0 8px 32px rgba(0, 0, 0, 0.3),
-			0 2px 8px rgba(0, 0, 0, 0.2);
+		box-shadow: var(--glass-panel-shadow, 0 8px 32px rgba(0, 0, 0, 0.3));
 	}
 	:global(.dark) .player-full:hover {
-		box-shadow:
-			0 12px 48px rgba(0, 0, 0, 0.4),
-			0 4px 12px rgba(0, 0, 0, 0.25);
+		box-shadow: var(--glass-shadow-hover, 0 12px 48px rgba(0, 0, 0, 0.4));
 	}
 
 	/* Glass backdrop layer */
 	.player-lg-backdrop {
 		position: absolute;
 		inset: 0;
-		backdrop-filter: blur(20px) saturate(200%);
-		-webkit-backdrop-filter: blur(20px) saturate(200%);
-		background: linear-gradient(
-			135deg,
-			rgba(255, 255, 255, 0.5) 0%,
-			rgba(255, 255, 255, 0.3) 50%,
-			rgba(255, 255, 255, 0.4) 100%
-		);
+		-webkit-backdrop-filter: var(--glass-panel-filter, blur(20px) saturate(200%));
+		backdrop-filter: var(--glass-panel-filter, blur(20px) saturate(200%));
+		background: var(--glass-panel-bg, rgba(255, 255, 255, 0.34));
 		z-index: 0;
 	}
 	:global(.dark) .player-lg-backdrop {
-		background: linear-gradient(
-			135deg,
-			rgba(255, 255, 255, 0.1) 0%,
-			rgba(255, 255, 255, 0.04) 50%,
-			rgba(255, 255, 255, 0.08) 100%
-		);
+		background: var(--glass-panel-bg, rgba(255, 255, 255, 0.06));
+	}
+	.player-lg-backdrop::before,
+	.player-lg-backdrop::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+	.player-lg-backdrop::before {
+		background: var(--glass-edge-gradient);
+		opacity: var(--glass-edge-opacity, 0.7);
+		mix-blend-mode: screen;
+	}
+	.player-lg-backdrop::after {
+		background-image: var(--glass-specular), var(--glass-noise);
+		opacity: calc(var(--glass-highlight-opacity, 0.34) + var(--glass-noise-opacity, 0));
+		mix-blend-mode: overlay;
 	}
 
 	/* Gradient border layers */
@@ -363,24 +369,12 @@ function handleBackdropClick() {
 	}
 	.player-lg-border-screen {
 		mix-blend-mode: screen;
-		opacity: 0.25;
-		background: linear-gradient(
-			135deg,
-			rgba(255, 255, 255, 0.0) 0%,
-			rgba(255, 255, 255, 0.15) 33%,
-			rgba(255, 255, 255, 0.45) 66%,
-			rgba(255, 255, 255, 0.0) 100%
-		);
+		opacity: var(--glass-edge-opacity, 0.25);
+		background: var(--glass-edge-gradient);
 	}
 	.player-lg-border-overlay {
 		mix-blend-mode: overlay;
-		background: linear-gradient(
-			135deg,
-			rgba(255, 255, 255, 0.0) 0%,
-			rgba(255, 255, 255, 0.35) 33%,
-			rgba(255, 255, 255, 0.65) 66%,
-			rgba(255, 255, 255, 0.0) 100%
-		);
+		background: var(--glass-specular);
 	}
 
 	/* Hover glow */
@@ -393,14 +387,15 @@ function handleBackdropClick() {
 		opacity: 0;
 		background-image: radial-gradient(
 			circle at 50% 0%,
-			rgba(255, 255, 255, 0.5) 0%,
-			rgba(255, 255, 255, 0) 60%
+			rgba(255, 255, 255, 0.68) 0%,
+			rgba(255, 255, 255, 0.24) 28%,
+			rgba(255, 255, 255, 0) 62%
 		);
 		mix-blend-mode: overlay;
 		transition: opacity 0.35s ease;
 	}
 	.player-full:hover .player-lg-hover-glow {
-		opacity: 0.5;
+		opacity: var(--glass-highlight-opacity, 0.5);
 	}
 
 	/* Content z-index above glass layers */
@@ -425,10 +420,28 @@ function handleBackdropClick() {
 		.dynamic-island.di-playing-pill.with-lyric {
 			width: 150px;
 		}
-		/* 降低 backdrop-filter 强度，修复 iOS Safari 毛玻璃过重 */
 		.player-lg-backdrop {
-			backdrop-filter: blur(12px) saturate(150%);
-			-webkit-backdrop-filter: blur(12px) saturate(150%);
+			-webkit-backdrop-filter: var(--glass-panel-filter, blur(9px) saturate(150%));
+			backdrop-filter: var(--glass-panel-filter, blur(9px) saturate(150%));
 		}
+	}
+
+	@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+		.player-lg-backdrop {
+			-webkit-backdrop-filter: none;
+			backdrop-filter: none;
+			background: var(--glass-fallback-bg, rgba(26, 26, 30, 0.92));
+		}
+		.player-lg-backdrop::before,
+		.player-lg-backdrop::after,
+		.player-lg-border,
+		.player-lg-hover-glow {
+			display: none;
+		}
+	}
+
+	:global(html.coarse-pointer) .player-full:hover .player-lg-hover-glow,
+	:global(html.reduced-motion) .player-full:hover .player-lg-hover-glow {
+		opacity: 0;
 	}
 </style>

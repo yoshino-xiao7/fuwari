@@ -62,6 +62,8 @@ const className = Astro.props.class;
   .liquid-glass-wrapper {
     position: relative;
     padding: 4px;
+    --glass-x: 50%;
+    --glass-y: 0%;
   }
 
   /* ===== Non-glass mode: hide decorative layers, use opaque bg ===== */
@@ -77,56 +79,60 @@ const className = Astro.props.class;
 
   .liquid-glass-container {
     position: relative;
+    isolation: isolate;
     border-radius: 20px;
     overflow: hidden;
+    background: var(--glass-surface-bg);
     transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
                 box-shadow 0.35s ease;
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.1),
-      0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--glass-shadow, 0 8px 32px rgba(0, 0, 0, 0.1));
     will-change: transform;
   }
 
   .liquid-glass-container:hover {
-    box-shadow:
-      0 12px 48px rgba(0, 0, 0, 0.15),
-      0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--glass-shadow-hover, 0 12px 48px rgba(0, 0, 0, 0.15));
   }
 
   :global(.dark) .liquid-glass-container {
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.3),
-      0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--glass-shadow, 0 8px 32px rgba(0, 0, 0, 0.3));
   }
 
   :global(.dark) .liquid-glass-container:hover {
-    box-shadow:
-      0 12px 48px rgba(0, 0, 0, 0.4),
-      0 4px 12px rgba(0, 0, 0, 0.25);
+    box-shadow: var(--glass-shadow-hover, 0 12px 48px rgba(0, 0, 0, 0.4));
   }
 
   /* ===== 毛玻璃背景层 ===== */
   .glass-backdrop {
     position: absolute;
     inset: 0;
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    backdrop-filter: blur(16px) saturate(180%);
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.45) 0%,
-      rgba(255, 255, 255, 0.25) 50%,
-      rgba(255, 255, 255, 0.35) 100%
-    );
+    -webkit-backdrop-filter: var(--glass-filter, blur(16px) saturate(180%));
+    backdrop-filter: var(--glass-filter, blur(16px) saturate(180%));
+    background: var(--glass-surface-bg);
     z-index: 0;
   }
 
   :global(.dark) .glass-backdrop {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.08) 0%,
-      rgba(255, 255, 255, 0.03) 50%,
-      rgba(255, 255, 255, 0.06) 100%
-    );
+    background: var(--glass-surface-bg);
+  }
+
+  .glass-backdrop::before,
+  .glass-backdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .glass-backdrop::before {
+    background: var(--glass-edge-gradient);
+    opacity: var(--glass-edge-opacity, 0.7);
+    mix-blend-mode: screen;
+  }
+
+  .glass-backdrop::after {
+    background-image: var(--glass-specular), var(--glass-noise);
+    opacity: calc(var(--glass-highlight-opacity, 0.34) + var(--glass-noise-opacity, 0));
+    mix-blend-mode: overlay;
   }
 
   /* ===== 渐变边框层 ===== */
@@ -149,25 +155,13 @@ const className = Astro.props.class;
 
   .glass-border-screen {
     mix-blend-mode: screen;
-    opacity: 0.25;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.0) 0%,
-      rgba(255, 255, 255, 0.15) 33%,
-      rgba(255, 255, 255, 0.45) 66%,
-      rgba(255, 255, 255, 0.0) 100%
-    );
+    opacity: var(--glass-edge-opacity, 0.25);
+    background: var(--glass-edge-gradient);
   }
 
   .glass-border-overlay {
     mix-blend-mode: overlay;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.0) 0%,
-      rgba(255, 255, 255, 0.35) 33%,
-      rgba(255, 255, 255, 0.65) 66%,
-      rgba(255, 255, 255, 0.0) 100%
-    );
+    background: var(--glass-specular);
   }
 
   /* ===== 悬浮高光层 ===== */
@@ -178,13 +172,19 @@ const className = Astro.props.class;
     pointer-events: none;
     z-index: 2;
     opacity: 0;
-    background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 60%);
+    background-image: radial-gradient(
+      circle at var(--glass-x) var(--glass-y),
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(255, 255, 255, 0.24) 26%,
+      rgba(255, 255, 255, 0) 62%
+    );
     mix-blend-mode: overlay;
     transition: opacity 0.35s ease;
   }
 
-  .liquid-glass-container:hover .glass-hover-glow {
-    opacity: 0.5;
+  .liquid-glass-container:hover .glass-hover-glow,
+  .liquid-glass-wrapper.is-touch-active .glass-hover-glow {
+    opacity: var(--glass-highlight-opacity, 0.5);
   }
 
   /* ===== 内容层 ===== */
@@ -276,6 +276,13 @@ const className = Astro.props.class;
       background: rgba(235, 235, 240, 0.95);
     }
 
+    .glass-backdrop::before,
+    .glass-backdrop::after,
+    .glass-border,
+    .glass-hover-glow {
+      display: none;
+    }
+
     :global(html.dark.glass) .glass-backdrop {
       background: rgba(26, 26, 30, 0.92);
     }
@@ -289,38 +296,39 @@ const className = Astro.props.class;
     .liquid-glass-container {
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
-      box-shadow:
-        0 6px 20px rgba(0, 0, 0, 0.14),
-        0 1px 6px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--glass-shadow);
       will-change: auto;
     }
 
     :global(.dark) .liquid-glass-container {
-      box-shadow:
-        0 6px 20px rgba(0, 0, 0, 0.32),
-        0 1px 6px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--glass-shadow);
     }
 
     .liquid-glass-container:hover {
-      box-shadow:
-        0 6px 20px rgba(0, 0, 0, 0.14),
-        0 1px 6px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--glass-shadow-hover);
     }
 
     :global(.dark) .liquid-glass-container:hover {
-      box-shadow:
-        0 6px 20px rgba(0, 0, 0, 0.32),
-        0 1px 6px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--glass-shadow-hover);
     }
 
     .glass-backdrop {
-      -webkit-backdrop-filter: blur(10px) saturate(145%);
-      backdrop-filter: blur(10px) saturate(145%);
+      -webkit-backdrop-filter: var(--glass-filter);
+      backdrop-filter: var(--glass-filter);
     }
 
-    .glass-hover-glow {
-      display: none;
+    .liquid-glass-container:hover .glass-hover-glow {
+      opacity: 0;
     }
+
+    .liquid-glass-wrapper.is-touch-active .glass-hover-glow {
+      opacity: var(--glass-highlight-opacity, 0.55);
+    }
+  }
+
+  :global(html.reduced-motion) .glass-hover-glow,
+  :global(html.reduced-motion) .glass-backdrop::after {
+    transition: none;
   }
 </style>
 
@@ -331,6 +339,7 @@ const className = Astro.props.class;
     private borderOverlay: HTMLElement | null = null;
     private onMouseMove: ((e: MouseEvent) => void) | null = null;
     private rafId: number | null = null;
+    private touchPulseTimer: number | null = null;
     private targetScaleX = 1;
     private targetScaleY = 1;
     private currentScaleX = 1;
@@ -358,6 +367,9 @@ const className = Astro.props.class;
       if (this.canUsePointerEffects()) {
         this.setupMouseInteraction();
       }
+      if (this.canUseTouchEffects()) {
+        this.setupTouchInteraction();
+      }
     }
 
     disconnectedCallback() {
@@ -369,6 +381,10 @@ const className = Astro.props.class;
         cancelAnimationFrame(this.rafId);
         this.rafId = null;
       }
+      if (this.touchPulseTimer !== null) {
+        window.clearTimeout(this.touchPulseTimer);
+        this.touchPulseTimer = null;
+      }
     }
 
     private canUsePointerEffects() {
@@ -376,11 +392,46 @@ const className = Astro.props.class;
         !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }
 
+    private canUseTouchEffects() {
+      return window.matchMedia("(hover: none), (pointer: coarse)").matches &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+
+    private updateGlowPosition(clientX: number, clientY: number) {
+      if (!this.container) return;
+      const rect = this.container.getBoundingClientRect();
+      const x = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+      const y = Math.max(0, Math.min(100, ((clientY - rect.top) / rect.height) * 100));
+      this.style.setProperty("--glass-x", `${x.toFixed(1)}%`);
+      this.style.setProperty("--glass-y", `${y.toFixed(1)}%`);
+    }
+
+    private setupTouchInteraction() {
+      const pulse = (event: PointerEvent) => {
+        if (event.pointerType === "mouse") return;
+
+        this.updateGlowPosition(event.clientX, event.clientY);
+        this.classList.add("is-touch-active");
+
+        if (this.touchPulseTimer !== null) {
+          window.clearTimeout(this.touchPulseTimer);
+        }
+        this.touchPulseTimer = window.setTimeout(() => {
+          this.classList.remove("is-touch-active");
+          this.touchPulseTimer = null;
+        }, 520);
+      };
+
+      this.addEventListener("pointerdown", pulse, { passive: true });
+      this.addEventListener("pointermove", pulse, { passive: true });
+    }
+
     private setupMouseInteraction() {
       this.onMouseMove = (e: MouseEvent) => {
         if (!this.container) return;
 
         const rect = this.container.getBoundingClientRect();
+        this.updateGlowPosition(e.clientX, e.clientY);
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         const deltaX = e.clientX - centerX;

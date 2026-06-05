@@ -110,7 +110,7 @@ const bgStyle = [
 		<slot />
 
 		<!-- 全局音乐播放器与灵动岛 (Svelte 5) -->
-		<MusicPlayer client:load />
+		<MusicPlayer client:only="svelte" />
 
 		<!-- 页面过渡期间撑高页面，防止滚动跳动 -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
