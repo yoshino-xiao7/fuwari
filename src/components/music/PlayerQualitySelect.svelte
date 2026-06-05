@@ -47,38 +47,45 @@ function handleChange(e: Event) {
 		position: relative;
 		display: inline-flex;
 		align-items: center;
+		flex: 0 0 auto;
 	}
 
 	.quality-select {
 		appearance: none;
 		-webkit-appearance: none;
-		height: 28px;
-		padding: 0 26px 0 10px;
+		height: 32px;
+		min-width: 68px;
+		padding: 0 25px 0 10px;
 		font-size: 0.7rem;
 		font-weight: 600;
 		letter-spacing: 0.03em;
-		border-radius: 14px;
+		border-radius: 999px;
 		background: linear-gradient(
-			135deg,
-			oklch(0.65 0.15 var(--hue) / 0.2),
-			oklch(0.65 0.15 var(--hue) / 0.08)
-		), var(--glass-control-bg, transparent);
-		color: oklch(0.45 0.1 var(--hue));
-		border: 1.5px solid oklch(0.65 0.15 var(--hue) / 0.3);
+				135deg,
+				oklch(0.65 0.15 var(--hue) / 0.18),
+				oklch(0.65 0.15 var(--hue) / 0.08)
+			),
+			rgba(255, 255, 255, 0.24);
+		color: oklch(0.43 0.1 var(--hue));
+		border: 1px solid rgba(255, 255, 255, 0.32);
 		cursor: pointer;
-		-webkit-backdrop-filter: var(--glass-control-filter, blur(8px));
-		backdrop-filter: var(--glass-control-filter, blur(8px));
+		-webkit-backdrop-filter: blur(10px) saturate(150%);
+		backdrop-filter: blur(10px) saturate(150%);
 		transition: all 0.25s ease;
 		outline: none;
+		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset;
 	}
 	.quality-select:hover {
 		background: linear-gradient(
-			135deg,
-			oklch(0.65 0.15 var(--hue) / 0.35),
-			oklch(0.65 0.15 var(--hue) / 0.15)
-		);
-		border-color: oklch(0.65 0.15 var(--hue) / 0.5);
-		box-shadow: 0 2px 12px oklch(0.65 0.2 var(--hue) / 0.2);
+				135deg,
+				oklch(0.65 0.15 var(--hue) / 0.28),
+				oklch(0.65 0.15 var(--hue) / 0.12)
+			),
+			rgba(255, 255, 255, 0.38);
+		border-color: rgba(255, 255, 255, 0.48);
+		box-shadow:
+			0 1px 0 rgba(255, 255, 255, 0.38) inset,
+			0 4px 14px oklch(0.65 0.2 var(--hue) / 0.16);
 	}
 	.quality-select:focus {
 		border-color: oklch(0.65 0.2 var(--hue) / 0.7);
@@ -95,20 +102,23 @@ function handleChange(e: Event) {
 
 	:global(.dark) .quality-select {
 		background: linear-gradient(
-			135deg,
-			oklch(0.65 0.15 var(--hue) / 0.15),
-			oklch(0.65 0.15 var(--hue) / 0.05)
-		), var(--glass-control-bg, transparent);
+				135deg,
+				oklch(0.65 0.15 var(--hue) / 0.16),
+				oklch(0.65 0.15 var(--hue) / 0.06)
+			),
+			rgba(255, 255, 255, 0.07);
 		color: oklch(0.8 0.12 var(--hue));
-		border-color: oklch(0.65 0.15 var(--hue) / 0.25);
+		border-color: rgba(255, 255, 255, 0.1);
+		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
 	}
 	:global(.dark) .quality-select:hover {
 		background: linear-gradient(
-			135deg,
-			oklch(0.65 0.15 var(--hue) / 0.25),
-			oklch(0.65 0.15 var(--hue) / 0.1)
-		);
-		border-color: oklch(0.65 0.15 var(--hue) / 0.45);
+				135deg,
+				oklch(0.65 0.15 var(--hue) / 0.24),
+				oklch(0.65 0.15 var(--hue) / 0.1)
+			),
+			rgba(255, 255, 255, 0.12);
+		border-color: rgba(255, 255, 255, 0.18);
 	}
 	:global(.dark) .quality-select option {
 		background: #2a2a2a;
