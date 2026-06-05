@@ -4,6 +4,7 @@
   由 DynamicIsland 的展开面板渲染。
 -->
 <script lang="ts">
+import MusicPanelSearch from "./MusicPanelSearch.svelte";
 import NowPlayingInfo from "./NowPlayingInfo.svelte";
 import PlayerControls from "./PlayerControls.svelte";
 import PlayerPlaylist from "./PlayerPlaylist.svelte";
@@ -18,6 +19,10 @@ import { musicStore } from "./music-store.svelte";
 
 	<!-- Progress + Controls + Volume/Quality -->
 	<PlayerControls />
+
+	{#if musicStore.showSearch}
+		<MusicPanelSearch />
+	{/if}
 
 	<!-- Playlist (toggleable) -->
 	{#if musicStore.showPlaylist}

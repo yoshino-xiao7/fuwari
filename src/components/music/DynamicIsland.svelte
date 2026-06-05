@@ -14,6 +14,7 @@ type IslandMode =
 	| "playing"
 	| "loading"
 	| "error"
+	| "toast"
 	| "expanded";
 
 let islandEl: HTMLElement | undefined = $state();
@@ -37,6 +38,9 @@ let islandMode: IslandMode = $derived.by(() => {
 	if (musicStore.isLoading && hasSong) return "loading";
 	if (musicStore.errorMessage) return "error";
 	if (musicStore.isPlaying && hasSong) return "playing";
+	if (musicStore.toastMessage && now < musicStore.toastVisibleUntil) {
+		return "toast";
+	}
 	if (hasSong && now < musicStore.pausedVisibleUntil) return "paused";
 	return "clock";
 });
@@ -47,7 +51,11 @@ let islandClass = $derived.by(() => {
 	if (islandMode === "playing" || islandMode === "paused") {
 		return "dynamic-island di-playing-pill with-lyric";
 	}
-	if (islandMode === "loading" || islandMode === "error") {
+	if (
+		islandMode === "loading" ||
+		islandMode === "error" ||
+		islandMode === "toast"
+	) {
 		return "dynamic-island di-status-pill";
 	}
 	return "dynamic-island di-idle";
@@ -61,6 +69,7 @@ let islandTitle = $derived.by(() => {
 	}
 	if (islandMode === "loading") return "音乐加载中";
 	if (islandMode === "error") return musicStore.errorMessage || "播放出错";
+	if (islandMode === "toast") return musicStore.toastMessage;
 	return `北京时间 ${clock}`;
 });
 
@@ -207,11 +216,17 @@ function handleQuickControl(e: MouseEvent, action: "prev" | "next") {
 				<div class="di-paused-dot" aria-hidden="true"></div>
 			{/if}
 		</div>
-	{:else if islandMode === "loading" || islandMode === "error"}
+	{:else if islandMode === "loading" || islandMode === "error" || islandMode === "toast"}
 		<div class="di-pill-status" class:error={islandMode === "error"}>
 			<span class="di-status-dot" aria-hidden="true"></span>
 			<span class="di-status-text">
-				{islandMode === "loading" ? "加载中" : "播放出错"}
+				{#if islandMode === "loading"}
+					加载中
+				{:else if islandMode === "error"}
+					播放出错
+				{:else}
+					{musicStore.toastMessage}
+				{/if}
 			</span>
 		</div>
 	{:else}

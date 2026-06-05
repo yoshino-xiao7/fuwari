@@ -10,6 +10,7 @@ let currentTimeStr = $derived(musicStore.formatTime(musicStore.currentTime));
 let durationStr = $derived(musicStore.formatTime(musicStore.duration));
 let volumePercent = $derived(Math.round(musicStore.volume * 100));
 let displayedVolumePercent = $derived(musicStore.isMuted ? 0 : volumePercent);
+let playModeLabel = $derived(musicStore.playModeLabel);
 
 function handleProgressInput(e: Event) {
 	const target = e.target as HTMLInputElement;
@@ -91,7 +92,7 @@ function handleVolumeInput(e: Event) {
 	</button>
 </div>
 
-<!-- Volume + Quality + Playlist toggle -->
+<!-- Volume + Mode + Quality + Search/Playlist toggles -->
 <div class="bottom-row">
 	<!-- Volume -->
 	<div class="volume-group">
@@ -126,14 +127,63 @@ function handleVolumeInput(e: Event) {
 		/>
 	</div>
 
+	<button
+		type="button"
+		class="icon-btn"
+		aria-label={playModeLabel}
+		title={playModeLabel}
+		onclick={() => musicStore.cyclePlayMode()}
+	>
+		{#if musicStore.playMode === "repeat-one"}
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<path d="m17 2 4 4-4 4" />
+				<path d="M3 11V9a4 4 0 0 1 4-4h14" />
+				<path d="m7 22-4-4 4-4" />
+				<path d="M21 13v2a4 4 0 0 1-4 4H3" />
+				<path d="M11 10h1v5" />
+			</svg>
+		{:else if musicStore.playMode === "shuffle"}
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<path d="M16 3h5v5" />
+				<path d="M4 20 21 3" />
+				<path d="M21 16v5h-5" />
+				<path d="M15 15l6 6" />
+				<path d="M4 4l5 5" />
+			</svg>
+		{:else}
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<path d="m17 2 4 4-4 4" />
+				<path d="M3 11V9a4 4 0 0 1 4-4h14" />
+				<path d="m7 22-4-4 4-4" />
+				<path d="M21 13v2a4 4 0 0 1-4 4H3" />
+			</svg>
+		{/if}
+	</button>
+
 	<!-- Quality -->
 	<PlayerQualitySelect />
+
+	<button
+		type="button"
+		class="icon-btn"
+		class:active={musicStore.showSearch}
+		aria-label="搜索歌曲"
+		title="搜索歌曲"
+		onclick={() => musicStore.toggleSearch()}
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<circle cx="11" cy="11" r="8" />
+			<path d="m21 21-4.35-4.35" />
+		</svg>
+	</button>
 
 	<!-- Playlist toggle -->
 	<button
 		type="button"
-		class="list-btn"
+		class="icon-btn"
+		class:active={musicStore.showPlaylist}
 		aria-label="播放列表"
+		title="播放列表"
 		onclick={() => musicStore.togglePlaylist()}
 	>
 		<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -271,7 +321,7 @@ function handleVolumeInput(e: Event) {
 	}
 
 	.vol-btn,
-	.list-btn {
+	.icon-btn {
 		width: 32px;
 		height: 32px;
 		border-radius: 50%;
@@ -285,15 +335,17 @@ function handleVolumeInput(e: Event) {
 		cursor: pointer;
 	}
 	.vol-btn:hover,
-	.list-btn:hover {
+	.icon-btn:hover,
+	.icon-btn.active {
 		background: oklch(0.93 0 0);
 	}
 	:global(.dark) .vol-btn,
-	:global(.dark) .list-btn {
+	:global(.dark) .icon-btn {
 		color: oklch(0.6 0 0);
 	}
 	:global(.dark) .vol-btn:hover,
-	:global(.dark) .list-btn:hover {
+	:global(.dark) .icon-btn:hover,
+	:global(.dark) .icon-btn.active {
 		background: oklch(0.3 0 0);
 	}
 

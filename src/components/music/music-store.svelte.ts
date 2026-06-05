@@ -5,7 +5,13 @@
  * 替代原 GlobalMusicPlayer.astro 中的 TypeScript class + DOM 操作模式。
  */
 
-import type { LyricLine, MusicEventDetail, QualityLevel, Song } from "./types";
+import type {
+	LyricLine,
+	MusicEventDetail,
+	PlayMode,
+	QualityLevel,
+	Song,
+} from "./types";
 
 // ===== API =====
 
@@ -20,6 +26,8 @@ const MUSIC_API = isLocalhost
 
 const PAUSED_VISIBLE_MS = 5000;
 const ERROR_VISIBLE_MS = 4500;
+const TOAST_VISIBLE_MS = 2600;
+const MAX_RECENT_SONGS = 20;
 
 // ===== Store =====
 
@@ -30,24 +38,31 @@ class MusicStore {
 	isPlaying: boolean = $state(false);
 	volume: number = $state(0.8);
 	quality: QualityLevel = $state("exhigh");
+	playMode: PlayMode = $state("sequence");
 	currentTime: number = $state(0);
 	duration: number = $state(0);
 	isExpanded: boolean = $state(false);
 	showPlaylist: boolean = $state(false);
+	showSearch: boolean = $state(false);
 	isLoading: boolean = $state(false);
 	errorMessage: string = $state("");
 	isMuted: boolean = $state(false);
+	toastMessage: string = $state("");
+	toastVisibleUntil: number = $state(0);
+	favoriteSongs: Song[] = $state([]);
+	recentSongs: Song[] = $state([]);
 	lastMusicInteractionAt: number = $state(0);
 	pausedVisibleUntil: number = $state(0);
 
 	// ---- Non-reactive internal state ----
-	lyrics: LyricLine[] = [];
-	currentLyricIndex = -1;
+	lyrics: LyricLine[] = $state([]);
+	currentLyricIndex: number = $state(-1);
 
 	// ---- Internal audio element ----
 	private audio: HTMLAudioElement;
 	private pauseTimer: ReturnType<typeof setTimeout> | null = null;
 	private errorTimer: ReturnType<typeof setTimeout> | null = null;
+	private toastTimer: ReturnType<typeof setTimeout> | null = null;
 	private clockInterval: ReturnType<typeof setInterval> | null = null;
 	private pollInterval: ReturnType<typeof setInterval> | null = null;
 	private initialized = false;
@@ -89,6 +104,23 @@ class MusicStore {
 			: "";
 	}
 
+	get currentLyricText(): string {
+		return this.lyrics[this.currentLyricIndex]?.text || "♪ 播放中";
+	}
+
+	get nextLyricText(): string {
+		return this.lyrics[this.currentLyricIndex + 1]?.text || "";
+	}
+
+	get playModeLabel(): string {
+		const labels: Record<PlayMode, string> = {
+			sequence: "顺序播放",
+			"repeat-one": "单曲循环",
+			shuffle: "随机播放",
+		};
+		return labels[this.playMode];
+	}
+
 	get isPausedVisible(): boolean {
 		return (
 			this.currentSong !== null &&
@@ -127,7 +159,7 @@ class MusicStore {
 			this.isMuted = this.audio.muted || this.volume === 0;
 		});
 		this.audio.addEventListener("ended", () => {
-			this.next();
+			this.handleEnded();
 		});
 		this.audio.addEventListener("play", () => {
 			this.isLoading = false;
@@ -157,6 +189,11 @@ class MusicStore {
 			const savedIndex = localStorage.getItem("music_current_index");
 			const savedVolume = localStorage.getItem("music_volume");
 			const savedMuted = localStorage.getItem("music_muted");
+			const savedPlayMode = localStorage.getItem(
+				"music_play_mode",
+			) as PlayMode | null;
+			const savedFavorites = localStorage.getItem("music_favorites");
+			const savedRecentSongs = localStorage.getItem("music_recent_songs");
 			const savedQuality = localStorage.getItem(
 				"music_quality",
 			) as QualityLevel | null;
@@ -169,6 +206,16 @@ class MusicStore {
 			if (savedMuted) this.isMuted = savedMuted === "true";
 			this.applyAudioVolume();
 			if (savedQuality) this.quality = savedQuality;
+			if (savedPlayMode && isPlayMode(savedPlayMode)) {
+				this.playMode = savedPlayMode;
+			}
+			if (savedFavorites) this.favoriteSongs = parseSongs(savedFavorites);
+			if (savedRecentSongs) {
+				this.recentSongs = parseSongs(savedRecentSongs).slice(
+					0,
+					MAX_RECENT_SONGS,
+				);
+			}
 
 			// Clean up legacy keys
 			localStorage.removeItem("music_is_minimized");
@@ -220,6 +267,7 @@ class MusicStore {
 			song.url = httpsUrl;
 			this.audio.src = httpsUrl;
 			this.applyAudioVolume();
+			this.addRecentSong(song);
 
 			const handleError = () => {
 				console.warn("HTTPS playback failed, falling back to HTTP");
@@ -267,7 +315,7 @@ class MusicStore {
 	next() {
 		if (this.playlist.length === 0) return;
 		this.markMusicInteraction();
-		this.currentIndex = (this.currentIndex + 1) % this.playlist.length;
+		this.currentIndex = this.getNextIndex();
 		this.playCurrent();
 	}
 
@@ -299,6 +347,7 @@ class MusicStore {
 		if (existingIndex === -1) {
 			this.playlist = [...this.playlist, song];
 			this.persistState();
+			if (!autoPlay) this.showToast("已加入播放列表");
 			if (autoPlay) {
 				this.currentIndex = this.playlist.length - 1;
 				this.playCurrent();
@@ -306,6 +355,8 @@ class MusicStore {
 		} else if (autoPlay) {
 			this.currentIndex = existingIndex;
 			this.playCurrent();
+		} else {
+			this.showToast("播放列表中已有这首歌");
 		}
 	}
 
@@ -335,9 +386,50 @@ class MusicStore {
 	}
 
 	playAtIndex(index: number) {
+		if (index < 0 || index >= this.playlist.length) return;
 		this.markMusicInteraction();
 		this.currentIndex = index;
 		this.playCurrent();
+	}
+
+	playSong(song: Song) {
+		this.addSong(song, true);
+	}
+
+	addRecentSong(song: Song) {
+		const next = [
+			stripTransientSongUrl(song),
+			...this.recentSongs.filter((s) => s.id !== song.id),
+		].slice(0, MAX_RECENT_SONGS);
+		this.recentSongs = next;
+		this.persistState();
+	}
+
+	clearRecentSongs() {
+		this.recentSongs = [];
+		this.persistState();
+		this.showToast("已清空最近播放");
+	}
+
+	toggleFavorite(song = this.currentSong) {
+		if (!song) return;
+		this.markMusicInteraction();
+		if (this.isFavorite(song.id)) {
+			this.favoriteSongs = this.favoriteSongs.filter((s) => s.id !== song.id);
+			this.showToast("已取消收藏");
+		} else {
+			this.favoriteSongs = [
+				stripTransientSongUrl(song),
+				...this.favoriteSongs.filter((s) => s.id !== song.id),
+			];
+			this.showToast("已收藏");
+		}
+		this.persistState();
+	}
+
+	isFavorite(songId: number | string | undefined): boolean {
+		if (songId === undefined) return false;
+		return this.favoriteSongs.some((song) => song.id === songId);
 	}
 
 	// ===== Volume =====
@@ -360,8 +452,9 @@ class MusicStore {
 
 	private applyAudioVolume() {
 		if (!this.audio) return;
-		this.audio.volume = clampVolume(this.volume);
-		this.audio.muted = this.isMuted || this.volume === 0;
+		const nextVolume = clampVolume(this.volume);
+		this.audio.muted = this.isMuted || nextVolume === 0;
+		this.audio.volume = nextVolume;
 	}
 
 	// ===== Quality =====
@@ -385,6 +478,18 @@ class MusicStore {
 		}
 	}
 
+	cyclePlayMode() {
+		this.markMusicInteraction();
+		const nextMode: Record<PlayMode, PlayMode> = {
+			sequence: "repeat-one",
+			"repeat-one": "shuffle",
+			shuffle: "sequence",
+		};
+		this.playMode = nextMode[this.playMode];
+		localStorage.setItem("music_play_mode", this.playMode);
+		this.showToast(this.playModeLabel);
+	}
+
 	// ===== UI =====
 
 	toggleExpanded() {
@@ -392,6 +497,7 @@ class MusicStore {
 		this.isExpanded = !this.isExpanded;
 		if (this.isExpanded) {
 			this.showPlaylist = false;
+			this.showSearch = false;
 		}
 	}
 
@@ -402,6 +508,13 @@ class MusicStore {
 	togglePlaylist() {
 		this.markMusicInteraction();
 		this.showPlaylist = !this.showPlaylist;
+		if (this.showPlaylist) this.showSearch = false;
+	}
+
+	toggleSearch() {
+		this.markMusicInteraction();
+		this.showSearch = !this.showSearch;
+		if (this.showSearch) this.showPlaylist = false;
 	}
 
 	// ===== Island visibility hints =====
@@ -426,6 +539,16 @@ class MusicStore {
 		this.errorTimer = setTimeout(() => {
 			this.errorMessage = "";
 		}, ERROR_VISIBLE_MS);
+	}
+
+	showToast(message: string, duration = TOAST_VISIBLE_MS) {
+		this.toastMessage = message;
+		this.toastVisibleUntil = Date.now() + duration;
+		if (this.toastTimer) clearTimeout(this.toastTimer);
+		this.toastTimer = setTimeout(() => {
+			this.toastVisibleUntil = 0;
+			this.toastMessage = "";
+		}, duration);
 	}
 
 	// ===== Lyrics =====
@@ -459,6 +582,33 @@ class MusicStore {
 		return this.lyrics[this.currentLyricIndex]?.text || "♪";
 	}
 
+	// ===== Playback mode helpers =====
+
+	private handleEnded() {
+		if (this.playMode === "repeat-one") {
+			this.markMusicInteraction();
+			this.audio.currentTime = 0;
+			this.audio.play().catch(() => {
+				this.playCurrent();
+			});
+			return;
+		}
+		this.next();
+	}
+
+	private getNextIndex(): number {
+		if (this.playlist.length <= 1) return 0;
+		if (this.playMode !== "shuffle") {
+			return (this.currentIndex + 1) % this.playlist.length;
+		}
+
+		let nextIndex = this.currentIndex;
+		while (nextIndex === this.currentIndex) {
+			nextIndex = Math.floor(Math.random() * this.playlist.length);
+		}
+		return nextIndex;
+	}
+
 	// ===== Persistence =====
 
 	persistState() {
@@ -467,6 +617,15 @@ class MusicStore {
 			localStorage.setItem("music_current_index", String(this.currentIndex));
 			localStorage.setItem("music_volume", String(this.volume));
 			localStorage.setItem("music_muted", String(this.isMuted));
+			localStorage.setItem("music_play_mode", this.playMode);
+			localStorage.setItem(
+				"music_favorites",
+				JSON.stringify(this.favoriteSongs.map(stripTransientSongUrl)),
+			);
+			localStorage.setItem(
+				"music_recent_songs",
+				JSON.stringify(this.recentSongs.map(stripTransientSongUrl)),
+			);
 		} catch (e) {
 			console.error("Failed to save player state", e);
 		}
@@ -500,6 +659,7 @@ class MusicStore {
 		if (this.pollInterval) clearInterval(this.pollInterval);
 		if (this.pauseTimer) clearTimeout(this.pauseTimer);
 		if (this.errorTimer) clearTimeout(this.errorTimer);
+		if (this.toastTimer) clearTimeout(this.toastTimer);
 	}
 }
 
@@ -524,6 +684,40 @@ function parseLRC(lrc: string): LyricLine[] {
 function clampVolume(value: number): number {
 	if (!Number.isFinite(value)) return 0.8;
 	return Math.min(1, Math.max(0, value));
+}
+
+function isPlayMode(value: string): value is PlayMode {
+	return value === "sequence" || value === "repeat-one" || value === "shuffle";
+}
+
+function parseSongs(value: string): Song[] {
+	try {
+		const parsed = JSON.parse(value);
+		if (!Array.isArray(parsed)) return [];
+		return parsed.filter(isSongLike).map(stripTransientSongUrl);
+	} catch (_e) {
+		return [];
+	}
+}
+
+function isSongLike(value: unknown): value is Song {
+	if (!value || typeof value !== "object") return false;
+	const song = value as Partial<Song>;
+	return (
+		(typeof song.id === "number" || typeof song.id === "string") &&
+		typeof song.name === "string" &&
+		typeof song.artist === "string" &&
+		typeof song.cover === "string"
+	);
+}
+
+function stripTransientSongUrl(song: Song): Song {
+	return {
+		id: song.id,
+		name: song.name,
+		artist: song.artist,
+		cover: song.cover,
+	};
 }
 
 // ===== Singleton export =====

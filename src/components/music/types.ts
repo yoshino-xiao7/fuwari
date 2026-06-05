@@ -22,6 +22,8 @@ export type QualityLevel =
 	| "lossless"
 	| "hires";
 
+export type PlayMode = "sequence" | "repeat-one" | "shuffle";
+
 /** MusicSearch.astro CustomEvent detail 结构 */
 export interface MusicEventDetail {
 	id: number | string;
