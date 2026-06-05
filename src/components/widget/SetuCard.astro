@@ -82,16 +82,20 @@ const wrapperProps = embedded
 
 <div
   id="setu-preview"
-  class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden"
+  class="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="图片预览"
 >
-  <div class="max-w-3xl max-h-[90vh] relative px-4">
-    <button
-      id="setu-preview-close"
-      type="button"
-      class="absolute -top-10 right-4 text-sm text-neutral-200 hover:text-white"
-    >
-      关闭
-    </button>
+  <button
+    id="setu-preview-close"
+    type="button"
+    class="setu-preview-close"
+    aria-label="关闭图片预览"
+  >
+    关闭
+  </button>
+  <div id="setu-preview-stage" class="setu-preview-stage">
     <img
       id="setu-preview-img"
       src=""
@@ -100,6 +104,41 @@ const wrapperProps = embedded
     />
   </div>
 </div>
+
+<style>
+  .setu-preview-close {
+    position: fixed;
+    top: max(1rem, env(safe-area-inset-top));
+    right: max(1rem, env(safe-area-inset-right));
+    z-index: 1;
+    min-width: 3.25rem;
+    min-height: 2.25rem;
+    padding: 0 0.875rem;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.42);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.875rem;
+    font-weight: 700;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .setu-preview-stage {
+    width: 100%;
+    height: 100%;
+    padding: max(4rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #setu-preview-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+</style>
 
 <script>
   const API_URL = "https://api.yukiryou.icu/blog/setu";
@@ -121,6 +160,7 @@ const wrapperProps = embedded
     const link = root.querySelector("#setu-link");
 
     const preview = document.getElementById("setu-preview");
+    const previewStage = document.getElementById("setu-preview-stage");
     const previewImg = document.getElementById("setu-preview-img");
     const previewClose = document.getElementById("setu-preview-close");
 
@@ -131,11 +171,13 @@ const wrapperProps = embedded
       previewImg.src = src;
       previewImg.alt = thumb.getAttribute("alt") || "";
       preview.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
     }
 
     function closePreview() {
       if (!preview) return;
       preview.classList.add("hidden");
+      document.body.style.overflow = "";
     }
 
     if (thumbWrapper) {
@@ -146,7 +188,7 @@ const wrapperProps = embedded
 
     if (preview) {
       preview.addEventListener("click", (e) => {
-        if (e.target === preview) {
+        if (e.target === preview || e.target === previewStage) {
           closePreview();
         }
       });
@@ -157,6 +199,12 @@ const wrapperProps = embedded
         closePreview();
       });
     }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closePreview();
+      }
+    });
 
     let loading = false;
 
