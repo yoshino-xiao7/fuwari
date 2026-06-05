@@ -109,8 +109,8 @@ const className = Astro.props.class;
   .glass-backdrop {
     position: absolute;
     inset: 0;
-    backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(180%);
     background: linear-gradient(
       135deg,
       rgba(255, 255, 255, 0.45) 0%,
@@ -268,6 +268,60 @@ const className = Astro.props.class;
     background: rgba(255, 255, 255, 0.12);
     color: rgba(255, 255, 255, 0.7);
   }
+
+  @supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+    :global(html.glass) .glass-backdrop {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background: rgba(235, 235, 240, 0.95);
+    }
+
+    :global(html.dark.glass) .glass-backdrop {
+      background: rgba(26, 26, 30, 0.92);
+    }
+  }
+
+  @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+    .liquid-glass-wrapper {
+      padding: 3px;
+    }
+
+    .liquid-glass-container {
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.14),
+        0 1px 6px rgba(0, 0, 0, 0.08);
+      will-change: auto;
+    }
+
+    :global(.dark) .liquid-glass-container {
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.32),
+        0 1px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .liquid-glass-container:hover {
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.14),
+        0 1px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    :global(.dark) .liquid-glass-container:hover {
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.32),
+        0 1px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .glass-backdrop {
+      -webkit-backdrop-filter: blur(10px) saturate(145%);
+      backdrop-filter: blur(10px) saturate(145%);
+    }
+
+    .glass-hover-glow {
+      display: none;
+    }
+  }
 </style>
 
 <script>
@@ -275,6 +329,7 @@ const className = Astro.props.class;
     private container: HTMLElement | null = null;
     private borderScreen: HTMLElement | null = null;
     private borderOverlay: HTMLElement | null = null;
+    private onMouseMove: ((e: MouseEvent) => void) | null = null;
     private rafId: number | null = null;
     private targetScaleX = 1;
     private targetScaleY = 1;
@@ -300,11 +355,29 @@ const className = Astro.props.class;
       }
 
       // 鼠标交互
-      this.setupMouseInteraction();
+      if (this.canUsePointerEffects()) {
+        this.setupMouseInteraction();
+      }
+    }
+
+    disconnectedCallback() {
+      if (this.onMouseMove) {
+        document.removeEventListener("mousemove", this.onMouseMove);
+        this.onMouseMove = null;
+      }
+      if (this.rafId !== null) {
+        cancelAnimationFrame(this.rafId);
+        this.rafId = null;
+      }
+    }
+
+    private canUsePointerEffects() {
+      return window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }
 
     private setupMouseInteraction() {
-      const onMouseMove = (e: MouseEvent) => {
+      this.onMouseMove = (e: MouseEvent) => {
         if (!this.container) return;
 
         const rect = this.container.getBoundingClientRect();
@@ -356,7 +429,7 @@ const className = Astro.props.class;
         this.startAnimation();
       };
 
-      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mousemove", this.onMouseMove, { passive: true });
     }
 
     private startAnimation() {

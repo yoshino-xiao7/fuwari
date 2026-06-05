@@ -1,6 +1,71 @@
 @tailwind components;
 
 @layer components {
+    :root.glass {
+        --glass-card-bg: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.45) 0%,
+                rgba(255, 255, 255, 0.25) 50%,
+                rgba(255, 255, 255, 0.35) 100%);
+        --glass-panel-bg: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.5) 0%,
+                rgba(255, 255, 255, 0.3) 100%);
+        --glass-filter: blur(16px) saturate(180%);
+        --glass-panel-filter: blur(20px) saturate(180%);
+        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+            0 2px 8px rgba(0, 0, 0, 0.06),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.4),
+            inset 0 1px 3px rgba(255, 255, 255, 0.2);
+        --glass-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.15),
+            0 4px 12px rgba(0, 0, 0, 0.08),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.5),
+            inset 0 1px 3px rgba(255, 255, 255, 0.25);
+        --glass-panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.12),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.4);
+        --glass-fallback-bg: rgba(235, 235, 240, 0.95);
+        --glass-fallback-bg-hover: rgba(228, 228, 235, 0.97);
+    }
+
+    :root.dark.glass {
+        --glass-card-bg: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(255, 255, 255, 0.03) 50%,
+                rgba(255, 255, 255, 0.06) 100%);
+        --glass-panel-bg: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(255, 255, 255, 0.03) 100%);
+        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+            0 2px 8px rgba(0, 0, 0, 0.2),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.1),
+            inset 0 1px 3px rgba(255, 255, 255, 0.05);
+        --glass-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.4),
+            0 4px 12px rgba(0, 0, 0, 0.25),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.15),
+            inset 0 1px 3px rgba(255, 255, 255, 0.08);
+        --glass-panel-shadow: 0 12px 40px rgba(0, 0, 0, 0.35),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+        --glass-fallback-bg: rgba(26, 26, 30, 0.92);
+        --glass-fallback-bg-hover: rgba(32, 32, 38, 0.95);
+    }
+
+    @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+        :root.glass {
+            --glass-filter: blur(10px) saturate(145%);
+            --glass-panel-filter: blur(12px) saturate(150%);
+            --glass-shadow: 0 6px 20px rgba(0, 0, 0, 0.14),
+                inset 0 0 0 0.5px rgba(255, 255, 255, 0.32);
+            --glass-shadow-hover: var(--glass-shadow);
+            --glass-panel-shadow: 0 8px 28px rgba(0, 0, 0, 0.16),
+                inset 0 0 0 0.5px rgba(255, 255, 255, 0.28);
+        }
+
+        :root.dark.glass {
+            --glass-shadow: 0 6px 20px rgba(0, 0, 0, 0.32),
+                inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+            --glass-shadow-hover: var(--glass-shadow);
+            --glass-panel-shadow: 0 8px 28px rgba(0, 0, 0, 0.34),
+                inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+        }
+    }
 
     /* ===== Default card (Classic Dark / Light) — opaque ===== */
     .card-base {
@@ -14,45 +79,14 @@
     /* ===== Liquid Glass mode — translucent glass cards ===== */
     :root.glass .card-base {
         position: relative;
-        background: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.45) 0%,
-                rgba(255, 255, 255, 0.25) 50%,
-                rgba(255, 255, 255, 0.35) 100%);
-        backdrop-filter: blur(16px) saturate(180%);
-        -webkit-backdrop-filter: blur(16px) saturate(180%);
-        box-shadow:
-            0 8px 32px rgba(0, 0, 0, 0.1),
-            0 2px 8px rgba(0, 0, 0, 0.06),
-            inset 0 0 0 0.5px rgba(255, 255, 255, 0.4),
-            inset 0 1px 3px rgba(255, 255, 255, 0.2);
+        background: var(--glass-card-bg);
+        -webkit-backdrop-filter: var(--glass-filter);
+        backdrop-filter: var(--glass-filter);
+        box-shadow: var(--glass-shadow);
     }
 
     :root.glass .card-base:hover {
-        box-shadow:
-            0 12px 48px rgba(0, 0, 0, 0.15),
-            0 4px 12px rgba(0, 0, 0, 0.08),
-            inset 0 0 0 0.5px rgba(255, 255, 255, 0.5),
-            inset 0 1px 3px rgba(255, 255, 255, 0.25);
-    }
-
-    :root.dark.glass .card-base {
-        background: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.08) 0%,
-                rgba(255, 255, 255, 0.03) 50%,
-                rgba(255, 255, 255, 0.06) 100%);
-        box-shadow:
-            0 8px 32px rgba(0, 0, 0, 0.3),
-            0 2px 8px rgba(0, 0, 0, 0.2),
-            inset 0 0 0 0.5px rgba(255, 255, 255, 0.1),
-            inset 0 1px 3px rgba(255, 255, 255, 0.05);
-    }
-
-    :root.dark.glass .card-base:hover {
-        box-shadow:
-            0 12px 48px rgba(0, 0, 0, 0.4),
-            0 4px 12px rgba(0, 0, 0, 0.25),
-            inset 0 0 0 0.5px rgba(255, 255, 255, 0.15),
-            inset 0 1px 3px rgba(255, 255, 255, 0.08);
+        box-shadow: var(--glass-shadow-hover);
     }
 
     /* ===== Glass text readability (only in glass mode) ===== */
@@ -144,15 +178,10 @@
     }
 
     :root.glass .float-panel {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), inset 0 0 0 0.5px rgba(255, 255, 255, 0.4);
-    }
-
-    :root.dark.glass .float-panel {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+        background: var(--glass-panel-bg);
+        -webkit-backdrop-filter: var(--glass-panel-filter);
+        backdrop-filter: var(--glass-panel-filter);
+        box-shadow: var(--glass-panel-shadow);
     }
 
     .float-panel-closed {
@@ -247,6 +276,27 @@
 
     .btn-regular-dark.success {
         @apply bg-[oklch(0.75_0.14_var(--hue))] dark:bg-[oklch(0.75_0.14_var(--hue))]
+    }
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+    :root.glass .card-base,
+    :root.glass .float-panel {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: var(--glass-fallback-bg);
+    }
+
+    :root.glass .card-base:hover {
+        background: var(--glass-fallback-bg-hover);
+    }
+}
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+    :root.glass .card-base,
+    :root.glass .float-panel {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
     }
 }
 
