@@ -30,11 +30,8 @@ const specCollection: ReturnType<typeof defineCollection> = defineCollection({
 });
 
 const assetsCollection: ReturnType<typeof defineCollection> = defineCollection({
-	type: "data",
-	schema: z.object({
-		title: z.string().optional(),
-		description: z.string().optional(),
-	}),
+	loader: () => [],
+	schema: z.object({}),
 });
 
 const devlogsCollection: ReturnType<typeof defineCollection> = defineCollection(
