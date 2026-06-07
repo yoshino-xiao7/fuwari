@@ -5,6 +5,9 @@ export type SiteConfig = {
 	subtitle: string;
 	description?: string;
 	keywords?: string[];
+	seo?: {
+		defaultOgImage: string;
+	};
 
 	lang: string;
 
@@ -98,6 +101,7 @@ export type BlogPostData = {
 	published: Date;
 	description: string;
 	tags: string[];
+	category?: string;
 	draft?: boolean;
 	image?: string;
 	prevTitle?: string;

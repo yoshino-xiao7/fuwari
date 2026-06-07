@@ -15,10 +15,13 @@ interface Props {
 	published: Date;
 	updated?: Date;
 	tags: string[];
+	category?: string;
 	image: string;
 	description: string;
 	draft: boolean;
 	style: string;
+	loading?: "lazy" | "eager";
+	fetchpriority?: "high" | "low" | "auto";
 }
 const {
 	entry,
@@ -27,9 +30,12 @@ const {
 	published,
 	updated,
 	tags,
+	category,
 	image,
 	description,
 	style,
+	loading = "lazy",
+	fetchpriority,
 } = Astro.props;
 
 const isPinned = entry.data.pinned === true;
@@ -61,7 +67,7 @@ const { remarkPluginFrontmatter } = await entry.render();
         </a>
 
         <!-- metadata -->
-        <PostMetadata published={published} updated={updated} tags={tags} hideTagsForMobile={true} hideUpdateDate={true} class="mb-4"></PostMetadata>
+        <PostMetadata published={published} updated={updated} tags={tags} category={category} hideTagsForMobile={true} hideUpdateDate={true} class="mb-4"></PostMetadata>
 
         <!-- description -->
         <div class:list={["transition text-75 mb-3.5 pr-4", {"line-clamp-2 md:line-clamp-1": !description}]}>
@@ -90,7 +96,7 @@ const { remarkPluginFrontmatter } = await entry.render();
             </Icon>
         </div>
         <ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt="Cover Image of the Post"
-                  class="w-full h-full">
+                  loading={loading} fetchpriority={fetchpriority} class="w-full h-full">
         </ImageWrapper>
     </a>}
 

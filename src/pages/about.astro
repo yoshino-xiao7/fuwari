@@ -5,6 +5,8 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { getEntry } from "astro:content";
 import { render } from "astro:content";
 import Markdown from "@components/misc/Markdown.astro";
+import { profileConfig } from "../config";
+import { getAbsoluteUrl, jsonLdString } from "../utils/seo-utils";
 
 const aboutPost = await getEntry("spec", "about");
 
@@ -13,8 +15,20 @@ if (!aboutPost) {
 }
 
 const { Content } = await render(aboutPost);
+
+const profileJsonLd = {
+	"@context": "https://schema.org",
+	"@type": "ProfilePage",
+	mainEntity: {
+		"@type": "Person",
+		name: profileConfig.name,
+		url: getAbsoluteUrl("/about/", Astro.site),
+		sameAs: profileConfig.links.map((link) => link.url),
+	},
+};
 ---
 <MainGridLayout title="关于" description="关于">
+    <script is:inline slot="head" type="application/ld+json" set:html={jsonLdString(profileJsonLd)}></script>
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
         <div class="card-base z-10 px-9 py-6 relative w-full ">
             <Markdown class="mt-2">

@@ -26,6 +26,7 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	BANNER_HEIGHT_HOME,
 } from "../constants/constants";
+import { getCanonicalUrl, jsonLdString } from "../utils/seo-utils";
 import { url, pathsEqual } from "../utils/url-utils";
 
 interface Props {
@@ -34,9 +35,11 @@ interface Props {
 	description?: string;
 	lang?: string;
 	setOGTypeArticle?: boolean;
+	ogImage?: string;
 }
 
-let { title, banner, description, lang, setOGTypeArticle } = Astro.props;
+let { title, banner, description, lang, setOGTypeArticle, ogImage } =
+	Astro.props;
 
 // Banner
 const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
@@ -89,6 +92,16 @@ const bgStyle = [
 	`--bg-attachment: ${siteConfig.background.attachment || "fixed"}`,
 	`--bg-opacity: ${siteConfig.background.opacity || 0.3}`,
 ].join(";");
+
+const siteJsonLd = isHomePage
+	? {
+			"@context": "https://schema.org",
+			"@type": "WebSite",
+			name: siteConfig.title,
+			url: getCanonicalUrl("/", Astro.site),
+			description: siteConfig.description || siteConfig.subtitle,
+		}
+	: null;
 ---
 
 <!DOCTYPE html>
@@ -98,7 +111,8 @@ const bgStyle = [
 >
 	<head>
 		<ThemeInit />
-		<HeadMeta pageTitle={pageTitle} description={description!} setOGTypeArticle={setOGTypeArticle} />
+		<HeadMeta pageTitle={pageTitle} description={description!} setOGTypeArticle={setOGTypeArticle} ogImage={ogImage} />
+		{siteJsonLd && <script is:inline type="application/ld+json" set:html={jsonLdString(siteJsonLd)}></script>}
 		<slot name="head" />
 	</head>
 

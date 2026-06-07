@@ -4,6 +4,7 @@ import type { MarkdownHeading } from "astro";
 import BlogExplorer from "./BlogExplorer.astro";
 import Profile from "./Profile.astro";
 import ProjectProgress from "./ProjectProgress.astro";
+import Tags from "./Tags.astro";
 import YukiServices from "./YukiServices.astro";
 
 interface Props {
@@ -19,8 +20,9 @@ const className = Astro.props.class;
     </div>
     <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 sticky top-4 lg:max-h-[calc(100vh_-_2rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-1">
         <BlogExplorer class="onload-animation" style="animation-delay: 200ms" />
-        <YukiServices class="onload-animation" style="animation-delay: 225ms" />
-        <ProjectProgress class="onload-animation" style="animation-delay: 250ms" />
+        <Tags class="onload-animation" style="animation-delay: 225ms" />
+        <YukiServices class="onload-animation" style="animation-delay: 250ms" />
+        <ProjectProgress class="onload-animation" style="animation-delay: 275ms" />
     </div>
 </div>
 

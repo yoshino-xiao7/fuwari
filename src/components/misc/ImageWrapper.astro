@@ -7,12 +7,24 @@ interface Props {
 	alt?: string;
 	position?: string;
 	basePath?: string;
+	loading?: "lazy" | "eager";
+	decoding?: "async" | "sync" | "auto";
+	fetchpriority?: "high" | "low" | "auto";
 }
 import { Image } from "astro:assets";
 import { imageFallbackConfig, siteConfig } from "../../config";
 import { url } from "../../utils/url-utils";
 
-const { id, src, alt, position = "center", basePath = "/" } = Astro.props;
+const {
+	id,
+	src,
+	alt,
+	position = "center",
+	basePath = "/",
+	loading = "lazy",
+	decoding = "async",
+	fetchpriority,
+} = Astro.props;
 const className = Astro.props.class;
 
 const isLocal = !(
@@ -53,11 +65,11 @@ const imageStyle = `object-position: ${position}`;
     </div>
     
     <!-- 图片内容 -->
-    {isLocal && img && <Image src={img} alt={alt || ""} class={`${imageClass} image-content opacity-0 transition-opacity duration-500`} style={imageStyle} onload="this.style.opacity='1'; this.parentElement.querySelector('.loading-bar').style.opacity='0';"/>}
+    {isLocal && img && <Image src={img} alt={alt || ""} loading={loading} decoding={decoding} fetchpriority={fetchpriority} class={`${imageClass} image-content opacity-0 transition-opacity duration-500`} style={imageStyle} onload="this.style.opacity='1'; this.parentElement.querySelector('.loading-bar').style.opacity='0';"/>}
     {!isLocal && (
         imageFallbackConfig.enable && src.includes(imageFallbackConfig.originalDomain) ? 
-            <img src={isPublic ? url(src) : src} alt={alt || ""} class={`${imageClass} image-content opacity-0 transition-opacity duration-500`} style={imageStyle} onload="this.style.opacity='1'; this.parentElement.querySelector('.loading-bar').style.opacity='0';" onerror={`this.onerror=null; this.src='${(isPublic ? url(src) : src).replace(imageFallbackConfig.originalDomain, imageFallbackConfig.fallbackDomain)}';`}/> :
-            <img src={isPublic ? url(src) : src} alt={alt || ""} class={`${imageClass} image-content opacity-0 transition-opacity duration-500`} style={imageStyle} onload="this.style.opacity='1'; this.parentElement.querySelector('.loading-bar').style.opacity='0';"/>
+            <img src={isPublic ? url(src) : src} alt={alt || ""} loading={loading} decoding={decoding} fetchpriority={fetchpriority} class={`${imageClass} image-content opacity-0 transition-opacity duration-500`} style={imageStyle} onload="this.style.opacity='1'; this.parentElement.querySelector('.loading-bar').style.opacity='0';" onerror={`this.onerror=null; this.src='${(isPublic ? url(src) : src).replace(imageFallbackConfig.originalDomain, imageFallbackConfig.fallbackDomain)}';`}/> :
+            <img src={isPublic ? url(src) : src} alt={alt || ""} loading={loading} decoding={decoding} fetchpriority={fetchpriority} class={`${imageClass} image-content opacity-0 transition-opacity duration-500`} style={imageStyle} onload="this.style.opacity='1'; this.parentElement.querySelector('.loading-bar').style.opacity='0';"/>
     )}
 </div>
 
@@ -87,4 +99,3 @@ const imageStyle = `object-position: ${position}`;
         transform: scale(1.05);
     }
 </style>
-

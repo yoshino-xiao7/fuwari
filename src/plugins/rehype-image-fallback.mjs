@@ -11,6 +11,8 @@ export default function rehypeImageFallback(options = {}) {
 		visit(tree, "element", (node) => {
 			if (node.tagName === "img" && node.properties && node.properties.src) {
 				const src = node.properties.src;
+				node.properties.loading = node.properties.loading || "lazy";
+				node.properties.decoding = node.properties.decoding || "async";
 
 				// 检查是否启用回退功能并且是来自指定域名的图片
 				if (enable && typeof src === "string" && src.includes(originalDomain)) {

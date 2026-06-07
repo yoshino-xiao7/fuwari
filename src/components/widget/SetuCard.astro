@@ -67,7 +67,7 @@ const wrapperProps = embedded
           id="setu-link"
           href="#"
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           aria-label="在新标签页查看原图"
           class="btn-regular h-8 text-sm px-3 rounded-lg inline-flex items-center flex-shrink-0 whitespace-nowrap w-fit"
         >
@@ -258,7 +258,7 @@ const wrapperProps = embedded
         if (link) {
           link.setAttribute("href", imgUrl);
           link.setAttribute("target", "_blank");
-          link.setAttribute("rel", "noreferrer");
+          link.setAttribute("rel", "noopener noreferrer");
         }
         if (result) {
           result.classList.remove("hidden");

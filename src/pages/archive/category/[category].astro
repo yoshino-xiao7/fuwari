@@ -1,0 +1,22 @@
+---
+import ArchivePanel from "@components/ArchivePanel.astro";
+
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getCategoryList } from "@utils/content-utils";
+
+export async function getStaticPaths() {
+	const categories = await getCategoryList();
+
+	return categories.map((category) => ({
+		params: {
+			category: category.name,
+		},
+	}));
+}
+
+const category = Astro.params.category as string;
+---
+
+<MainGridLayout title={`${category} - 分类`} description={`分类归档 - ${category}`}>
+    <ArchivePanel category={category}></ArchivePanel>
+</MainGridLayout>

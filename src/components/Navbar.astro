@@ -43,6 +43,7 @@ const rightLinks = links.slice(midIndex);
             <div class="hidden md:flex items-center overflow-hidden">
                 {leftLinks.map((l) => {
                     return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
+                              rel={l.external ? "noopener noreferrer" : null}
                               class="btn-plain scale-animation rounded-lg h-11 font-bold px-2 xl:px-3 active:scale-95 whitespace-nowrap"
                     >
                         <div class="flex items-center">
@@ -64,6 +65,7 @@ const rightLinks = links.slice(midIndex);
             <div class="hidden md:flex items-center overflow-hidden mr-auto">
                 {rightLinks.map((l) => {
                     return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
+                              rel={l.external ? "noopener noreferrer" : null}
                               class="btn-plain scale-animation rounded-lg h-11 font-bold px-2 xl:px-3 active:scale-95 whitespace-nowrap"
                     >
                         <div class="flex items-center">

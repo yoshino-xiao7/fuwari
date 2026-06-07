@@ -16,6 +16,9 @@ export const siteConfig: SiteConfig = {
 		"分享网络技术、服务器部署、内网穿透、静态网站搭建、CDN优化、容器化部署等技术教程与实践经验的个人技术博客，专注于云原生、无服务器架构和前后端开发",
 
 	keywords: [],
+	seo: {
+		defaultOgImage: "/favicon/nodeseek.png",
+	},
 	lang: "zh_CN", // 'en', 'zh_CN', 'zh_TW', 'ja', 'ko', 'es', 'th'
 	themeColor: {
 		hue: 361, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
@@ -65,6 +68,11 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
+		{
+			name: "日志",
+			url: "/devlogs/",
+			external: false,
+		},
 		LinkPreset.About,
 		{
 			name: "友链",

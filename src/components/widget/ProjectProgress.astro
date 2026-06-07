@@ -88,6 +88,11 @@ for (const proj of projects) {
     <div class="flex flex-col gap-0" id="proj-logs">
       <!-- 由 JS 填充 -->
     </div>
+
+    <a href="/devlogs/" class="proj-all-link">
+      <span>全部开发日志</span>
+      <span aria-hidden="true">→</span>
+    </a>
   </div>
 </LiquidGlassLayout>
 
@@ -121,6 +126,22 @@ for (const proj of projects) {
     transform-origin: left center;
   }
   :global(.proj-log-item:hover .proj-log-title) {
+    color: oklch(0.7 0.18 var(--hue));
+  }
+  .proj-all-link {
+    align-items: center;
+    border-radius: 8px;
+    color: oklch(0.62 0.16 var(--hue));
+    display: flex;
+    font-size: 0.75rem;
+    font-weight: 700;
+    justify-content: space-between;
+    padding: 6px 8px;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .proj-all-link:hover {
+    background: rgba(128, 128, 128, 0.08);
     color: oklch(0.7 0.18 var(--hue));
   }
   :global(.proj-log-date) {
