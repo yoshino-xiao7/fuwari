@@ -1,4 +1,211 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>扣扣空间</title><description>日常技术分享与实践</description><link>https://blog.yukiryou.top/</link><language>zh_CN</language><item><title>把五台云服务器整理成三台：一次个人项目的成本账</title><link>https://blog.yukiryou.top/posts/2026-06-13-cloud-server-cleanup/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/2026-06-13-cloud-server-cleanup/</guid><description>最近重新梳理了一下雪涼云和终末地相关服务的服务器部署、代理下载、OSS 成本和后续规划，顺便给个人项目算了一笔更现实的长期维护账。</description><pubDate>Sat, 13 Jun 2026 20:40:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：又到了整理服务器的时候&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>扣扣空间</title><description>日常技术分享与实践</description><link>https://blog.yukiryou.top/</link><language>zh_CN</language><item><title>给终末地 Wiki 换一套底座：为了 Yunzai 插件和资源来源</title><link>https://blog.yukiryou.top/posts/2026-06-14-endfield-wiki-yunzai-foundation/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/2026-06-14-endfield-wiki-yunzai-foundation/</guid><description>记录本轮终末地 Wiki 更新：独立 Wiki 站、普通浏览与管理员同步分离、森空岛原始详情渲染，以及它为什么是后续 Yunzai Wiki 功能和资源来源治理的基础。</description><pubDate>Sun, 14 Jun 2026 20:20:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：这次不是单纯做一个 Wiki 页面&lt;/h2&gt;
+&lt;p&gt;最近把终末地 Wiki 相关功能又整理了一轮。&lt;/p&gt;
+&lt;p&gt;表面上看，这次更新像是给站点加了一个独立 Wiki 页面：能看首页、分类、搜索、分页、条目详情，管理员也能在后台同步数据。但它真正要解决的事情不只是“网页上能看资料”，而是后续 &lt;strong&gt;Yunzai 插件的 Wiki 功能&lt;/strong&gt; 和 &lt;strong&gt;资源来源问题&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;之前终末地相关功能已经有网页端，也有 Yunzai Bot 插件。网页端适合浏览和管理，Bot 适合在群里快速查资料。但只要两个入口都要查同一批资料，就必须先回答一个问题：&lt;/p&gt;
+&lt;p&gt;这些资源到底从哪里来，又用什么结构存下来？&lt;/p&gt;
+&lt;p&gt;如果这个问题没解决，后面无论是网页 Wiki，还是 Bot 的 Wiki 查询，都会变成各写各的、各补各的字段。短期能跑，长期会很难维护。&lt;/p&gt;
+&lt;p&gt;所以这次更新的重点，是先把 Wiki 数据链路重新整理清楚。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 从后台浏览页，拆成真正的 Wiki 站&lt;/h2&gt;
+&lt;p&gt;之前的 Wiki 功能更像是一个后台数据浏览页。&lt;/p&gt;
+&lt;p&gt;普通用户入口和管理员入口混在一起，页面可以看到一些条目，但更偏“我能把同步回来的数据展示出来”。它能用，但不太像一个真正面向用户的 Wiki。&lt;/p&gt;
+&lt;p&gt;这次把入口拆开了：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/wiki/endfield
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这是普通用户和游客访问的独立 Wiki 站。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/dashboard/admin/wiki
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这是管理员后台入口，用来做同步、任务查看和失败重试。&lt;/p&gt;
+&lt;p&gt;工作台里的 Wiki 菜单也不再直接承载管理能力，而是跳到独立 Wiki：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/dashboard/wiki -&amp;gt; /wiki/endfield
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这个拆分很重要。普通用户只需要搜索、浏览和查看详情；管理员才需要同步资源、查看任务状态和重试失败任务。把这两条路径分开之后，权限边界会清楚很多，页面心智也不会混在一起。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 普通用户要能看，管理员同步必须严&lt;/h2&gt;
+&lt;p&gt;这次 Wiki 查询接口的设计方向是：普通浏览尽量开放，管理同步严格限制。&lt;/p&gt;
+&lt;p&gt;普通查询接口包括：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;GET /endfield/wiki/home
+GET /endfield/wiki/sidebar
+GET /endfield/wiki/items
+GET /endfield/wiki/items/page
+GET /endfield/wiki/search
+GET /endfield/wiki/item/detail
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这些接口应该允许游客、登录用户和 API Key 调用方读取。Wiki 本身是资料浏览，如果普通用户第一次进页面就被拦到登录页，体验会很别扭，也不利于后续 Bot 或外部入口复用。&lt;/p&gt;
+&lt;p&gt;但管理员同步接口必须严格校验：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;POST /endfield/wiki/sync/home
+GET  /endfield/wiki/sync/tasks
+GET  /endfield/wiki/sync/tasks/{taskId}
+POST /endfield/wiki/sync/tasks/{taskId}/retry
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;最终权限判断应该落到：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;level_id = 1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;不能只看前端传来的 &lt;code&gt;isAdmin&lt;/code&gt;，也不能只看某个字符串字段。同步能力会影响数据来源和内容更新，必须由后端做真实权限判断。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 资源来源：不要把官方详情洗没了&lt;/h2&gt;
+&lt;p&gt;终末地 Wiki 的数据来源主要是森空岛终末地 Wiki。&lt;/p&gt;
+&lt;p&gt;森空岛返回的原始详情其实很完整，尤其是干员详情，里面不只是标题和封面，还包含：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;官方章节结构。&lt;/li&gt;
+&lt;li&gt;角色立绘和标签。&lt;/li&gt;
+&lt;li&gt;干员资料表。&lt;/li&gt;
+&lt;li&gt;技能、天赋、潜能等页签内容。&lt;/li&gt;
+&lt;li&gt;富文本正文。&lt;/li&gt;
+&lt;li&gt;富文档图片。&lt;/li&gt;
+&lt;li&gt;官方表格。&lt;/li&gt;
+&lt;li&gt;语音资源和外链。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果后端为了“好看”只存一份清洗后的摘要，前端详情页就很难还原这些内容。更麻烦的是，后续武器、材料、道具、装备、活动等条目结构都可能不一样。如果每种类型都单独硬编码一套，很快就会变成维护地狱。&lt;/p&gt;
+&lt;p&gt;所以这次定下来的思路是：&lt;strong&gt;标准字段负责列表和搜索，原始详情负责完整渲染&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;列表、搜索、筛选需要的是稳定字段：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;id
+officialItemId
+categoryId
+mainTypeId
+subTypeId
+name
+cover
+tagIds
+briefData
+caption
+hasDetail
+publishedAt
+updatedAt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;详情页需要的是完整的：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;detailData
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;detailData&lt;/code&gt; 不建议深度裁剪。前端会从里面解析官方章节、主图、标签树、富文档、表格、图片和语音资源。也就是说，后端不要替前端“过度理解”官方结构，先把原始资料保留下来，前端再逐层渲染。&lt;/p&gt;
+&lt;p&gt;这对后续 Yunzai 插件也很关键。Bot 可以不直接接触复杂的森空岛原始结构，而是复用已经整理过的 Wiki 接口。网页端和 Bot 端都从同一个资源池取数据，后面才不会出现“网页能查，Bot 查不到”或者“Bot 的数据又是另一套”的情况。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 详情页做成通用原始数据渲染器&lt;/h2&gt;
+&lt;p&gt;这次详情页没有只针对“干员”硬编码。&lt;/p&gt;
+&lt;p&gt;前端会优先识别森空岛官方结构：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;detailData.document.chapterGroup
+detailData.document.widgetCommonMap
+detailData.document.documentMap
+tabList
+tabDataMap
+tableList
+blockIds
+blockMap
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;森空岛的详情数据有点绕。章节里的 widget 往往只是一个索引，真正内容在 &lt;code&gt;widgetCommonMap&lt;/code&gt;；页签里的 &lt;code&gt;content&lt;/code&gt; 也经常不是正文，而是 &lt;code&gt;documentMap&lt;/code&gt; 的短 ID。前端需要顺着这些引用把内容找出来，再渲染成页面。&lt;/p&gt;
+&lt;p&gt;当前已经支持这些内容：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;文本和富文档段落。&lt;/li&gt;
+&lt;li&gt;图片和官方物料。&lt;/li&gt;
+&lt;li&gt;表格。&lt;/li&gt;
+&lt;li&gt;页签内容。&lt;/li&gt;
+&lt;li&gt;技能 GIF 或图片。&lt;/li&gt;
+&lt;li&gt;语音资源链接。&lt;/li&gt;
+&lt;li&gt;外链资源。&lt;/li&gt;
+&lt;li&gt;普通对象键值行。&lt;/li&gt;
+&lt;li&gt;未识别结构的原始 JSON 折叠展示。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;主图也会优先使用官方立绘：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;detailData.document.extraInfo.illustration
+detailData.brief.illustration
+detailData.brief.cover
+WikiItem.cover
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这样干员详情不会只显示列表封面，而是尽量还原官方资料里的主视觉。&lt;/p&gt;
+&lt;p&gt;如果遇到不是官方 &lt;code&gt;document&lt;/code&gt; 结构的条目，前端会走通用 JSON 兜底：能识别图片就显示图片，能识别表格就显示表格，数组和对象拆成章节，实在看不懂的内容就折叠展示原始 JSON。&lt;/p&gt;
+&lt;p&gt;目标很朴素：&lt;strong&gt;内容可以暂时不够漂亮，但不能空白，也不能丢数据&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 为什么这对 Yunzai 插件很重要&lt;/h2&gt;
+&lt;p&gt;Yunzai 插件后续如果要做 Wiki 查询，最怕的不是渲染卡片，而是资料来源不稳定。&lt;/p&gt;
+&lt;p&gt;比如群里发：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#终末地wiki 弭弗
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;理想状态下，Bot 应该能稳定查到条目、摘要、标签、主图、技能、材料或其他资料，然后根据 QQ 场景渲染成图片或文字。&lt;/p&gt;
+&lt;p&gt;如果没有统一 Wiki 数据源，Bot 可能会走另一套接口，或者把某些资源写死在插件里。这样短期开发快，但一旦官方数据更新、字段变化、资源失效，就要在网页端和 Bot 端分别修。&lt;/p&gt;
+&lt;p&gt;这次先把独立 Wiki 站和接口契约做起来，就是为了后面让 Bot 端少踩坑：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;搜索走统一接口。&lt;/li&gt;
+&lt;li&gt;详情走统一 &lt;code&gt;itemId&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;标签从同一套 &lt;code&gt;filterTagTree&lt;/code&gt; 反查中文名。&lt;/li&gt;
+&lt;li&gt;图片、语音、表格都从原始详情里解析。&lt;/li&gt;
+&lt;li&gt;后续同步任务由管理员后台维护。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这样 Yunzai 插件只需要思考“怎么把资料适合 QQ 场景地展示出来”，不用再各自处理资源来源和官方结构解析。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 当前完成度&lt;/h2&gt;
+&lt;p&gt;这轮已经完成的东西包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;独立 Wiki 页面。&lt;/li&gt;
+&lt;li&gt;左侧目录和移动端目录抽屉。&lt;/li&gt;
+&lt;li&gt;Wiki 首页。&lt;/li&gt;
+&lt;li&gt;分类图鉴列表。&lt;/li&gt;
+&lt;li&gt;筛选标签。&lt;/li&gt;
+&lt;li&gt;搜索。&lt;/li&gt;
+&lt;li&gt;分页。&lt;/li&gt;
+&lt;li&gt;条目详情。&lt;/li&gt;
+&lt;li&gt;普通用户 Wiki 浏览入口和管理员同步入口分离。&lt;/li&gt;
+&lt;li&gt;管理员后台同步首页、任务查看和失败重试。&lt;/li&gt;
+&lt;li&gt;官方原始 JSON 详情渲染。&lt;/li&gt;
+&lt;li&gt;非官方结构的通用 JSON 兜底。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最近一次前端验证已经通过：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm run build
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;路由也能正常返回：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/wiki/endfield
+/wiki/endfield/detail?itemId=1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这不代表 Wiki 已经做到最终形态，但至少说明核心链路已经能跑起来：普通用户能看，管理员能同步，详情页能读出官方原始结构。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 现在还不完美的地方&lt;/h2&gt;
+&lt;p&gt;第一版先保证内容完整和可读，没有追求完全复刻森空岛官网。&lt;/p&gt;
+&lt;p&gt;目前还有这些限制：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;页签暂时不是交互式切换，而是连续面板。&lt;/li&gt;
+&lt;li&gt;语音资源还是外链，没有内嵌播放器。&lt;/li&gt;
+&lt;li&gt;富文本样式还不够接近官网。&lt;/li&gt;
+&lt;li&gt;官方表格的跨行、跨列、颜色和对齐还没有完整还原。&lt;/li&gt;
+&lt;li&gt;同步任务状态第一版可以先用内存态，后续需要持久化。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这些问题都可以继续优化，但优先级没有“资源不丢”和“结构能读”高。&lt;/p&gt;
+&lt;p&gt;尤其是 Wiki 这种功能，第一阶段最怕的是为了做得像官网，把数据结构写死在某一种条目上。那样看起来很精致，但后面一遇到武器、材料、活动或者新 widget 类型，就会开始崩。&lt;/p&gt;
+&lt;p&gt;所以这次宁可先做一个稳一点的通用渲染器，再慢慢把视觉和交互补上。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 后续计划&lt;/h2&gt;
+&lt;p&gt;后续大概会分几步走。&lt;/p&gt;
+&lt;p&gt;第一步是继续增强详情渲染：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;干员技能做成更接近官网的技能卡。&lt;/li&gt;
+&lt;li&gt;语音资源改成播放器。&lt;/li&gt;
+&lt;li&gt;图片说明展示出来。&lt;/li&gt;
+&lt;li&gt;quote block 增加引用样式。&lt;/li&gt;
+&lt;li&gt;表格支持 &lt;code&gt;rowSpan&lt;/code&gt; 和 &lt;code&gt;colSpan&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;富文本颜色映射到主题状态色。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;第二步是增强 Wiki 首页：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;首页 banner。&lt;/li&gt;
+&lt;li&gt;快捷入口。&lt;/li&gt;
+&lt;li&gt;干员池和武器池。&lt;/li&gt;
+&lt;li&gt;活动模块。&lt;/li&gt;
+&lt;li&gt;更新日志。&lt;/li&gt;
+&lt;li&gt;数据更新时间或贡献信息。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;第三步是改善搜索体验：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;搜索关键词高亮。&lt;/li&gt;
+&lt;li&gt;分类筛选。&lt;/li&gt;
+&lt;li&gt;最近搜索。&lt;/li&gt;
+&lt;li&gt;空状态推荐分类。&lt;/li&gt;
+&lt;li&gt;搜索接口缓存。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;再往后才是同步任务持久化和性能优化，比如同步任务表、定时同步、首页缓存、列表分页缓存、详情缓存、大型详情页分章节懒渲染。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 小结&lt;/h2&gt;
+&lt;p&gt;这次终末地 Wiki 更新，表面上是在做一个更好看的资料站，实际上是在补一层更底层的资源基础设施。&lt;/p&gt;
+&lt;p&gt;对网页端来说，它让普通用户可以用独立入口浏览 Wiki，也让管理员同步和维护资源时有清晰的后台。&lt;/p&gt;
+&lt;p&gt;对 Yunzai 插件来说，它先把资源来源、接口结构和原始详情解析稳定下来。后面插件要做 Wiki 查询，就可以站在这套数据底座上继续扩展，而不是重新处理一遍森空岛复杂的原始结构。&lt;/p&gt;
+&lt;p&gt;目前最重要的目标不是“一步做到官网级还原”，而是先保证资料来源稳定、详情不丢内容、未知结构不空白。只要这层打稳，后续无论是网页 Wiki、QQ 群查询，还是更多终末地工具，都能从同一份数据里长出来。&lt;/p&gt;
+</content:encoded></item><item><title>把五台云服务器整理成三台：一次个人项目的成本账</title><link>https://blog.yukiryou.top/posts/2026-06-13-cloud-server-cleanup/</link><guid isPermaLink="true">https://blog.yukiryou.top/posts/2026-06-13-cloud-server-cleanup/</guid><description>最近重新梳理了一下雪涼云和终末地相关服务的服务器部署、代理下载、OSS 成本和后续规划，顺便给个人项目算了一笔更现实的长期维护账。</description><pubDate>Sat, 13 Jun 2026 20:40:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：又到了整理服务器的时候&lt;/h2&gt;
 &lt;p&gt;最近把手里的云服务器重新盘了一遍，突然发现自己不知不觉已经养了 &lt;strong&gt;五台服务器&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;两台在阿里云，其中一台快到期；一台在腾讯云；另外还有两台香港服务器。单看每台其实都不算贵，都是一些小规格机器，用来跑雪涼云、终末地相关后端、QQ Bot、代理下载，还有一些零零碎碎的小服务。但加起来之后，年付成本大概已经到了 &lt;strong&gt;3000 元左右&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;这笔钱说多也不算特别夸张，毕竟不是大规格机器，也没有上什么豪华配置。但作为个人项目长期维护成本，确实到了应该认真整理一下的程度。&lt;/p&gt;
