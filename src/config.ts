@@ -28,6 +28,7 @@ export const siteConfig: SiteConfig = {
 	seo: {
 		defaultOgImage: "/favicon/nodeseek.png",
 		googleSiteVerification: "eKEGiYR_MejlPuEzN7ULsbX9tjHjv6NPRrdLNhci1Ow",
+		msValidate: "8D13DDAA02A4F4F30105DFC54DA07172",
 	},
 	lang: "zh_CN", // 'en', 'zh_CN', 'zh_TW', 'ja', 'ko', 'es', 'th'
 	themeColor: {
@@ -69,8 +70,8 @@ export const siteConfig: SiteConfig = {
 		},
 	],
 	officialSites: [
-		{ url: "https://blog-n.yukiryou.top", alias: "Vercel" },
-		{ url: "https://blog.yukiryou.icu", alias: "备案域" },
+		{ url: "https://blog.yukiryou.icu", alias: "博客" },
+		{ url: "https://yukiryou.icu", alias: "主域" },
 	],
 };
 

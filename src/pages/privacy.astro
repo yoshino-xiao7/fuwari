@@ -1,0 +1,41 @@
+---
+import { getEntry, render } from "astro:content";
+import Markdown from "@components/misc/Markdown.astro";
+import { siteConfig } from "../config";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+import { getCanonicalUrl, jsonLdString } from "../utils/seo-utils";
+
+const privacyPost = await getEntry("spec", "privacy");
+const privacyDescription =
+	"雪涼的扣扣空间隐私政策，说明本站使用的托管、统计、音乐播放、插画展示、Cookie 和本地存储等数据处理方式。";
+
+if (!privacyPost) {
+	throw new Error("Privacy page content not found");
+}
+
+const { Content } = await render(privacyPost);
+
+const privacyJsonLd = {
+	"@context": "https://schema.org",
+	"@type": "WebPage",
+	name: "隐私政策",
+	description: privacyDescription,
+	url: getCanonicalUrl(Astro.url.pathname, Astro.site),
+	isPartOf: {
+		"@type": "WebSite",
+		name: siteConfig.title,
+		url: getCanonicalUrl("/", Astro.site),
+	},
+};
+---
+
+<MainGridLayout title="隐私政策" description={privacyDescription}>
+    <script is:inline slot="head" type="application/ld+json" set:html={jsonLdString(privacyJsonLd)}></script>
+    <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
+        <div class="card-base z-10 px-9 py-6 relative w-full ">
+            <Markdown class="mt-2">
+                <Content />
+            </Markdown>
+        </div>
+    </div>
+</MainGridLayout>

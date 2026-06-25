@@ -9,6 +9,8 @@ import { profileConfig } from "../config";
 import { getAbsoluteUrl, jsonLdString } from "../utils/seo-utils";
 
 const aboutPost = await getEntry("spec", "about");
+const aboutDescription =
+	"关于雪涼（YukiRyou）和个人博客「雪涼的扣扣空间」：记录个人项目、技术实践、雪涼云开发日志与日常内容。";
 
 if (!aboutPost) {
 	throw new Error("About page content not found");
@@ -19,15 +21,20 @@ const { Content } = await render(aboutPost);
 const profileJsonLd = {
 	"@context": "https://schema.org",
 	"@type": "ProfilePage",
+	name: "关于雪涼",
+	description: aboutDescription,
+	url: getAbsoluteUrl("/about/", Astro.site),
 	mainEntity: {
 		"@type": "Person",
 		name: profileConfig.name,
+		alternateName: ["雪凉", "YukiRyou", "yukiryou"],
 		url: getAbsoluteUrl("/about/", Astro.site),
+		image: profileConfig.avatar,
 		sameAs: profileConfig.links.map((link) => link.url),
 	},
 };
 ---
-<MainGridLayout title="关于" description="关于">
+<MainGridLayout title="关于雪涼" description={aboutDescription}>
     <script is:inline slot="head" type="application/ld+json" set:html={jsonLdString(profileJsonLd)}></script>
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
         <div class="card-base z-10 px-9 py-6 relative w-full ">

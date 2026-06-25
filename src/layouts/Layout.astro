@@ -26,7 +26,11 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	BANNER_HEIGHT_HOME,
 } from "../constants/constants";
-import { getCanonicalUrl, jsonLdString } from "../utils/seo-utils";
+import {
+	getAbsoluteUrl,
+	getCanonicalUrl,
+	jsonLdString,
+} from "../utils/seo-utils";
 import { url, pathsEqual } from "../utils/url-utils";
 
 interface Props {
@@ -101,10 +105,13 @@ const siteJsonLd = isHomePage
 			alternateName: ["扣扣空间", "雪凉的扣扣空间", "YukiRyou Blog"],
 			url: getCanonicalUrl("/", Astro.site),
 			description: siteConfig.description || siteConfig.subtitle,
+			inLanguage: siteConfig.lang.replace("_", "-"),
 			author: {
 				"@type": "Person",
 				name: profileConfig.name,
 				alternateName: ["雪凉", "YukiRyou", "yukiryou"],
+				url: getAbsoluteUrl("/about/", Astro.site),
+				image: profileConfig.avatar,
 				sameAs: profileConfig.links.map((link) => link.url),
 			},
 		}

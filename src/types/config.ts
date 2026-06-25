@@ -8,6 +8,7 @@ export type SiteConfig = {
 	seo?: {
 		defaultOgImage: string;
 		googleSiteVerification?: string;
+		msValidate?: string;
 	};
 
 	lang: string;
