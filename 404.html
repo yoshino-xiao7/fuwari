@@ -460,13 +460,13 @@ function backToTop() {
 			checkDomain();
 		}
 	})();
-})();</script> <!-- Vercel Analytics（不需要 cookie 同意，由 Vercel 平台管理） --><vercel-analytics data-props="{}" data-params="{}" data-pathname="/404/"></vercel-analytics> <script type="module">var f="@vercel/analytics",l="1.5.0",w=()=>{window.va||(window.va=function(...r){(window.vaq=window.vaq||[]).push(r)})};function d(){return typeof window<"u"}function u(){try{const e="production"}catch{}return"production"}function v(e="auto"){if(e==="auto"){window.vam=u();return}window.vam=e}function m(){return(d()?window.vam:u())||"production"}function c(){return m()==="development"}function b(e,r){if(!e||!r)return e;let n=e;try{const t=Object.entries(r);for(const[a,i]of t)if(!Array.isArray(i)){const o=s(i);o.test(n)&&(n=n.replace(o,`/[${a}]`))}for(const[a,i]of t)if(Array.isArray(i)){const o=s(i.join("/"));o.test(n)&&(n=n.replace(o,`/[...${a}]`))}return n}catch{return e}}function s(e){return new RegExp(`/${h(e)}(?=[/?#]|$)`)}function h(e){return e.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}function y(e){return e.scriptSrc?e.scriptSrc:c()?"https://va.vercel-scripts.com/v1/script.debug.js":e.basePath?`${e.basePath}/insights/script.js`:"/_vercel/insights/script.js"}function g(e={debug:!0}){var r;if(!d())return;v(e.mode),w(),e.beforeSend&&((r=window.va)==null||r.call(window,"beforeSend",e.beforeSend));const n=y(e);if(document.head.querySelector(`script[src*="${n}"]`))return;const t=document.createElement("script");t.src=n,t.defer=!0,t.dataset.sdkn=f+(e.framework?`/${e.framework}`:""),t.dataset.sdkv=l,e.disableAutoTrack&&(t.dataset.disableAutoTrack="1"),e.endpoint?t.dataset.endpoint=e.endpoint:e.basePath&&(t.dataset.endpoint=`${e.basePath}/insights`),e.dsn&&(t.dataset.dsn=e.dsn),t.onerror=()=>{const a=c()?"Please check if any ad blockers are enabled and try again.":"Be sure to enable Web Analytics for your project and deploy again. See https://vercel.com/docs/analytics/quickstart for more information.";console.log(`[Vercel Web Analytics] Failed to load script from ${n}. ${a}`)},c()&&e.debug===!1&&(t.dataset.debug="false"),document.head.appendChild(t)}function p({route:e,path:r}){var n;(n=window.va)==null||n.call(window,"pageview",{route:e,path:r})}function k(){try{return}catch{}}customElements.define("vercel-analytics",class extends HTMLElement{constructor(){super();try{const r=JSON.parse(this.dataset.props??"{}"),n=JSON.parse(this.dataset.params??"{}");g({...r,disableAutoTrack:!0,framework:"astro",basePath:k(),beforeSend:window.webAnalyticsBeforeSend});const t=this.dataset.pathname;p({route:b(t??"",n),path:t})}catch(r){throw new Error(`Failed to parse WebAnalytics properties: ${r}`)}}});</script> <!-- Cookie Consent Banner UI --> <div id="cookie-consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-[100] pb-4 px-4"> <div class="mx-auto max-w-xl rounded-2xl p-4 md:p-5 border border-white/[0.12]" style="background: oklch(0.22 0.015 var(--hue) / 0.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);"> <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3"> <p class="text-sm text-neutral-300 leading-relaxed">
-本网站使用 Cookie 和分析服务来改善体验。继续使用即表示同意，详见<a href="/about/" class="text-[var(--primary)] underline underline-offset-2 hover:opacity-80">隐私政策</a>。
+})();</script> <!-- Cookie Consent Banner UI --><div id="cookie-consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-[100] pb-4 px-4"> <div class="mx-auto max-w-xl rounded-2xl p-4 md:p-5 border border-white/[0.12]" style="background: oklch(0.22 0.015 var(--hue) / 0.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);"> <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3"> <p class="text-sm text-neutral-300 leading-relaxed">
+本网站使用 Cookie 和分析服务来改善体验。继续使用即表示同意，详见<a href="/privacy/" class="text-[var(--primary)] underline underline-offset-2 hover:opacity-80">隐私政策</a>。
 </p> <div class="flex items-center gap-2 shrink-0"> <button id="cookie-decline" class="px-3 py-1.5 rounded-lg text-sm font-medium text-neutral-400 hover:text-white hover:bg-white/[0.06] transition">
 拒绝
 </button> <button id="cookie-accept" class="px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--primary)] text-white hover:opacity-90 active:scale-95 transition">
 接受
-</button> </div> </div> </div> </div> <!-- 单一 script：分析注入 + Cookie 同意交互 --> <script data-swup-ignore-script>(function(){const config = {"umami":{"websiteId":"15924681-f412-49c8-8f0d-63f14495b9d7","scriptUrl":"https://cloud.umami.is/script.js"},"baidu":{"scriptUrl":"https://hm.baidu.com/hm.js?69025b38a7f30d097ec77b0635cc7f84"},"clarity":{"projectId":"udl1zwuz27"},"ga":{"trackingId":"G-8BSEJ23TXZ","scriptUrl":"https://www.googletagmanager.com/gtag/js"},"cloudflare":{"token":"58c9626fdb9c418eb0aeac6d3c60aada","scriptUrl":"https://static.cloudflareinsights.com/beacon.min.js"}};
+</button> </div> </div> </div> </div> <!-- 单一 script：分析注入 + Cookie 同意交互 --> <script data-swup-ignore-script>(function(){const config = {"baidu":{"enabled":true,"scriptUrl":"https://hm.baidu.com/hm.js?69025b38a7f30d097ec77b0635cc7f84"},"clarity":{"enabled":false,"projectId":"udl1zwuz27"},"ga":{"enabled":true,"trackingId":"G-8BSEJ23TXZ","scriptUrl":"https://www.googletagmanager.com/gtag/js"},"cloudflare":{"enabled":false,"token":"58c9626fdb9c418eb0aeac6d3c60aada","scriptUrl":"https://static.cloudflareinsights.com/beacon.min.js"}};
 
 (function() {
 	var KEY = 'cookie-consent';
@@ -477,44 +477,47 @@ function backToTop() {
 	 */
 	function injectAnalytics() {
 		var s;
-
-		// Umami
-		s = document.createElement('script');
-		s.defer = true;
-		s.src = config.umami.scriptUrl;
-		s.setAttribute('data-website-id', config.umami.websiteId);
-		document.head.appendChild(s);
+		if (window.__yukiAnalyticsInjected) return;
+		window.__yukiAnalyticsInjected = true;
 
 		// 百度统计
-		window._hmt = window._hmt || [];
-		s = document.createElement('script');
-		s.src = config.baidu.scriptUrl;
-		s.async = true;
-		document.head.appendChild(s);
+		if (config.baidu.enabled && !document.querySelector('script[src="' + config.baidu.scriptUrl + '"]')) {
+			window._hmt = window._hmt || [];
+			s = document.createElement('script');
+			s.src = config.baidu.scriptUrl;
+			s.async = true;
+			document.head.appendChild(s);
+		}
 
 		// Microsoft Clarity
-		(function(c,l,a,r,i,t,y){
-			c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-			t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
-			y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-		})(window, document, 'clarity', 'script', config.clarity.projectId);
+		if (config.clarity.enabled && !document.querySelector('script[src*="clarity.ms/tag/"]')) {
+			(function(c,l,a,r,i,t,y){
+				c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+				t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
+				y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+			})(window, document, 'clarity', 'script', config.clarity.projectId);
+		}
 
 		// Google Analytics
-		s = document.createElement('script');
-		s.async = true;
-		s.src = config.ga.scriptUrl + '?id=' + config.ga.trackingId;
-		document.head.appendChild(s);
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-		gtag('config', config.ga.trackingId);
+		if (config.ga.enabled && !document.querySelector('script[src*="' + config.ga.trackingId + '"]')) {
+			s = document.createElement('script');
+			s.async = true;
+			s.src = config.ga.scriptUrl + '?id=' + config.ga.trackingId;
+			document.head.appendChild(s);
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', config.ga.trackingId);
+		}
 
 		// Cloudflare Web Analytics
-		s = document.createElement('script');
-		s.defer = true;
-		s.src = config.cloudflare.scriptUrl;
-		s.setAttribute('data-cf-beacon', '{"token": "' + config.cloudflare.token + '"}');
-		document.head.appendChild(s);
+		if (config.cloudflare.enabled && !document.querySelector('script[src="' + config.cloudflare.scriptUrl + '"]')) {
+			s = document.createElement('script');
+			s.defer = true;
+			s.src = config.cloudflare.scriptUrl;
+			s.setAttribute('data-cf-beacon', '{"token": "' + config.cloudflare.token + '"}');
+			document.head.appendChild(s);
+		}
 	}
 
 	// 页面加载时：如果用户之前已同意，立即注入分析脚本
@@ -603,13 +606,13 @@ function backToTop() {
 			checkDomain();
 		}
 	})();
-})();</script> <!-- Vercel Analytics（不需要 cookie 同意，由 Vercel 平台管理） --><vercel-analytics data-props="{}" data-params="{}" data-pathname="/404/"></vercel-analytics>  <!-- Cookie Consent Banner UI --> <div id="cookie-consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-[100] pb-4 px-4"> <div class="mx-auto max-w-xl rounded-2xl p-4 md:p-5 border border-white/[0.12]" style="background: oklch(0.22 0.015 var(--hue) / 0.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);"> <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3"> <p class="text-sm text-neutral-300 leading-relaxed">
-本网站使用 Cookie 和分析服务来改善体验。继续使用即表示同意，详见<a href="/about/" class="text-[var(--primary)] underline underline-offset-2 hover:opacity-80">隐私政策</a>。
+})();</script> <!-- Cookie Consent Banner UI --><div id="cookie-consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-[100] pb-4 px-4"> <div class="mx-auto max-w-xl rounded-2xl p-4 md:p-5 border border-white/[0.12]" style="background: oklch(0.22 0.015 var(--hue) / 0.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);"> <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3"> <p class="text-sm text-neutral-300 leading-relaxed">
+本网站使用 Cookie 和分析服务来改善体验。继续使用即表示同意，详见<a href="/privacy/" class="text-[var(--primary)] underline underline-offset-2 hover:opacity-80">隐私政策</a>。
 </p> <div class="flex items-center gap-2 shrink-0"> <button id="cookie-decline" class="px-3 py-1.5 rounded-lg text-sm font-medium text-neutral-400 hover:text-white hover:bg-white/[0.06] transition">
 拒绝
 </button> <button id="cookie-accept" class="px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--primary)] text-white hover:opacity-90 active:scale-95 transition">
 接受
-</button> </div> </div> </div> </div> <!-- 单一 script：分析注入 + Cookie 同意交互 --> <script data-swup-ignore-script>(function(){const config = {"umami":{"websiteId":"15924681-f412-49c8-8f0d-63f14495b9d7","scriptUrl":"https://cloud.umami.is/script.js"},"baidu":{"scriptUrl":"https://hm.baidu.com/hm.js?69025b38a7f30d097ec77b0635cc7f84"},"clarity":{"projectId":"udl1zwuz27"},"ga":{"trackingId":"G-8BSEJ23TXZ","scriptUrl":"https://www.googletagmanager.com/gtag/js"},"cloudflare":{"token":"58c9626fdb9c418eb0aeac6d3c60aada","scriptUrl":"https://static.cloudflareinsights.com/beacon.min.js"}};
+</button> </div> </div> </div> </div> <!-- 单一 script：分析注入 + Cookie 同意交互 --> <script data-swup-ignore-script>(function(){const config = {"baidu":{"enabled":true,"scriptUrl":"https://hm.baidu.com/hm.js?69025b38a7f30d097ec77b0635cc7f84"},"clarity":{"enabled":false,"projectId":"udl1zwuz27"},"ga":{"enabled":true,"trackingId":"G-8BSEJ23TXZ","scriptUrl":"https://www.googletagmanager.com/gtag/js"},"cloudflare":{"enabled":false,"token":"58c9626fdb9c418eb0aeac6d3c60aada","scriptUrl":"https://static.cloudflareinsights.com/beacon.min.js"}};
 
 (function() {
 	var KEY = 'cookie-consent';
@@ -620,44 +623,47 @@ function backToTop() {
 	 */
 	function injectAnalytics() {
 		var s;
-
-		// Umami
-		s = document.createElement('script');
-		s.defer = true;
-		s.src = config.umami.scriptUrl;
-		s.setAttribute('data-website-id', config.umami.websiteId);
-		document.head.appendChild(s);
+		if (window.__yukiAnalyticsInjected) return;
+		window.__yukiAnalyticsInjected = true;
 
 		// 百度统计
-		window._hmt = window._hmt || [];
-		s = document.createElement('script');
-		s.src = config.baidu.scriptUrl;
-		s.async = true;
-		document.head.appendChild(s);
+		if (config.baidu.enabled && !document.querySelector('script[src="' + config.baidu.scriptUrl + '"]')) {
+			window._hmt = window._hmt || [];
+			s = document.createElement('script');
+			s.src = config.baidu.scriptUrl;
+			s.async = true;
+			document.head.appendChild(s);
+		}
 
 		// Microsoft Clarity
-		(function(c,l,a,r,i,t,y){
-			c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-			t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
-			y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-		})(window, document, 'clarity', 'script', config.clarity.projectId);
+		if (config.clarity.enabled && !document.querySelector('script[src*="clarity.ms/tag/"]')) {
+			(function(c,l,a,r,i,t,y){
+				c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+				t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
+				y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+			})(window, document, 'clarity', 'script', config.clarity.projectId);
+		}
 
 		// Google Analytics
-		s = document.createElement('script');
-		s.async = true;
-		s.src = config.ga.scriptUrl + '?id=' + config.ga.trackingId;
-		document.head.appendChild(s);
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-		gtag('config', config.ga.trackingId);
+		if (config.ga.enabled && !document.querySelector('script[src*="' + config.ga.trackingId + '"]')) {
+			s = document.createElement('script');
+			s.async = true;
+			s.src = config.ga.scriptUrl + '?id=' + config.ga.trackingId;
+			document.head.appendChild(s);
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', config.ga.trackingId);
+		}
 
 		// Cloudflare Web Analytics
-		s = document.createElement('script');
-		s.defer = true;
-		s.src = config.cloudflare.scriptUrl;
-		s.setAttribute('data-cf-beacon', '{"token": "' + config.cloudflare.token + '"}');
-		document.head.appendChild(s);
+		if (config.cloudflare.enabled && !document.querySelector('script[src="' + config.cloudflare.scriptUrl + '"]')) {
+			s = document.createElement('script');
+			s.defer = true;
+			s.src = config.cloudflare.scriptUrl;
+			s.setAttribute('data-cf-beacon', '{"token": "' + config.cloudflare.token + '"}');
+			document.head.appendChild(s);
+		}
 	}
 
 	// 页面加载时：如果用户之前已同意，立即注入分析脚本
