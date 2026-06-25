@@ -10,14 +10,24 @@ import type {
 import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
-	title: "扣扣空间",
-	subtitle: "日常技术分享与实践",
+	title: "雪涼的扣扣空间",
+	subtitle: "",
 	description:
-		"分享网络技术、服务器部署、内网穿透、静态网站搭建、CDN优化、容器化部署等技术教程与实践经验的个人技术博客，专注于云原生、无服务器架构和前后端开发",
+		"雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验。",
 
-	keywords: [],
+	keywords: [
+		"扣扣空间",
+		"雪涼",
+		"雪凉",
+		"YukiRyou",
+		"yukiryou",
+		"雪涼云",
+		"个人博客",
+		"技术博客",
+	],
 	seo: {
 		defaultOgImage: "/favicon/nodeseek.png",
+		googleSiteVerification: "eKEGiYR_MejlPuEzN7ULsbX9tjHjv6NPRrdLNhci1Ow",
 	},
 	lang: "zh_CN", // 'en', 'zh_CN', 'zh_TW', 'ja', 'ko', 'es', 'th'
 	themeColor: {

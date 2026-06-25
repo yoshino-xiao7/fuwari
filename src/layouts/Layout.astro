@@ -14,7 +14,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "katex/dist/katex.css";
 
-import { siteConfig } from "@/config";
+import { profileConfig, siteConfig } from "@/config";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import DomainChecker from "@components/DomainChecker.astro";
 import AnalyticsScripts from "@components/analytics/AnalyticsScripts.astro";
@@ -98,8 +98,15 @@ const siteJsonLd = isHomePage
 			"@context": "https://schema.org",
 			"@type": "WebSite",
 			name: siteConfig.title,
+			alternateName: ["扣扣空间", "雪凉的扣扣空间", "YukiRyou Blog"],
 			url: getCanonicalUrl("/", Astro.site),
 			description: siteConfig.description || siteConfig.subtitle,
+			author: {
+				"@type": "Person",
+				name: profileConfig.name,
+				alternateName: ["雪凉", "YukiRyou", "yukiryou"],
+				sameAs: profileConfig.links.map((link) => link.url),
+			},
 		}
 	: null;
 ---

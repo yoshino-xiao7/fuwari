@@ -7,6 +7,7 @@ export type SiteConfig = {
 	keywords?: string[];
 	seo?: {
 		defaultOgImage: string;
+		googleSiteVerification?: string;
 	};
 
 	lang: string;

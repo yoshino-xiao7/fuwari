@@ -78,7 +78,8 @@ export async function GET(context: APIContext): Promise<Response> {
 
 	return rss({
 		title: siteConfig.title,
-		description: siteConfig.subtitle || "No description",
+		description:
+			siteConfig.description || siteConfig.subtitle || "No description",
 		site: context.site,
 		items: feed,
 		customData: `<language>${siteConfig.lang}</language>`,

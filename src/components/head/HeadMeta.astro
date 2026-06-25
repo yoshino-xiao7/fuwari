@@ -34,6 +34,9 @@ const absoluteOgImage = getAbsoluteUrl(ogImage || fallbackOgImage, Astro.site);
 <meta charset="UTF-8" />
 <meta name="description" content={description}>
 <meta name="author" content={profileConfig.name}>
+{siteConfig.seo?.googleSiteVerification && (
+	<meta name="google-site-verification" content={siteConfig.seo.googleSiteVerification}>
+)}
 {siteConfig.keywords?.length > 0 && (
 	<meta name="keywords" content={siteConfig.keywords.join(", ")}>
 )}
