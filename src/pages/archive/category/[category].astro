@@ -18,5 +18,6 @@ const category = Astro.params.category as string;
 ---
 
 <MainGridLayout title={`${category} - 分类`} description={`分类归档 - ${category}`}>
+    <h1 class="sr-only">{category} 分类文章归档</h1>
     <ArchivePanel category={category}></ArchivePanel>
 </MainGridLayout>

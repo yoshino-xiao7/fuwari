@@ -52,8 +52,23 @@
     },
     {
       "source": "/donate",
-      "destination": "/sponsors",
-      "permanent": false
+      "destination": "/posts/sponsor/",
+      "permanent": true
+    },
+    {
+      "source": "/donate/",
+      "destination": "/posts/sponsor/",
+      "permanent": true
+    },
+    {
+      "source": "/sponsors",
+      "destination": "/posts/sponsor/",
+      "permanent": true
+    },
+    {
+      "source": "/sponsors/",
+      "destination": "/posts/sponsor/",
+      "permanent": true
     }
   ]
 }

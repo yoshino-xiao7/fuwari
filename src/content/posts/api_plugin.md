@@ -12,7 +12,7 @@ lang: ""
 
 # 起因
 最近一直在做p站的api，目前进度只有6000+的图片信息，数据库部分信息类似下图
-![](../assets/images/2025-12-02-21-25-14-image.png)
+![Pixiv 图片数据库信息示例截图](../assets/images/2025-12-02-21-25-14-image.png)
 1. 所有图片均来自 [Pixiv](https://www.pixiv.net/)，版权也归作品的作者所有，API 仅储存了作品的基本信息，不提供图片的储存服务
 2. 为保证质量的话，所有图片信息都是根据本人xp来的，这里不过多解释了
 总之就是任务还没完成，只能偷工减料了。
@@ -339,5 +339,4 @@ async def get_by_pid_uid_tag_with_fallback(session, bot, event, owner_qq, refres
 # 结果
 
 结果就是我发现标签查询效果更好了，标签匹配更吻合了，非常满意
-![](../assets/images/2025-12-02-21-59-34-image.png)
-
+![QQ Bot 标签查询优化效果截图](../assets/images/2025-12-02-21-59-34-image.png)

@@ -30,7 +30,7 @@ Setu Cloud地址:[https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 ### 预览
 
-![](../assets/images/2025-12-13-23-14-59-image.png)
+![Setu Cloud v2 用户端首页预览](../assets/images/2025-12-13-23-14-59-image.png)
 
 ---
 ### 2. 更加灵活的 API Key 管理
@@ -45,7 +45,7 @@ Setu Cloud地址:[https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 ### 预览
 
-![](../assets/images/2025-12-13-23-18-53-image.png)
+![Setu Cloud v2 API Key 管理仪表盘预览](../assets/images/2025-12-13-23-18-53-image.png)
 
 ---
 
@@ -55,7 +55,7 @@ Setu Cloud地址:[https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 ### 看板娘预览
 
-![](../assets/images/2025-12-13-23-22-00-image.png)
+![Setu Cloud v2 看板娘预览](../assets/images/2025-12-13-23-22-00-image.png)
 
 
 ---
@@ -99,4 +99,4 @@ Setu Cloud 的初衷是提供简单、好用的二次元图片接口服务。v2 
 欢迎大家注册体验，如果有任何建议或遇到 BUG，欢迎通过邮件或 QQ 提交反馈！
 
 说个题外话，今天打一下午未许之地突袭8，谁能告诉我这玩意到底怎么过，越打越破防。
-![](../assets/images/987f5c8f6b10836f7f3c05ac51e0bcbb.jpg)
+![未许之地突袭8游戏截图](../assets/images/987f5c8f6b10836f7f3c05ac51e0bcbb.jpg)

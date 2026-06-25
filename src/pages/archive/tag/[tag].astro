@@ -27,5 +27,6 @@ const tag = Astro.params.tag as string;
 ---
 
 <MainGridLayout title={`${tag} - 标签`} description={`归档 - ${tag}`}>
+    <h1 class="sr-only">{tag} 标签文章归档</h1>
     <ArchivePanel tags={[tag]}></ArchivePanel>
 </MainGridLayout>

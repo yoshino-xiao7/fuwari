@@ -50,8 +50,8 @@ lang: "zh-CN"
 ## # 随手拍拍
 这里放两张最近拍的照片，大家可以自己感受一下：
 
-![](../assets/images/e5f143ebf52a62354452227b4d37e56c.png)
+![iPhone 17 随手拍样张一](../assets/images/e5f143ebf52a62354452227b4d37e56c.png)
 
-![](../assets/images/df47bfb496974fa5fa6933b68b33b502.png)
+![iPhone 17 随手拍样张二](../assets/images/df47bfb496974fa5fa6933b68b33b502.png)
 
 过多的就不说了，想到什么说什么。总的来说，iPhone 17 是好用的，但也没必要把它神话。

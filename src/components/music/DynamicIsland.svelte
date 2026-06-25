@@ -200,7 +200,7 @@ function handleQuickControl(e: MouseEvent, action: "prev" | "next") {
 			{#if coverUrl}
 				<img
 					src={coverUrl}
-					alt=""
+					alt={songTitle ? `${songTitle}封面` : "当前播放歌曲封面"}
 					class="di-cover cover-spin"
 					class:playing={musicStore.isPlaying}
 				/>

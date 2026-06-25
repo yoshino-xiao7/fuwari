@@ -52,8 +52,23 @@
     },
     {
       "source": "/donate",
-      "destination": "/sponsors",
-      "statusCode": 302
+      "destination": "/posts/sponsor/",
+      "statusCode": 301
+    },
+    {
+      "source": "/donate/",
+      "destination": "/posts/sponsor/",
+      "statusCode": 301
+    },
+    {
+      "source": "/sponsors",
+      "destination": "/posts/sponsor/",
+      "statusCode": 301
+    },
+    {
+      "source": "/sponsors/",
+      "destination": "/posts/sponsor/",
+      "statusCode": 301
     }
   ]
 }
