@@ -33,14 +33,7 @@ title: 隐私政策
 
 ### 2. 分析和统计服务
 
-除 Vercel Analytics 外，下列第三方统计脚本会在您点击 Cookie 横幅中的“接受”后再加载；如果点击“拒绝”，这些脚本不会由本站主动注入。
-
-#### Vercel Analytics
-
-- 可能收集的信息：页面访问量、基础性能指标、匿名化访问数据。
-- 用途：了解站点访问情况和性能表现。
-- 特点：由 Vercel 平台提供，通常不依赖第三方 Cookie；该服务随站点基础脚本加载。
-- 隐私政策：[Vercel Privacy Notice](https://vercel.com/legal/privacy-policy)
+下列第三方统计脚本会在您点击 Cookie 横幅中的“接受”后再加载；如果点击“拒绝”，这些脚本不会由本站主动注入。
 
 #### Google Analytics（谷歌分析）
 
@@ -56,19 +49,7 @@ title: 隐私政策
 - 使用 Cookie：是
 - 隐私政策：[百度统计隐私政策](https://tongji.baidu.com/web/help/article?id=330&type=0)
 
-#### Microsoft Clarity
-
-- 可能收集的信息：用户交互行为（点击、滚动）、页面热力图、会话回放。
-- 用途：用户体验分析与优化。
-- 使用 Cookie：是
-- 隐私政策：[Microsoft 隐私声明](https://privacy.microsoft.com/zh-cn/privacystatement)
-
-#### Cloudflare Web Analytics
-
-- 可能收集的信息：匿名化的页面浏览量、访问来源、设备类型等。
-- 用途：网站性能与流量分析。
-- 特点：不使用 Cookie，注重隐私保护，所有数据均经过匿名化处理。
-- 隐私政策：[Cloudflare 隐私政策](https://www.cloudflare.com/privacypolicy/)
+Microsoft Clarity 和 Cloudflare Web Analytics 目前处于停用状态，本站不会主动加载它们的统计脚本。
 
 ### 3. 灵动岛时钟服务
 

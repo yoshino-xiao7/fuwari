@@ -3,21 +3,21 @@
  * 修改 tracking ID 只需改这一处
  */
 export const analyticsConfig = {
-	umami: {
-		websiteId: "15924681-f412-49c8-8f0d-63f14495b9d7",
-		scriptUrl: "https://cloud.umami.is/script.js",
-	},
 	baidu: {
+		enabled: true,
 		scriptUrl: "https://hm.baidu.com/hm.js?69025b38a7f30d097ec77b0635cc7f84",
 	},
 	clarity: {
+		enabled: false,
 		projectId: "udl1zwuz27",
 	},
 	ga: {
+		enabled: true,
 		trackingId: "G-8BSEJ23TXZ",
 		scriptUrl: "https://www.googletagmanager.com/gtag/js",
 	},
 	cloudflare: {
+		enabled: false,
 		token: "58c9626fdb9c418eb0aeac6d3c60aada",
 		scriptUrl: "https://static.cloudflareinsights.com/beacon.min.js",
 	},

@@ -12,19 +12,15 @@
  *
  * 分析服务配置集中在 src/constants/analytics.ts，修改 ID 只需改那一个文件。
  */
-import Analytics from "@vercel/analytics/astro";
 import { analyticsConfig } from "../../constants/analytics";
 ---
-
-<!-- Vercel Analytics（不需要 cookie 同意，由 Vercel 平台管理） -->
-<Analytics />
 
 <!-- Cookie Consent Banner UI -->
 <div id="cookie-consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-[100] pb-4 px-4">
 	<div class="mx-auto max-w-xl rounded-2xl p-4 md:p-5 border border-white/[0.12]" style="background: oklch(0.22 0.015 var(--hue) / 0.94); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
 		<div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
 			<p class="text-sm text-neutral-300 leading-relaxed">
-				本网站使用 Cookie 和分析服务来改善体验。继续使用即表示同意，详见<a href="/about/" class="text-[var(--primary)] underline underline-offset-2 hover:opacity-80">隐私政策</a>。
+				本网站使用 Cookie 和分析服务来改善体验。继续使用即表示同意，详见<a href="/privacy/" class="text-[var(--primary)] underline underline-offset-2 hover:opacity-80">隐私政策</a>。
 			</p>
 			<div class="flex items-center gap-2 shrink-0">
 				<button id="cookie-decline" class="px-3 py-1.5 rounded-lg text-sm font-medium text-neutral-400 hover:text-white hover:bg-white/[0.06] transition">
@@ -49,44 +45,47 @@ import { analyticsConfig } from "../../constants/analytics";
 	 */
 	function injectAnalytics() {
 		var s;
-
-		// Umami
-		s = document.createElement('script');
-		s.defer = true;
-		s.src = config.umami.scriptUrl;
-		s.setAttribute('data-website-id', config.umami.websiteId);
-		document.head.appendChild(s);
+		if (window.__yukiAnalyticsInjected) return;
+		window.__yukiAnalyticsInjected = true;
 
 		// 百度统计
-		window._hmt = window._hmt || [];
-		s = document.createElement('script');
-		s.src = config.baidu.scriptUrl;
-		s.async = true;
-		document.head.appendChild(s);
+		if (config.baidu.enabled && !document.querySelector('script[src="' + config.baidu.scriptUrl + '"]')) {
+			window._hmt = window._hmt || [];
+			s = document.createElement('script');
+			s.src = config.baidu.scriptUrl;
+			s.async = true;
+			document.head.appendChild(s);
+		}
 
 		// Microsoft Clarity
-		(function(c,l,a,r,i,t,y){
-			c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-			t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
-			y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-		})(window, document, 'clarity', 'script', config.clarity.projectId);
+		if (config.clarity.enabled && !document.querySelector('script[src*="clarity.ms/tag/"]')) {
+			(function(c,l,a,r,i,t,y){
+				c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+				t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;
+				y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+			})(window, document, 'clarity', 'script', config.clarity.projectId);
+		}
 
 		// Google Analytics
-		s = document.createElement('script');
-		s.async = true;
-		s.src = config.ga.scriptUrl + '?id=' + config.ga.trackingId;
-		document.head.appendChild(s);
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-		gtag('config', config.ga.trackingId);
+		if (config.ga.enabled && !document.querySelector('script[src*="' + config.ga.trackingId + '"]')) {
+			s = document.createElement('script');
+			s.async = true;
+			s.src = config.ga.scriptUrl + '?id=' + config.ga.trackingId;
+			document.head.appendChild(s);
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', config.ga.trackingId);
+		}
 
 		// Cloudflare Web Analytics
-		s = document.createElement('script');
-		s.defer = true;
-		s.src = config.cloudflare.scriptUrl;
-		s.setAttribute('data-cf-beacon', '{"token": "' + config.cloudflare.token + '"}');
-		document.head.appendChild(s);
+		if (config.cloudflare.enabled && !document.querySelector('script[src="' + config.cloudflare.scriptUrl + '"]')) {
+			s = document.createElement('script');
+			s.defer = true;
+			s.src = config.cloudflare.scriptUrl;
+			s.setAttribute('data-cf-beacon', '{"token": "' + config.cloudflare.token + '"}');
+			document.head.appendChild(s);
+		}
 	}
 
 	// 页面加载时：如果用户之前已同意，立即注入分析脚本
