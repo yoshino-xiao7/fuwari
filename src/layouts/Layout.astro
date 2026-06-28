@@ -14,7 +14,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "katex/dist/katex.css";
 
-import { profileConfig, siteConfig } from "@/config";
+import { identityConfig, profileConfig, siteConfig } from "@/config";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import DomainChecker from "@components/DomainChecker.astro";
 import AnalyticsScripts from "@components/analytics/AnalyticsScripts.astro";
@@ -97,23 +97,33 @@ const bgStyle = [
 	`--bg-opacity: ${siteConfig.background.opacity || 0.3}`,
 ].join(";");
 
+const homeUrl = getCanonicalUrl("/", Astro.site);
+const aboutUrl = getAbsoluteUrl("/about/", Astro.site);
+const websiteId = getAbsoluteUrl("/#website", Astro.site);
+const personId = getAbsoluteUrl("/about/#person", Astro.site);
+const personJsonLd = {
+	"@type": "Person",
+	"@id": personId,
+	name: identityConfig.primaryName,
+	alternateName: identityConfig.personAliases,
+	url: aboutUrl,
+	image: profileConfig.avatar,
+	sameAs: profileConfig.links.map((link) => link.url),
+	knowsAbout: identityConfig.topics,
+};
 const siteJsonLd = isHomePage
 	? {
 			"@context": "https://schema.org",
 			"@type": "WebSite",
-			name: siteConfig.title,
-			alternateName: ["扣扣空间", "雪凉的扣扣空间", "YukiRyou Blog"],
-			url: getCanonicalUrl("/", Astro.site),
+			"@id": websiteId,
+			name: identityConfig.siteName,
+			alternateName: [identityConfig.siteName, ...identityConfig.siteAliases],
+			url: homeUrl,
 			description: siteConfig.description || siteConfig.subtitle,
 			inLanguage: siteConfig.lang.replace("_", "-"),
-			author: {
-				"@type": "Person",
-				name: profileConfig.name,
-				alternateName: ["雪凉", "YukiRyou", "yukiryou"],
-				url: getAbsoluteUrl("/about/", Astro.site),
-				image: profileConfig.avatar,
-				sameAs: profileConfig.links.map((link) => link.url),
-			},
+			about: personJsonLd,
+			author: personJsonLd,
+			publisher: personJsonLd,
 		}
 	: null;
 ---

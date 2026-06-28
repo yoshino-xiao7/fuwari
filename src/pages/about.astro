@@ -5,7 +5,7 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { getEntry } from "astro:content";
 import { render } from "astro:content";
 import Markdown from "@components/misc/Markdown.astro";
-import { profileConfig } from "../config";
+import { identityConfig, profileConfig, siteConfig } from "../config";
 import { getAbsoluteUrl, jsonLdString } from "../utils/seo-utils";
 
 const aboutPost = await getEntry("spec", "about");
@@ -18,19 +18,45 @@ if (!aboutPost) {
 
 const { Content } = await render(aboutPost);
 
+const aboutUrl = getAbsoluteUrl("/about/", Astro.site);
+const homeUrl = getAbsoluteUrl("/", Astro.site);
+const profilePageId = getAbsoluteUrl("/about/#profile", Astro.site);
+const personId = getAbsoluteUrl("/about/#person", Astro.site);
+const websiteId = getAbsoluteUrl("/#website", Astro.site);
+
 const profileJsonLd = {
 	"@context": "https://schema.org",
 	"@type": "ProfilePage",
-	name: "关于雪涼",
+	"@id": profilePageId,
+	name: `关于${identityConfig.primaryName}`,
 	description: aboutDescription,
-	url: getAbsoluteUrl("/about/", Astro.site),
+	url: aboutUrl,
+	inLanguage: siteConfig.lang.replace("_", "-"),
+	isPartOf: {
+		"@type": "WebSite",
+		"@id": websiteId,
+		name: identityConfig.siteName,
+		alternateName: identityConfig.siteAliases,
+		url: homeUrl,
+	},
 	mainEntity: {
 		"@type": "Person",
-		name: profileConfig.name,
-		alternateName: ["雪凉", "YukiRyou", "yukiryou"],
-		url: getAbsoluteUrl("/about/", Astro.site),
+		"@id": personId,
+		name: identityConfig.primaryName,
+		alternateName: identityConfig.personAliases,
+		url: aboutUrl,
 		image: profileConfig.avatar,
 		sameAs: profileConfig.links.map((link) => link.url),
+		mainEntityOfPage: {
+			"@id": profilePageId,
+		},
+		subjectOf: {
+			"@type": "WebSite",
+			"@id": websiteId,
+			name: identityConfig.siteName,
+			url: homeUrl,
+		},
+		knowsAbout: identityConfig.topics,
 	},
 };
 ---

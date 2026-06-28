@@ -2,10 +2,11 @@
 import type { GetStaticPaths } from "astro";
 import PostPage from "../components/PostPage.astro";
 import Pagination from "../components/control/Pagination.astro";
-import { siteConfig } from "../config";
+import { identityConfig, siteConfig } from "../config";
 import { PAGE_SIZE } from "../constants/constants";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { getSortedPosts } from "../utils/content-utils";
+import { url } from "../utils/url-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();
@@ -16,16 +17,31 @@ export const getStaticPaths = (async ({ paginate }) => {
 const { page } = Astro.props;
 
 const len = page.data.length;
-const pageTitle =
-	page.currentPage === 1 ? undefined : `第 ${page.currentPage} 页`;
-const heading =
-	page.currentPage === 1
-		? siteConfig.title
-		: `${siteConfig.title} - 第 ${page.currentPage} 页`;
+const isFirstPage = page.currentPage === 1;
+const pageTitle = isFirstPage ? undefined : `第 ${page.currentPage} 页`;
+const heading = isFirstPage
+	? siteConfig.title
+	: `${siteConfig.title} - 第 ${page.currentPage} 页`;
 ---
 
 <MainGridLayout title={pageTitle}>
     <h1 class="sr-only">{heading}</h1>
+    {isFirstPage && (
+        <section class="card-base mb-4 px-6 py-5 md:px-8 md:py-6 onload-animation" aria-labelledby="home-identity-title">
+            <p class="mb-2 text-sm font-bold text-[var(--primary)]">{identityConfig.siteName}</p>
+            <h2 id="home-identity-title" class="mb-3 text-2xl font-bold leading-tight text-neutral-900 transition dark:text-neutral-50">
+                {identityConfig.primaryName} / {identityConfig.simplifiedName} / {identityConfig.romanizedName}
+            </h2>
+            <p class="max-w-3xl text-sm leading-7 text-neutral-600 transition dark:text-neutral-300 md:text-base">
+                这里是{identityConfig.primaryName}（简体写作{identityConfig.simplifiedName}，英文名 {identityConfig.romanizedName}）的个人博客「{identityConfig.siteName}」。我会在这里记录雪涼云开发日志、服务器与前后端实践，也写一些日常内容；如果你是在搜索“{identityConfig.simplifiedName}”“{identityConfig.romanizedName}”或“扣扣空间”，这些入口都指向同一个站点。
+            </p>
+            <nav class="mt-4 flex flex-wrap gap-2" aria-label="雪涼站内入口">
+                <a class="btn-regular rounded-lg px-3 py-2 text-sm font-bold" href={url("/about/")}>关于雪涼</a>
+                <a class="btn-regular rounded-lg px-3 py-2 text-sm font-bold" href={url("/devlogs/")}>雪涼云日志</a>
+                <a class="btn-regular rounded-lg px-3 py-2 text-sm font-bold" href={url("/archive/")}>文章归档</a>
+            </nav>
+        </section>
+    )}
     <PostPage page={page}></PostPage>
     <Pagination class="mx-auto onload-animation" page={page} style=`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`></Pagination>
 </MainGridLayout>

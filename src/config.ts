@@ -9,8 +9,27 @@ import type {
 } from "./types/config";
 import { LinkPreset } from "./types/config";
 
+export const identityConfig = {
+	primaryName: "雪涼",
+	simplifiedName: "雪凉",
+	romanizedName: "YukiRyou",
+	lowercaseRomanizedName: "yukiryou",
+	siteName: "雪涼的扣扣空间",
+	siteAliases: ["雪凉的扣扣空间", "扣扣空间", "YukiRyou Blog"],
+	personAliases: ["雪凉", "YukiRyou", "yukiryou"],
+	topics: [
+		"雪涼云",
+		"个人服务",
+		"Astro",
+		"Svelte",
+		"Cloudflare",
+		"服务器部署",
+		"前后端开发",
+	],
+} as const;
+
 export const siteConfig: SiteConfig = {
-	title: "雪涼的扣扣空间",
+	title: identityConfig.siteName,
 	subtitle: "",
 	description:
 		"雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验。",
@@ -105,7 +124,7 @@ export const navBarConfig: NavBarConfig = {
 
 export const profileConfig: ProfileConfig = {
 	avatar: "https://q2.qlogo.cn/headimg_dl?dst_uin=2830323446&spec=0", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
-	name: "雪涼",
+	name: identityConfig.primaryName,
 	bio: "小琦天天开心.",
 	links: [
 		{
