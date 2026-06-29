@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>一个周末都在折腾 AI 绘图：雪涼云 Beta2 和双角色绘制</title><link>https://blog.yukiryou.icu/posts/2026-06-28-xueliangyun-ai-drawing-beta2/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-28-xueliangyun-ai-drawing-beta2/</guid><description>记录雪涼云 AI 绘图 Beta2 的周末开发：双角色绘制、角色 LoRA 和预设补充、提示词生成优化，以及两个角色画成一个、特征混乱、遮挡和绘制区域污染这些让人头疼的问题。</description><pubDate>Sun, 28 Jun 2026 22:20:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：游戏没怎么玩，图倒是画了一堆&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>一个周末都在折腾 AI 绘图：雪涼云 Beta2 和双角色绘制</title><link>https://blog.yukiryou.icu/posts/2026-06-28-xueliangyun-ai-drawing-beta2/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-28-xueliangyun-ai-drawing-beta2/</guid><description>记录雪涼云 AI 绘图这个周末的开发：昨天完成 Beta1 主链路，今天继续推进 Beta2，重点补上双角色绘制、角色 LoRA 和预设、提示词生成优化，以及那些让人头疼的双角色问题。</description><pubDate>Sun, 28 Jun 2026 22:20:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：游戏没怎么玩，图倒是画了一堆&lt;/h2&gt;
 &lt;p&gt;这个周末基本都在折腾雪涼云的 AI 绘画功能。&lt;/p&gt;
-&lt;p&gt;本来还想着周末多少玩会游戏，结果一坐到电脑前就是 ComfyUI、Worker、LoRA、prompt、双角色、区域控制、前端页面、后端队列，来来回回改了一整天又一整天。&lt;/p&gt;
+&lt;p&gt;先把时间说清楚一点：我写这篇的时候是周日晚上，所以文里的“昨天”就是周六，也就是 Beta1；“今天”就是周日，也就是 Beta2。&lt;/p&gt;
+&lt;p&gt;昨天先把 AI 绘图 Beta1 做出来，让基础链路能跑通；今天继续做 Beta2，把重点放在双角色绘制、服务状态、提示词生成和角色预设这些体验上。&lt;/p&gt;
+&lt;p&gt;本来还想着周末多少玩会游戏，结果一坐到电脑前就是 ComfyUI、Worker、LoRA、prompt、双角色、区域控制、前端页面、后端队列，从昨天折腾到今天，游戏没怎么碰，代码倒是改了一堆。&lt;/p&gt;
 &lt;p&gt;虽然过程挺折磨，但现在回头看，效果还算可观。&lt;/p&gt;
-&lt;p&gt;Beta1 解决的是“能不能跑起来”：用户提交任务，本机 Worker 领取，ComfyUI 出图，云端保存到 OSS，用户在历史里查看。&lt;/p&gt;
-&lt;p&gt;这次 Beta2 主要解决的是“怎么稍微好用一点”：服务状态要看得到，提示词生成要更可靠，LoRA 和角色预设不能再靠一个冷冰冰的下拉框，双角色绘制也要先有个能用的雏形。&lt;/p&gt;
+&lt;p&gt;昨天的 Beta1 解决的是“能不能跑起来”：用户提交任务，本机 Worker 领取，ComfyUI 出图，云端保存到 OSS，用户在历史里查看。&lt;/p&gt;
+&lt;p&gt;今天的 Beta2 主要解决的是“怎么稍微好用一点”：服务状态要看得到，提示词生成要更可靠，LoRA 和角色预设不能再靠一个冷冰冰的下拉框，双角色绘制也要先有个能用的雏形。&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h2&gt;# 双角色绘制：能用，但还很 Beta&lt;/h2&gt;
-&lt;p&gt;今天最主要的更新是 &lt;strong&gt;双角色绘制&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;今天这轮 Beta2 最主要的更新是 &lt;strong&gt;双角色绘制&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;单角色绘制相对好办。选一个角色预设，注入一组 tags，挂一个 LoRA，再配合正向提示词和反向提示词，生成结果不一定每次都完美，但至少方向比较明确。&lt;/p&gt;
 &lt;p&gt;双角色就完全不是一个难度了。&lt;/p&gt;
 &lt;p&gt;现在前端可以在单角色 / 双角色之间切换。双角色模式里可以选择：&lt;/p&gt;
@@ -22,7 +24,7 @@
 &lt;p&gt;目前双角色属于“勉强能用”的状态。如果提示词写得好，角色选择合适，LoRA 强度控制住，效果确实能出来，而且有时候还挺惊喜。但它还远没有到稳定、傻瓜式、随便点两下就出好图的程度。&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h2&gt;# 遇到的离谱问题&lt;/h2&gt;
-&lt;p&gt;这两天最让我头疼的，就是双角色各种奇怪 bug。&lt;/p&gt;
+&lt;p&gt;今天做 Beta2 时，最让我头疼的就是双角色各种奇怪 bug。&lt;/p&gt;
 &lt;p&gt;最开始我以为：既然可以加载两个 LoRA，那是不是给 A 一个区域、给 B 一个区域，再让模型按区域画就好了？&lt;/p&gt;
 &lt;p&gt;事实证明没那么简单。&lt;/p&gt;
 &lt;p&gt;实际测试里遇到过这些问题：&lt;/p&gt;
@@ -58,7 +60,7 @@
 &lt;p&gt;后续如果继续优化，可能要接入 attention couple、regional LoRA 之类的自定义节点，或者引入自动分割后的局部修复流程。那就是下一阶段的事情了。&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h2&gt;# LoRA 和角色预设也补了一点&lt;/h2&gt;
-&lt;p&gt;除了双角色，这次也补充了一小部分新的角色 LoRA 和预设。&lt;/p&gt;
+&lt;p&gt;除了双角色，今天也补充了一小部分新的角色 LoRA 和预设。&lt;/p&gt;
 &lt;p&gt;目前整理进去的角色包括：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;卡提希娅。&lt;/li&gt;
@@ -81,11 +83,11 @@
 &lt;/ul&gt;
 &lt;p&gt;这部分还远远不够。&lt;/p&gt;
 &lt;p&gt;AI 绘图真正好用起来，很大一部分体验其实不在“按钮能不能点”，而在于预设够不够好。用户不应该每次都去翻 LoRA 文件名、查触发词、试强度。理想状态是点一个角色卡片，基础 tags、LoRA、强度、推荐模型都自动带出来，然后用户只需要补场景和动作。&lt;/p&gt;
-&lt;p&gt;这次只是先补了一点点，后面还会继续加。&lt;/p&gt;
+&lt;p&gt;这轮只是先补了一点点，后面还会继续加。&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h2&gt;# 提示词生成也换成了本机 Ollama&lt;/h2&gt;
 &lt;p&gt;之前自然语言提示词生成效果不太稳定。&lt;/p&gt;
-&lt;p&gt;这次改成了由本机 Worker 领取提示词翻译任务，再调用本机 Ollama 生成英文正向/反向提示词。云端只负责任务排队和结果回写，不直接生成。&lt;/p&gt;
+&lt;p&gt;Beta2 里改成了由本机 Worker 领取提示词翻译任务，再调用本机 Ollama 生成英文正向/反向提示词。云端只负责任务排队和结果回写，不直接生成。&lt;/p&gt;
 &lt;p&gt;同时给本机加了一个提示词知识库：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;setu_ai_wife/config/prompt_knowledge.json
 &lt;/code&gt;&lt;/pre&gt;
@@ -138,7 +140,7 @@
 &lt;hr /&gt;
 &lt;h2&gt;# 小结：又要上班了&lt;/h2&gt;
 &lt;p&gt;这个周末基本都丢给 AI 绘图了。&lt;/p&gt;
-&lt;p&gt;游戏没怎么玩，休息也没怎么休，倒是把雪涼云 AI 绘图从 Beta1 推到了 Beta2：服务状态、提示词生成、资产选择器、角色预设、双角色绘制都往前走了一步。&lt;/p&gt;
+&lt;p&gt;昨天把 Beta1 跑通，今天把 Beta2 推上去。游戏没怎么玩，休息也没怎么休，但雪涼云 AI 绘图确实从“基础能跑”往“开始好用”推进了一步：服务状态、提示词生成、资产选择器、角色预设、双角色绘制都补上了新的东西。&lt;/p&gt;
 &lt;p&gt;不过明天又是周内了，又要上班。&lt;/p&gt;
 &lt;p&gt;所以后续更新频率大概率会低一点，只能下班之后慢慢继续优化。能补模型就补模型，能补 LoRA 就补 LoRA，能把双角色稳定性往前推一点是一点。&lt;/p&gt;
 &lt;p&gt;总之，先这样。&lt;/p&gt;
