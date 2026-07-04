@@ -69,6 +69,96 @@
       "source": "/sponsors/",
       "destination": "/posts/sponsor/",
       "statusCode": 301
+    },
+    {
+      "source": "/posts/iPhone17",
+      "destination": "/posts/iphone17/",
+      "statusCode": 301
+    },
+    {
+      "source": "/posts/iPhone17/",
+      "destination": "/posts/iphone17/",
+      "statusCode": 301
+    },
+    {
+      "source": "/posts/setu_cloud%20v2",
+      "destination": "/posts/setu_cloud-v2/",
+      "statusCode": 301
+    },
+    {
+      "source": "/posts/setu_cloud%20v2/",
+      "destination": "/posts/setu_cloud-v2/",
+      "statusCode": 301
+    },
+    {
+      "source": "/posts/setu_cloud_v2.5",
+      "destination": "/posts/setu_cloud_v25/",
+      "statusCode": 301
+    },
+    {
+      "source": "/posts/setu_cloud_v2.5/",
+      "destination": "/posts/setu_cloud_v25/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/endfield-yunzai-v1.1-changelog",
+      "destination": "/devlogs/endfield-yunzai-v11-changelog/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/endfield-yunzai-v1.1-changelog/",
+      "destination": "/devlogs/endfield-yunzai-v11-changelog/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/endfield-yunzai-v1.2-changelog",
+      "destination": "/devlogs/endfield-yunzai-v12-changelog/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/endfield-yunzai-v1.2-changelog/",
+      "destination": "/devlogs/endfield-yunzai-v12-changelog/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/xueliangyun-gallery-upload-v2.5.0",
+      "destination": "/devlogs/xueliangyun-gallery-upload-v250/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/xueliangyun-gallery-upload-v2.5.0/",
+      "destination": "/devlogs/xueliangyun-gallery-upload-v250/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/xueliangyun-v2.3.8-overview",
+      "destination": "/devlogs/xueliangyun-v238-overview/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/xueliangyun-v2.3.8-overview/",
+      "destination": "/devlogs/xueliangyun-v238-overview/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/xueliangyun-v2.6.0-ai-drawing",
+      "destination": "/devlogs/xueliangyun-v260-ai-drawing/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/xueliangyun-v2.6.0-ai-drawing/",
+      "destination": "/devlogs/xueliangyun-v260-ai-drawing/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/xueliangyun-v2.6.0-beta2-ai-drawing",
+      "destination": "/devlogs/xueliangyun-v260-beta2-ai-drawing/",
+      "statusCode": 301
+    },
+    {
+      "source": "/devlogs/xueliangyun-v2.6.0-beta2-ai-drawing/",
+      "destination": "/devlogs/xueliangyun-v260-beta2-ai-drawing/",
+      "statusCode": 301
     }
   ]
 }
