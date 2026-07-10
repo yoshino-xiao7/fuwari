@@ -7,9 +7,6 @@ allowBuilds:
   esbuild: true
   sharp: true
   swup: true
-patchedDependencies:
-  astro: patches/astro.patch
-
 onlyBuiltDependencies:
   - "@biomejs/biome"
   - "@parcel/watcher"
