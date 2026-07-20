@@ -77,9 +77,9 @@ function formatTag(tag: string[]) {
                     >
                         <div class="flex flex-row justify-start items-center h-full">
                             <!-- date -->
-                            <div class="w-[15%] md:w-[10%] transition text-sm text-right text-50">
-                                {formatDate(post.data.published)}
-                            </div>
+							<time datetime={post.data.published.toISOString()} class="w-[15%] md:w-[10%] transition text-sm text-right text-50">
+								{formatDate(post.data.published)}
+							</time>
                             <!-- dot and line -->
                             <div class="w-[15%] md:w-[10%] relative dash-line h-full flex items-center">
                                 <div class="transition-all mx-auto w-1 h-1 rounded group-hover:h-5

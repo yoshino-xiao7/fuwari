@@ -30,9 +30,9 @@ export const identityConfig = {
 
 export const siteConfig: SiteConfig = {
 	title: identityConfig.siteName,
-	subtitle: "",
+	subtitle: "个人技术博客",
 	description:
-		"雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验。",
+		"雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。",
 
 	keywords: [
 		"扣扣空间",

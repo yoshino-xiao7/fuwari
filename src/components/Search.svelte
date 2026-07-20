@@ -1,7 +1,6 @@
 <script lang="ts">
 import Icon from "@iconify/svelte";
 import { url } from "@utils/url-utils.ts";
-import { onMount } from "svelte";
 
 interface SearchResult {
 	url: string;
@@ -17,6 +16,46 @@ let keywordMobile = "";
 let result: SearchResult[] = [];
 let isSearching = false;
 let posts: Record<string, unknown>[] = [];
+let postsPromise: Promise<void> | null = null;
+
+const loadPosts = (): Promise<void> => {
+	if (postsPromise) return postsPromise;
+
+	postsPromise = (async () => {
+		try {
+			const response = await fetch("/rss.xml");
+			if (!response.ok)
+				throw new Error(`RSS request failed: ${response.status}`);
+
+			const text = await response.text();
+			const parser = new DOMParser();
+			const xml = parser.parseFromString(text, "text/xml");
+			const items = xml.querySelectorAll("item");
+
+			posts = Array.from(items).map((item) => {
+				const contentEncoded =
+					item.getElementsByTagNameNS("*", "encoded")[0]?.textContent ||
+					item.querySelector("*|encoded")?.textContent ||
+					"";
+
+				return {
+					title: item.querySelector("title")?.textContent || "",
+					description: item.querySelector("description")?.textContent || "",
+					content: contentEncoded.replace(/<[^>]*>/g, ""),
+					link:
+						item
+							.querySelector("link")
+							?.textContent?.replace(/.*\/posts\/(.*?)\//, "$1") || "",
+				};
+			});
+		} catch (error) {
+			postsPromise = null;
+			console.error("Error fetching RSS:", error);
+		}
+	})();
+
+	return postsPromise;
+};
 
 const togglePanel = () => {
 	const panel = document.getElementById("search-panel");
@@ -50,6 +89,7 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 	isSearching = true;
 
 	try {
+		await loadPosts();
 		const searchResults = posts
 			.filter((post) => {
 				const keywordLower = keyword.toLowerCase();
@@ -101,41 +141,6 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 	}
 };
 
-onMount(async () => {
-	try {
-		const response = await fetch("/rss.xml");
-		const text = await response.text();
-		const parser = new DOMParser();
-		const xml = parser.parseFromString(text, "text/xml");
-		const items = xml.querySelectorAll("item");
-
-		posts = Array.from(items).map((item) => {
-			// 尝试多种方式获取content:encoded内容
-			let content = "";
-			const contentEncoded =
-				item.getElementsByTagNameNS("*", "encoded")[0]?.textContent ||
-				item.querySelector("*|encoded")?.textContent ||
-				"";
-
-			if (contentEncoded) {
-				content = contentEncoded.replace(/<[^>]*>/g, "");
-			}
-
-			return {
-				title: item.querySelector("title")?.textContent || "",
-				description: item.querySelector("description")?.textContent || "",
-				content: content,
-				link:
-					item
-						.querySelector("link")
-						?.textContent?.replace(/.*\/posts\/(.*?)\//, "$1") || "",
-			};
-		});
-	} catch (error) {
-		console.error("Error fetching RSS:", error);
-	}
-});
-
 $: search(keywordDesktop, true);
 $: search(keywordMobile, false);
 </script>
@@ -146,7 +151,7 @@ $: search(keywordMobile, false);
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
 ">
     <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-    <input placeholder="搜索" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
+    <input id="site-search-desktop" aria-label="搜索文章" placeholder="搜索" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
            class="transition-all pl-10 text-sm bg-transparent outline-0
          h-full w-40 text-black/50 dark:text-white/50"
     >
@@ -168,7 +173,7 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
   ">
         <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-        <input placeholder="Search" bind:value={keywordMobile}
+        <input id="site-search-mobile" aria-label="搜索文章" placeholder="搜索" bind:value={keywordMobile}
                class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
                focus:w-60 text-black/50 dark:text-white/50"
         >

@@ -95,8 +95,9 @@ const { remarkPluginFrontmatter } = await entry.render();
                   class="transition opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 text-white text-5xl">
             </Icon>
         </div>
-        <ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt={`${title}封面图`}
-                  loading={loading} fetchpriority={fetchpriority} class="w-full h-full">
+		<ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt={`${title}封面图`}
+				  loading={loading} fetchpriority={fetchpriority} widths={[320, 480, 640, 800]}
+				  sizes="(min-width: 1024px) 22vw, calc(100vw - 2rem)" class="w-full h-full">
         </ImageWrapper>
     </a>}
 

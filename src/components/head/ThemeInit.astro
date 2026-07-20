@@ -87,23 +87,43 @@ const configHue = siteConfig.themeColor.hue;
 	offset = offset - offset % 4;
 	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
 
-	// Background image loading detection
-	// Use define:vars values directly instead of getComputedStyle,
-	// because the <style> block may be externalized by Astro and not yet loaded
+	// Background image is decorative, so fetch and decode it after the critical
+	// page load. A blob URL lets CSS reuse the same response without requesting
+	// the redirecting image endpoint a second time.
 	if (bgSrc && bgEnable === '1') {
-		const img = new Image();
-		img.onload = function() {
-			const bgEl = document.getElementById('bg-layer');
-			if (bgEl) bgEl.classList.add('bg-loaded');
-			document.documentElement.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
-			document.documentElement.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
+		const loadBackground = async function() {
+			try {
+				const response = await fetch(bgSrc);
+				if (!response.ok) throw new Error('Background request failed: ' + response.status);
+				const objectUrl = URL.createObjectURL(await response.blob());
+				const img = new Image();
+				img.onload = function() {
+					root.style.setProperty('--bg-url', 'url("' + objectUrl + '")');
+					const bgEl = document.getElementById('bg-layer');
+					if (bgEl) bgEl.classList.add('bg-loaded');
+					root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
+					root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
+				};
+				img.onerror = function() {
+					URL.revokeObjectURL(objectUrl);
+					console.warn('Background image failed to decode, keeping cards opaque');
+				};
+				img.src = objectUrl;
+			} catch (error) {
+				console.warn('Background image failed to load, keeping cards opaque', error);
+			}
 		};
-		img.onerror = function() {
-			console.warn('Background image failed to load, keeping cards opaque');
-			const bgEl = document.getElementById('bg-layer');
-			if (bgEl) bgEl.classList.add('bg-loaded');
+
+		const scheduleBackground = function() {
+			if ('requestIdleCallback' in window) {
+				window.requestIdleCallback(loadBackground, { timeout: 2000 });
+			} else {
+				setTimeout(loadBackground, 1);
+			}
 		};
-		img.src = bgSrc;
+
+		if (document.readyState === 'complete') scheduleBackground();
+		else window.addEventListener('load', scheduleBackground, { once: true });
 	}
 </script>
 

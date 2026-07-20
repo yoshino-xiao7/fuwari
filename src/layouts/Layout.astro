@@ -12,7 +12,6 @@
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import "katex/dist/katex.css";
 
 import { identityConfig, profileConfig, siteConfig } from "@/config";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
@@ -88,7 +87,7 @@ const bannerOffset =
 
 // Background image CSS variables — injected inline to avoid depending on external CSS loading
 const bgStyle = [
-	`--bg-url: ${siteConfig.background.src ? `url(${siteConfig.background.src})` : "none"}`,
+	"--bg-url: none",
 	`--bg-enable: ${siteConfig.background.enable ? "1" : "0"}`,
 	`--bg-position: ${siteConfig.background.position || "center"}`,
 	`--bg-size: ${siteConfig.background.size || "cover"}`,
@@ -143,6 +142,7 @@ const siteJsonLd = isHomePage
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
+		<a href="#swup-container" class="skip-link">跳到正文</a>
 		<div id="reading-progress" class="pointer-events-none fixed left-0 top-0 z-[9999] h-[3px] w-full opacity-0 transition-opacity duration-200" aria-hidden="true">
 			<div id="reading-progress-fill" class="h-full w-full origin-left scale-x-0 bg-[var(--primary)]"></div>
 		</div>
@@ -151,7 +151,7 @@ const siteJsonLd = isHomePage
 		<slot />
 
 		<!-- 全局音乐播放器与灵动岛 (Svelte 5) -->
-		<MusicPlayer client:only="svelte" />
+		<MusicPlayer client:idle />
 
 		<!-- 页面过渡期间撑高页面，防止滚动跳动 -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
@@ -199,6 +199,29 @@ const siteJsonLd = isHomePage
 		box-shadow: 0 0 12px oklch(0.68 0.18 var(--hue) / 0.55);
 	}
 }
+</style>
+
+<style is:global>
+	.skip-link {
+		position: fixed;
+		top: 0.75rem;
+		left: 0.75rem;
+		z-index: 10000;
+		transform: translateY(-200%);
+		border-radius: 0.5rem;
+		background: var(--card-bg);
+		color: var(--primary);
+		padding: 0.75rem 1rem;
+		font-weight: 700;
+		box-shadow: 0 4px 16px rgb(0 0 0 / 20%);
+		transition: transform 0.15s ease;
+	}
+
+	.skip-link:focus {
+		transform: translateY(0);
+		outline: 2px solid var(--primary);
+		outline-offset: 2px;
+	}
 </style>
 
 <!-- 站点初始化脚本 -->
