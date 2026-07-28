@@ -67,8 +67,18 @@
     },
     {
       "source": "/tit",
-      "destination": "/posts/pin/",
-      "permanent": false
+      "destination": "/about/",
+      "permanent": true
+    },
+    {
+      "source": "/posts/pin",
+      "destination": "/about/",
+      "permanent": true
+    },
+    {
+      "source": "/posts/pin/",
+      "destination": "/about/",
+      "permanent": true
     },
     {
       "source": "/tly",
