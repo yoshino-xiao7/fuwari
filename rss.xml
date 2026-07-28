@@ -1162,7 +1162,7 @@ export const musicStore = new MusicStore();
 &lt;/ul&gt;
 &lt;p&gt;构建验证：&lt;code&gt;pnpm type-check&lt;/code&gt; 零错误（&lt;code&gt;--isolatedDeclarations&lt;/code&gt; 严格模式），&lt;code&gt;pnpm lint&lt;/code&gt; 87 个文件零问题，&lt;code&gt;pnpm build&lt;/code&gt; 50 页 8 秒完成。&lt;/p&gt;
 &lt;p&gt;如果你也在维护一个逐渐膨胀的 Astro 项目，我的建议是：先做低风险的结构清理（拆分大文件、去重配置），再动核心组件的重写。这样核心重写时面对的是一个干净、可预测的代码基，出问题时也容易定位。&lt;/p&gt;
-</content:encoded></item><item><title>五一星铁LAND嘉年华游玩体验：人很多，队很长，也很快乐</title><link>https://blog.yukiryou.icu/posts/2026-05-05-star-rail-land-experience/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-05-05-star-rail-land-experience/</guid><description>五一去了星铁LAND嘉年华，人多队长但很快乐，记录一下这次的游玩体验。</description><pubDate>Tue, 05 May 2026 20:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 五一去星铁LAND嘉年华了&lt;/h2&gt;
+</content:encoded></item><item><title>五一星铁LAND嘉年华游玩体验：人很多，队很长，也很快乐</title><link>https://blog.yukiryou.icu/posts/2026-05-05-star-rail-land-experience/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-05-05-star-rail-land-experience/</guid><description>五一参加星铁 LAND 嘉年华的完整体验记录，包括现场排队、活动项目、周边内容与游玩感受，也留下一份属于这次线下旅行的纪念。</description><pubDate>Tue, 05 May 2026 20:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 五一去星铁LAND嘉年华了&lt;/h2&gt;
 &lt;p&gt;五一假期第一天，去了期待已久的星铁LAND嘉年华。&lt;/p&gt;
 &lt;p&gt;体验总结：&lt;strong&gt;人很多，队很长，也很快乐。&lt;/strong&gt;&lt;/p&gt;
 &lt;hr /&gt;
@@ -1441,7 +1441,7 @@ export const musicStore = new MusicStore();
 &lt;p&gt;当然，就算真的排队排到怀疑人生，应该也挺有节目效果的。&lt;/p&gt;
 &lt;p&gt;总之，票已经有了，人也差不多该准备出发了。&lt;/p&gt;
 &lt;p&gt;五一见，星铁 LAND。&lt;/p&gt;
-</content:encoded></item><item><title>苹果 Apple Store 异环联动周边 &amp; 终末地插件近况</title><link>https://blog.yukiryou.icu/posts/2026-04-08-endfield-daily/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-04-08-endfield-daily/</guid><description>去 Apple Store 薅到了异环联动周边徽章，顺便聊聊最近终末地插件的开发近况和一些感想。</description><pubDate>Wed, 08 Apr 2026 20:30:00 GMT</pubDate><content:encoded>&lt;h2&gt;# Apple Store × 异环：周边到手了&lt;/h2&gt;
+</content:encoded></item><item><title>苹果 Apple Store 异环联动周边 &amp; 终末地插件近况</title><link>https://blog.yukiryou.icu/posts/2026-04-08-endfield-daily/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-04-08-endfield-daily/</guid><description>记录在 Apple Store 参加《异环》联动活动并领取周边徽章的经历，同时分享终末地插件近期的开发进展、功能调整与一些个人感想。</description><pubDate>Wed, 08 Apr 2026 20:30:00 GMT</pubDate><content:encoded>&lt;h2&gt;# Apple Store × 异环：周边到手了&lt;/h2&gt;
 &lt;p&gt;今天去 Apple Store 逛了一圈，顺手薅到了 &lt;strong&gt;异环（Hotta Studio）&lt;/strong&gt; 的联动周边——&lt;strong&gt;两枚角色徽章&lt;/strong&gt;！&lt;/p&gt;
 &lt;p&gt;异环是 Hotta Studio（就是做幻塔的那家）正在开发的新作，目前还没正式上线，但已经开始跟 Apple 搞线下联动了。不得不说宣发这块确实可以，游戏还在预热阶段就先把周边铺出来了，这波属于&lt;strong&gt;先用周边把你拿下，上线之后你不玩都不好意思&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;拿到手的是两枚圆形亚克力徽章，包装是黑色底卡配上「异环」的 logo，简洁利落。&lt;/p&gt;
@@ -1497,7 +1497,7 @@ export const musicStore = new MusicStore();
 &lt;p&gt;&lt;s&gt;异环上线之后大概率又要写一套新插件……到时候又是新一轮的循环。&lt;/s&gt;&lt;/p&gt;
 &lt;p&gt;&lt;s&gt;希望有人帮我做 UI。&lt;/s&gt;&lt;/p&gt;
 &lt;p&gt;晚安！🌙&lt;/p&gt;
-</content:encoded></item><item><title>新年开工：收收心该干活了</title><link>https://blog.yukiryou.icu/posts/2026-03-05-back-to-work/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-03-05-back-to-work/</guid><description>年后第一篇，聊聊最近的更新和接下来的计划，以及那些拖了好久的坑终于要填了。</description><pubDate>Thu, 05 Mar 2026 17:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：假期？什么假期？&lt;/h2&gt;
+</content:encoded></item><item><title>新年重新开工：雪涼云、个人博客与待办计划</title><link>https://blog.yukiryou.icu/posts/2026-03-05-back-to-work/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-03-05-back-to-work/</guid><description>年后重新开工，整理雪涼云、个人博客与其他开发项目的近期更新、后续计划，以及准备逐步补完的长期任务和技术欠账。</description><pubDate>Thu, 05 Mar 2026 17:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：假期？什么假期？&lt;/h2&gt;
 &lt;p&gt;各位好，我回来了。&lt;/p&gt;
 &lt;p&gt;说起来这个&quot;新年假期&quot;过得是真的快。感觉前两天还在研究怎么让终末地的电线走得更整齐，一转眼就已经三月了。期间虽然嘴上说着&quot;放假要好好休息&quot;，但实际上手一直没停——只不过从拉电线变成了敲代码。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -1830,7 +1830,7 @@ let msg = `✅ ${signinData || &apos;签到成功！&apos;}`
 &lt;p&gt;接下来？也许会继续优化一下性能，或者看看能不能挖掘出更多有趣的数据玩法。&lt;/p&gt;
 &lt;p&gt;反正，&lt;strong&gt;电线要拉，代码也要写&lt;/strong&gt;。工业党的快乐，就是这么朴实无华。&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;(本文图片均为开发中截图，实际效果以上线版本为准)&lt;/em&gt;&lt;/p&gt;
-</content:encoded></item><item><title>拉电线上瘾与备案二号：一周碎碎念</title><link>https://blog.yukiryou.icu/posts/2026-02-04-daily/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-02-04-daily/</guid><description>最近沉迷明日方舟终末地拉电线，顺便聊聊第二个备案域名 suzuki.ink 下来了。</description><pubDate>Wed, 04 Feb 2026 23:52:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 拉电线上瘾了&lt;/h2&gt;
+</content:encoded></item><item><title>沉迷终末地基建与第二个域名备案：一周开发碎碎念</title><link>https://blog.yukiryou.icu/posts/2026-02-04-daily/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-02-04-daily/</guid><description>记录最近沉迷《明日方舟：终末地》基建玩法的日常，也整理第二个备案域名 suzuki.ink 审核通过后的站点规划与个人项目近况。</description><pubDate>Wed, 04 Feb 2026 23:52:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 拉电线上瘾了&lt;/h2&gt;
 &lt;p&gt;最近日子过得比较&quot;充实&quot;——充实在《明日方舟：终末地》里。&lt;/p&gt;
 &lt;p&gt;自从终末地上线之后，我就沉迷于一件事：&lt;strong&gt;拉电线&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;不知道有没有人和我一样，在游戏里可以花几个小时规划电力布局，研究怎么让电线走得最省材料、最整齐、最合理。虽然说游戏本身内容很丰富，但我偏偏对这种&quot;基建规划&quot;类的玩法有一种近乎变态的执念。&lt;/p&gt;
@@ -1877,7 +1877,7 @@ let msg = `✅ ${signinData || &apos;签到成功！&apos;}`
 &lt;p&gt;再拉一会儿电线也不是不行。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;就这样，今天的流水账到此结束。各位晚安！🌙&lt;/p&gt;
-</content:encoded></item><item><title>从零构建短链服务：Cloudflare Worker + D1 实践</title><link>https://blog.yukiryou.icu/posts/shortener/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/shortener/</guid><description>使用 Cloudflare Serverless 技术栈打造低成本、高性能的短链服务</description><pubDate>Wed, 21 Jan 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;起因&lt;/h1&gt;
+</content:encoded></item><item><title>从零构建短链服务：Cloudflare Worker + D1 实践</title><link>https://blog.yukiryou.icu/posts/shortener/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/shortener/</guid><description>从零构建基于 Cloudflare Workers、D1 和 Pages 的短链服务，讲解路由、数据库、访问统计、前端界面、自动部署与常见问题。</description><pubDate>Wed, 21 Jan 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;起因&lt;/h2&gt;
 &lt;p&gt;一直想拥有自己的短链服务，像 bit.ly 那样简洁的链接看起来既专业又美观。正好最近在探索 Cloudflare 的 Serverless 生态，发现 Worker + D1 的组合简直是天作之合——边缘计算 + SQLite 数据库，零服务器成本就能搞定！&lt;/p&gt;
 &lt;p&gt;于是花了几天时间，从零撸了一个完整的短链服务，支持公开创建、管理后台、访问统计等功能。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;在线体验：&lt;/strong&gt;&lt;/p&gt;
@@ -1886,7 +1886,7 @@ let msg = `✅ ${signinData || &apos;签到成功！&apos;}`
 &lt;li&gt;管理后台：&lt;a href=&quot;https://dl.yukiryou.icu&quot;&gt;dl.yukiryou.icu&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
-&lt;h1&gt;功能一览&lt;/h1&gt;
+&lt;h2&gt;功能一览&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;公开创建&lt;/strong&gt; - 无需注册，输入长链接即可生成短链&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;管理后台&lt;/strong&gt; - 管理员可查看、编辑、删除所有链接&lt;/li&gt;
@@ -1895,7 +1895,7 @@ let msg = `✅ ${signinData || &apos;签到成功！&apos;}`
 &lt;li&gt;&lt;strong&gt;自动部署&lt;/strong&gt; - GitHub Actions + EdgeOne Pages 全自动 CI/CD&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
-&lt;h1&gt;技术架构&lt;/h1&gt;
+&lt;h2&gt;技术架构&lt;/h2&gt;
 &lt;p&gt;整体架构非常简洁：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;用户访问 ki1.mom/abc
         ↓
@@ -1933,7 +1933,7 @@ let msg = `✅ ${signinData || &apos;签到成功！&apos;}`
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;hr /&gt;
-&lt;h1&gt;数据库设计&lt;/h1&gt;
+&lt;h2&gt;数据库设计&lt;/h2&gt;
 &lt;p&gt;D1 使用 SQLite 语法，设计了两张表：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;-- 短链表
 CREATE TABLE links (
@@ -1963,7 +1963,7 @@ CREATE TABLE visits (
 CREATE INDEX idx_visits_link_id ON visits(link_id);
 &lt;/code&gt;&lt;/pre&gt;
 &lt;hr /&gt;
-&lt;h1&gt;核心实现&lt;/h1&gt;
+&lt;h2&gt;核心实现&lt;/h2&gt;
 &lt;h3&gt;路由设计&lt;/h3&gt;
 &lt;p&gt;Worker 的路由分为三层：API 接口、短链跳转、根路径重定向。&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;export async function handleRequest(request: Request, env: Env): Promise&amp;lt;Response&amp;gt; {
@@ -2026,7 +2026,7 @@ CREATE INDEX idx_visits_link_id ON visits(link_id);
 }
 &lt;/code&gt;&lt;/pre&gt;
 &lt;hr /&gt;
-&lt;h1&gt;前端界面&lt;/h1&gt;
+&lt;h2&gt;前端界面&lt;/h2&gt;
 &lt;p&gt;采用了粉色玻璃态（Glassmorphism）设计，配合随机图片背景：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;:root {
   --primary: #f472b6;
@@ -2048,7 +2048,7 @@ body {
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;效果挺好看的，配合我的随机图 API，每次刷新都是不同的背景图～&lt;/p&gt;
 &lt;hr /&gt;
-&lt;h1&gt;CI/CD 配置&lt;/h1&gt;
+&lt;h2&gt;CI/CD 配置&lt;/h2&gt;
 &lt;h3&gt;Worker 自动部署&lt;/h3&gt;
 &lt;p&gt;使用 GitHub Actions + Wrangler 自动部署：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;name: Deploy Worker
@@ -2076,7 +2076,7 @@ jobs:
 &lt;h3&gt;前端自动部署&lt;/h3&gt;
 &lt;p&gt;前端托管在 EdgeOne Pages，绑定 GitHub 仓库后会自动监听推送并部署，无需额外配置。&lt;/p&gt;
 &lt;hr /&gt;
-&lt;h1&gt;踩坑记录&lt;/h1&gt;
+&lt;h2&gt;踩坑记录&lt;/h2&gt;
 &lt;h3&gt;CORS 跨域&lt;/h3&gt;
 &lt;p&gt;前端调 API 时遇到 CORS 错误，在 Worker 里加响应头解决：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;const corsHeaders = {
@@ -2094,7 +2094,7 @@ jobs:
 &lt;pre&gt;&lt;code&gt;const API_URL = import.meta.env.PROD ? &apos;https://ki1.mom&apos; : &apos;&apos;;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;hr /&gt;
-&lt;h1&gt;性能数据&lt;/h1&gt;
+&lt;h2&gt;性能数据&lt;/h2&gt;
 &lt;p&gt;简单测了一下，性能非常满意：&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
@@ -2119,7 +2119,7 @@ jobs:
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;hr /&gt;
-&lt;h1&gt;总结&lt;/h1&gt;
+&lt;h2&gt;总结&lt;/h2&gt;
 &lt;p&gt;这个项目让我对 Cloudflare 的 Serverless 生态有了更深的理解：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;Worker&lt;/strong&gt; 冷启动极快，全球边缘节点意味着用户无论在哪都能快速访问&lt;/li&gt;
@@ -2134,7 +2134,7 @@ jobs:
 &lt;li&gt;短链服务：&lt;a href=&quot;https://ki1.mom&quot;&gt;ki1.mom&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;管理后台：&lt;a href=&quot;https://dl.yukiryou.icu&quot;&gt;dl.yukiryou.icu&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</content:encoded></item><item><title>安卓换苹果：iPhone 17 标准版入坑实录</title><link>https://blog.yukiryou.icu/posts/iphone17/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/iphone17/</guid><description>最近换了iPhone 17标准版，感觉苹果和安卓还是有很大区别的，聊聊真心话。</description><pubDate>Tue, 13 Jan 2026 23:11:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 序：拖延症晚期的开箱&lt;/h2&gt;
+</content:encoded></item><item><title>安卓换苹果：iPhone 17 标准版入坑实录</title><link>https://blog.yukiryou.icu/posts/iphone17/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/iphone17/</guid><description>从安卓手机换到 iPhone 17 标准版后的真实体验，聊聊系统生态、日常使用、功能差异与适应过程，以及我对苹果和安卓的个人感受。</description><pubDate>Tue, 13 Jan 2026 23:11:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 序：拖延症晚期的开箱&lt;/h2&gt;
 &lt;p&gt;手机其实已经到手用了两三周了，因为有点懒，这篇文章一直拖到现在才动笔。毕竟是第一台苹果，还是想留点文字记录一下。&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h2&gt;# 为什么选了 iPhone 17？&lt;/h2&gt;
@@ -2166,12 +2166,12 @@ jobs:
 &lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.icu/_astro/e5f143ebf52a62354452227b4d37e56c.DkDJ62aa_Bg2o6.webp&quot; alt=&quot;iPhone 17 随手拍样张一&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.icu/_astro/df47bfb496974fa5fa6933b68b33b502.Dahmp-5G_DaW1u.webp&quot; alt=&quot;iPhone 17 随手拍样张二&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;过多的就不说了，想到什么说什么。总的来说，iPhone 17 是好用的，但也没必要把它神话。&lt;/p&gt;
-</content:encoded></item><item><title>Setu Cloud v2.5 音乐功能重磅上线！</title><link>https://blog.yukiryou.icu/posts/setu_cloud_v25/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_cloud_v25/</guid><description>全新网易云音乐集成功能，打造一站式娱乐控制台</description><pubDate>Sat, 27 Dec 2025 22:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;序言&lt;/h1&gt;
+</content:encoded></item><item><title>Setu Cloud v2.5 音乐功能重磅上线！</title><link>https://blog.yukiryou.icu/posts/setu_cloud_v25/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_cloud_v25/</guid><description>介绍 Setu Cloud v2.5 新增的网易云音乐集成功能，包括全局播放器、歌曲搜索、歌单管理、播放历史、技术实现与后续优化计划。</description><pubDate>Sat, 27 Dec 2025 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;序言&lt;/h2&gt;
 &lt;p&gt;距离 Setu Cloud v2 正式上线已经过去两周了，这段时间收到了很多小伙伴的反馈和建议。在保持原有图片 API 服务稳定运行的基础上，我们决定做一些&quot;不务正业&quot;的事情——给控制台加入音乐播放功能！&lt;/p&gt;
 &lt;p&gt;没错，现在你可以一边管理 API Key，一边听着网易云音乐放松心情了。这次更新不仅仅是简单的功能堆砌，而是从用户体验出发，打造了一套完整的音乐管理系统。&lt;/p&gt;
 &lt;p&gt;Setu Cloud 地址: &lt;a href=&quot;https://cloud.yukiryou.icu/&quot;&gt;https://cloud.yukiryou.icu/&lt;/a&gt;&lt;/p&gt;
 &lt;hr /&gt;
-&lt;h1&gt;核心更新&lt;/h1&gt;
+&lt;h2&gt;核心更新&lt;/h2&gt;
 &lt;h3&gt;1. 全局音乐播放器&lt;/h3&gt;
 &lt;p&gt;我们在控制台底部集成了一个&lt;strong&gt;全局音乐播放器&lt;/strong&gt;，无论你切换到哪个页面，音乐都不会停止。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;主要特性：&lt;/strong&gt;&lt;/p&gt;
@@ -2257,7 +2257,7 @@ jobs:
 &lt;li&gt;&lt;strong&gt;抽屉设计&lt;/strong&gt;：侧边滑出，不遮挡主要内容&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
-&lt;h1&gt;技术实现细节&lt;/h1&gt;
+&lt;h2&gt;技术实现细节&lt;/h2&gt;
 &lt;p&gt;这次音乐功能的实现，涉及了不少技术挑战：&lt;/p&gt;
 &lt;h3&gt;前端架构&lt;/h3&gt;
 &lt;ul&gt;
@@ -2281,7 +2281,7 @@ jobs:
 &lt;li&gt;&lt;strong&gt;平滑动画&lt;/strong&gt;：过渡动画让交互更流畅&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
-&lt;h1&gt;快速上手指南&lt;/h1&gt;
+&lt;h2&gt;快速上手指南&lt;/h2&gt;
 &lt;p&gt;想要体验音乐功能？只需两步：&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;第一步：登录控制台&lt;/strong&gt;
 访问 Setu Cloud 官网并登录你的账号。&lt;/p&gt;
@@ -2292,7 +2292,7 @@ jobs:
 &lt;p&gt;&lt;strong&gt;可选：查看历史&lt;/strong&gt;
 点击 &lt;strong&gt;「播放历史」&lt;/strong&gt;，可以看到最近播放的 50 首歌曲，点击即可重新播放。&lt;/p&gt;
 &lt;hr /&gt;
-&lt;h1&gt;技术栈更新&lt;/h1&gt;
+&lt;h2&gt;技术栈更新&lt;/h2&gt;
 &lt;p&gt;音乐功能基于以下技术实现：&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;前端：&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -2317,7 +2317,7 @@ jobs:
 &lt;li&gt;全局播放器生命周期管理&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
-&lt;h1&gt;已知问题 &amp;amp; 后续计划&lt;/h1&gt;
+&lt;h2&gt;已知问题 &amp;amp; 后续计划&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;已知问题：&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;部分歌曲因版权原因无法播放（网易云 API 限制）&lt;/li&gt;
@@ -2332,7 +2332,7 @@ jobs:
 &lt;li&gt;[ ] 添加音乐可视化效果&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
-&lt;h1&gt;结语&lt;/h1&gt;
+&lt;h2&gt;结语&lt;/h2&gt;
 &lt;p&gt;Setu Cloud 从一个简单的图片 API 服务，逐渐演变成了一个多功能的娱乐控制台。音乐功能的加入，让开发者在管理 API 的同时也能享受片刻的放松。&lt;/p&gt;
 &lt;p&gt;这次更新耗时约一周，从需求设计到功能实现，再到 UI 打磨，每一个细节都经过了反复推敲。虽然&quot;不务正业&quot;，但确实提升了使用控制台的幸福感😊&lt;/p&gt;
 &lt;p&gt;欢迎大家登录体验，如果有任何建议或遇到 BUG，欢迎通过邮件或 QQ 反馈！&lt;/p&gt;
@@ -2343,12 +2343,12 @@ jobs:
 &lt;li&gt;Setu Cloud: &lt;a href=&quot;https://cloud.yukiryou.icu/&quot;&gt;https://cloud.yukiryou.icu/&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;反馈邮箱: yuki@yukiryou.online&lt;/li&gt;
 &lt;/ul&gt;
-</content:encoded></item><item><title>Setu Cloud v2正式上线！</title><link>https://blog.yukiryou.icu/posts/setu_cloud-v2/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_cloud-v2/</guid><description>setu_cloud用户端正式上线，主要还是以学习为目的</description><pubDate>Sat, 13 Dec 2025 22:30:00 GMT</pubDate><content:encoded>&lt;h1&gt;序言&lt;/h1&gt;
+</content:encoded></item><item><title>Setu Cloud v2 正式上线：用户端、API Key 与服务升级</title><link>https://blog.yukiryou.icu/posts/setu_cloud-v2/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_cloud-v2/</guid><description>记录 Setu Cloud v2 用户端正式上线后的主要变化，包括界面升级、API Key 管理、服务稳定性优化、快速上手方式与项目技术栈。</description><pubDate>Sat, 13 Dec 2025 22:30:00 GMT</pubDate><content:encoded>&lt;h2&gt;序言&lt;/h2&gt;
 &lt;p&gt;最近一段时间没有更新博客了主要原因就是在写需求文档然后空闲时间在给setu_api完善好并写一个用户端和管理端。时间紧每天太累了，懒得更新了就。不过现在也是正式完工了。不过写什么都是以学习为目的，以交流为主，有问题希望锐评我。&lt;/p&gt;
 &lt;p&gt;Setu Cloud地址:&lt;a href=&quot;https://cloud.yukiryou.icu/&quot;&gt;https://cloud.yukiryou.icu/&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;相比于 v1 版本，v2 不仅仅是一次简单的版本号迭代，更是从交互体验到底层架构的一次全面升级。引入了全新的设计语言，重写了 API 管理逻辑，旨在为开发者提供更稳定、更美观、更易用的图片 API 服务。&lt;/p&gt;
 &lt;hr /&gt;
-&lt;h1&gt;核心更新&lt;/h1&gt;
+&lt;h2&gt;核心更新&lt;/h2&gt;
 &lt;h3&gt;1.UI设计&lt;/h3&gt;
 &lt;p&gt;我们抛弃了传统枯燥的后台管理界面，基于 &lt;strong&gt;Naive UI&lt;/strong&gt; 打造了一套全新的“极光毛玻璃”设计系统。&lt;/p&gt;
 &lt;ul&gt;
@@ -2383,17 +2383,17 @@ jobs:
 &lt;h3&gt;看板娘预览&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.icu/_astro/2025-12-13-23-22-00-image.DN6azugU_1n6lFQ.webp&quot; alt=&quot;Setu Cloud v2 看板娘预览&quot; /&gt;&lt;/p&gt;
 &lt;hr /&gt;
-&lt;h1&gt;快速上手指南&lt;/h1&gt;
+&lt;h2&gt;快速上手指南&lt;/h2&gt;
 &lt;p&gt;想要使用 Setu Cloud v2 的服务非常简单，只需三步：&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;第一步：注册与登录&lt;/strong&gt; 访问 Setu Cloud 官网，使用邮箱注册账号。登录后，你将直接进入全新的用户仪表盘。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;第二步：获取 API Key&lt;/strong&gt; 在左侧菜单点击 &lt;strong&gt;「API Key 管理」&lt;/strong&gt; -&amp;gt; &lt;strong&gt;「新建 API Key」&lt;/strong&gt;。 输入一个备注名称（例如 &quot;My Blog&quot;），点击创建。系统会生成一串密钥，请务必立即复制并保存。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;第三步：发起调用&lt;/strong&gt; 现在，你可以使用任何 HTTP 客户端调用接口了。记得在 Header 中带上你的 Key：&lt;/p&gt;
 &lt;p&gt;Bash&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# 示例：使用 cURL 调用
+&lt;pre&gt;&lt;code&gt;## 示例：使用 cURL 调用
 curl -X GET &quot;https://api.yukiryou.icu/setu/v2&quot; \
      -H &quot;X-API-Key: sk-你的密钥&quot;
 &lt;/code&gt;&lt;/pre&gt;
-&lt;h1&gt;技术栈一览&lt;/h1&gt;
+&lt;h2&gt;技术栈一览&lt;/h2&gt;
 &lt;p&gt;对于感兴趣的开发者，Setu Cloud v2 的前端构建于以下现代技术栈之上：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
@@ -2412,15 +2412,15 @@ curl -X GET &quot;https://api.yukiryou.icu/setu/v2&quot; \
 &lt;p&gt;&lt;strong&gt;语言&lt;/strong&gt;：TypeScript&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;h1&gt;结语&lt;/h1&gt;
+&lt;h2&gt;结语&lt;/h2&gt;
 &lt;p&gt;Setu Cloud 的初衷是提供简单、好用的二次元图片接口服务。v2 的上线是一个新的开始，未来我们将持续引入更多实用的功能（如更多维度的图片筛选、图库搜索等）。&lt;/p&gt;
 &lt;p&gt;欢迎大家注册体验，如果有任何建议或遇到 BUG，欢迎通过邮件或 QQ 提交反馈！&lt;/p&gt;
 &lt;p&gt;说个题外话，今天打一下午未许之地突袭8，谁能告诉我这玩意到底怎么过，越打越破防。
 &lt;img src=&quot;https://blog.yukiryou.icu/_astro/987f5c8f6b10836f7f3c05ac51e0bcbb.lVS1t2i0_Z1g18at.webp&quot; alt=&quot;未许之地突袭8游戏截图&quot; /&gt;&lt;/p&gt;
-</content:encoded></item><item><title>二次元随机美图api</title><link>https://blog.yukiryou.icu/posts/setu_api/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_api/</guid><description>把pixiv的图片信息存储在数据库中，并提供代理服务</description><pubDate>Thu, 04 Dec 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h1&gt;起因&lt;/h1&gt;
+</content:encoded></item><item><title>二次元随机图片 API：Pixiv 数据入库、标签筛选与代理服务</title><link>https://blog.yukiryou.icu/posts/setu_api/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_api/</guid><description>介绍二次元随机图片 API 的设计与使用方式：将 Pixiv 图片信息存入数据库，支持标签组合筛选、批量查询、图片尺寸选择与代理访问。</description><pubDate>Thu, 04 Dec 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;起因&lt;/h2&gt;
 &lt;p&gt;一直以来总想根据自己的性趣去部署一个图片api，最近购置了阿里云服务器进行备案，就干脆把阿里云的服务器拿来搭建好了。&lt;/p&gt;
 &lt;hr /&gt;
-&lt;h1&gt;API v2&lt;/h1&gt;
+&lt;h2&gt;API v2&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&quot;https://www.pixiv.net/&quot;&gt;https://api.yukiryou.icu/setu/v2&lt;/a&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;接口地址（GET / POST 通用）&lt;/strong&gt;&lt;/li&gt;
@@ -2433,7 +2433,7 @@ curl -X GET &quot;https://api.yukiryou.icu/setu/v2&quot; \
 &lt;li&gt;&lt;strong&gt;返回格式：JSON&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
-&lt;h1&gt;请求参数说明&lt;/h1&gt;
+&lt;h2&gt;请求参数说明&lt;/h2&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -2519,9 +2519,9 @@ curl -X GET &quot;https://api.yukiryou.icu/setu/v2&quot; \
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;hr /&gt;
-&lt;h1&gt;标签（tag）高级匹配规则&lt;/h1&gt;
+&lt;h2&gt;标签（tag）高级匹配规则&lt;/h2&gt;
 &lt;p&gt;标签匹配支持 AND / OR 组合，大小写不敏感。&lt;/p&gt;
-&lt;h2&gt;AND 规则（数组之间）&lt;/h2&gt;
+&lt;h3&gt;AND 规则（数组之间）&lt;/h3&gt;
 &lt;p&gt;例如：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;
 tag=萝莉|少女
@@ -2534,14 +2534,14 @@ tag=黑丝|白丝
 (萝莉 OR 少女) AND (黑丝 OR 白丝)
 
 &lt;/code&gt;&lt;/pre&gt;
-&lt;h2&gt;OR 规则（同一个字符串内用 &lt;code&gt;|&lt;/code&gt; 分隔）&lt;/h2&gt;
+&lt;h3&gt;OR 规则（同一个字符串内用 &lt;code&gt;|&lt;/code&gt; 分隔）&lt;/h3&gt;
 &lt;p&gt;例如：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;
 tag=巨乳|おっぱい
 
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;表示匹配其中任意一个即可。&lt;/p&gt;
-&lt;h2&gt;匹配范围：&lt;/h2&gt;
+&lt;h3&gt;匹配范围：&lt;/h3&gt;
 &lt;p&gt;| 字段 | 是否参与匹配 |&lt;/p&gt;
 &lt;p&gt;|------|-------------|&lt;/p&gt;
 &lt;p&gt;| 标签（tags） | ✔ |&lt;/p&gt;
@@ -2549,18 +2549,18 @@ tag=巨乳|おっぱい
 &lt;p&gt;| 作者（author） | ✔ |&lt;/p&gt;
 &lt;p&gt;全部以 &lt;strong&gt;小写&lt;/strong&gt; + &lt;strong&gt;包含（contains）匹配&lt;/strong&gt;方式处理。&lt;/p&gt;
 &lt;hr /&gt;
-&lt;h1&gt;GET 示例&lt;/h1&gt;
-&lt;h2&gt;1️⃣ 获取 1 个非 R18 的随机图（默认 original 尺寸）&lt;/h2&gt;
+&lt;h2&gt;GET 示例&lt;/h2&gt;
+&lt;h3&gt;1️⃣ 获取 1 个非 R18 的随机图（默认 original 尺寸）&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;
 GET https://api.yukiryou.icu/setu/v2
 
 &lt;/code&gt;&lt;/pre&gt;
-&lt;h2&gt;2️⃣ 获取 5 张 original + regular 尺寸图片&lt;/h2&gt;
+&lt;h3&gt;2️⃣ 获取 5 张 original + regular 尺寸图片&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;
 GET https://api.yukiryou.icu/setu/v2?num=5&amp;amp;size=original&amp;amp;size=regular
 
 &lt;/code&gt;&lt;/pre&gt;
-&lt;h2&gt;3️⃣ 标签高级匹配示例&lt;/h2&gt;
+&lt;h3&gt;3️⃣ 标签高级匹配示例&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;
 GET https://api.yukiryou.icu/setu/v2?tag=萝莉|少女&amp;amp;tag=白丝|黑丝
 
@@ -2570,28 +2570,28 @@ GET https://api.yukiryou.icu/setu/v2?tag=萝莉|少女&amp;amp;tag=白丝|黑丝
 (萝莉 OR 少女) AND (白丝 OR 黑丝)
 
 &lt;/code&gt;&lt;/pre&gt;
-&lt;h2&gt;4️⃣ 按关键字模糊搜索&lt;/h2&gt;
+&lt;h3&gt;4️⃣ 按关键字模糊搜索&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;
 GET https://api.yukiryou.icu/setu/v2?keyword=碧蓝航线
 
 &lt;/code&gt;&lt;/pre&gt;
-&lt;h2&gt;5️⃣ 按作者 uid 搜索&lt;/h2&gt;
+&lt;h3&gt;5️⃣ 按作者 uid 搜索&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;
 GET https://api.yukiryou.icu/setu/v2?uid=12345&amp;amp;uid=67890
 
 &lt;/code&gt;&lt;/pre&gt;
-&lt;h2&gt;6️⃣ 限制长宽比&lt;/h2&gt;
+&lt;h3&gt;6️⃣ 限制长宽比&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;
 GET https://api.yukiryou.icu/setu/v2?aspectRatio=1.6-1.8
 
 &lt;/code&gt;&lt;/pre&gt;
-&lt;h2&gt;7️⃣ 过滤 AI 图&lt;/h2&gt;
+&lt;h3&gt;7️⃣ 过滤 AI 图&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;
 GET https://api.yukiryou.icu/setu/v2?excludeAI=true
 
 &lt;/code&gt;&lt;/pre&gt;
 &lt;hr /&gt;
-&lt;h1&gt;📨 POST 示例&lt;/h1&gt;
+&lt;h2&gt;📨 POST 示例&lt;/h2&gt;
 &lt;p&gt;POST 支持 JSON 的二维 tag：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;
 {
@@ -2623,7 +2623,7 @@ tag=黑丝|白丝
 
 &lt;/code&gt;&lt;/pre&gt;
 &lt;hr /&gt;
-&lt;h1&gt;返回格式&lt;/h1&gt;
+&lt;h2&gt;返回格式&lt;/h2&gt;
 &lt;p&gt;示例：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;
 {
@@ -2680,7 +2680,7 @@ tag=黑丝|白丝
 
 &lt;/code&gt;&lt;/pre&gt;
 &lt;hr /&gt;
-&lt;h1&gt;🔄 图片 URL 自动生成逻辑&lt;/h1&gt;
+&lt;h2&gt;🔄 图片 URL 自动生成逻辑&lt;/h2&gt;
 &lt;p&gt;你只需要 original，即：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;/img-original/.../90551655_p0.jpg
 &lt;/code&gt;&lt;/pre&gt;
@@ -2716,7 +2716,7 @@ tag=黑丝|白丝
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;hr /&gt;
-&lt;h1&gt;⚠️ 注意事项&lt;/h1&gt;
+&lt;h2&gt;⚠️ 注意事项&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;num 最大为 20&lt;/p&gt;
@@ -2735,10 +2735,10 @@ tag=黑丝|白丝
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
-&lt;h1&gt;其他服务&lt;/h1&gt;
+&lt;h2&gt;其他服务&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&quot;https://yukiryou.icu/posts/api_plugin/&quot;&gt;QQ Bot&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;后续可能优化一下并公开插件&lt;/p&gt;
-</content:encoded></item><item><title>QQbot插件优化</title><link>https://blog.yukiryou.icu/posts/api_plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/api_plugin/</guid><description>通过pixiv官方refresh_token去获取图片</description><pubDate>Tue, 02 Dec 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h1&gt;起因&lt;/h1&gt;
+</content:encoded></item><item><title>QQ Bot 插件优化：接入 Pixiv 官方 API 与本地数据库回退</title><link>https://blog.yukiryou.icu/posts/api_plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/api_plugin/</guid><description>记录 QQ Bot 图片插件的完整优化过程：使用 Pixiv refresh_token 获取官方数据，并加入第三方 API 与本地数据库回退链路。</description><pubDate>Tue, 02 Dec 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;起因&lt;/h2&gt;
 &lt;p&gt;最近一直在做p站的api，目前进度只有6000+的图片信息，数据库部分信息类似下图
 &lt;img src=&quot;https://blog.yukiryou.icu/_astro/2025-12-02-21-25-14-image.K1QwrchD_Zu4Y8H.webp&quot; alt=&quot;Pixiv 图片数据库信息示例截图&quot; /&gt;&lt;/p&gt;
 &lt;ol&gt;
@@ -2746,22 +2746,22 @@ tag=黑丝|白丝
 &lt;li&gt;为保证质量的话，所有图片信息都是根据本人xp来的，这里不过多解释了
 总之就是任务还没完成，只能偷工减料了。&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h1&gt;QQ Bot&lt;/h1&gt;
+&lt;h2&gt;QQ Bot&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;qq号:2830323446&lt;/strong&gt;&lt;/p&gt;
 &lt;hr /&gt;
-&lt;h1&gt;成果一览&lt;/h1&gt;
+&lt;h2&gt;成果一览&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;发图插件&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;- &lt;code&gt;setu&lt;/code&gt; 随机仅从 &lt;strong&gt;外部 API + 数据库&lt;/strong&gt; 取图；&lt;/p&gt;
 &lt;p&gt;- &lt;code&gt;setu pid=... / uid=... / tag=...&lt;/code&gt;：&lt;strong&gt;官方优先&lt;/strong&gt;→失败自动回退 &lt;strong&gt;API → DB&lt;/strong&gt;，并 **通知主人 ；&lt;/p&gt;
 &lt;p&gt;- 随机策略：&lt;strong&gt;随机跳页 + 水库采样&lt;/strong&gt;，避免“第一页偏置”；&lt;/p&gt;
-&lt;h1&gt;优化过程&lt;/h1&gt;
+&lt;h2&gt;优化过程&lt;/h2&gt;
 &lt;p&gt;::github{repo=&quot;Tsuk1ko/pxder&quot;}
 通过以上项目可以获取到你自己账号的refresh_token，然后就可以愉快的获取pixiv的信息了。&lt;/p&gt;
 &lt;hr /&gt;
-&lt;h1&gt;具体实现（可直接复用的核心函数）&lt;/h1&gt;
-&lt;h2&gt;1) Pixiv 官方认证（refresh_token → access_token）&lt;/h2&gt;
+&lt;h2&gt;具体实现（可直接复用的核心函数）&lt;/h2&gt;
+&lt;h3&gt;1) Pixiv 官方认证（refresh_token → access_token）&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;
 import requests
 
@@ -2838,7 +2838,7 @@ def make_aapi(refresh_token: str) -&amp;gt; AppPixivAPI:
     return aapi
 
 &lt;/code&gt;&lt;/pre&gt;
-&lt;h2&gt;2) 随机策略：随机跳页 + 水库采样&lt;/h2&gt;
+&lt;h3&gt;2) 随机策略：随机跳页 + 水库采样&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;
 import random
 
@@ -2935,7 +2935,7 @@ def random_one_from_tag(aapi, tag: str, max_jumps: int = 30) -&amp;gt; str | Non
     return random.choice(pages) if pages else None
 
 &lt;/code&gt;&lt;/pre&gt;
-&lt;h2&gt;3) 官方→API→DB 回退链路&lt;/h2&gt;
+&lt;h3&gt;3) 官方→API→DB 回退链路&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;
 async def notify_owner(bot, owner_qq: int, text: str, event=None):
 
@@ -3031,22 +3031,22 @@ async def get_by_pid_uid_tag_with_fallback(session, bot, event, owner_qq, refres
 
 &lt;/code&gt;&lt;/pre&gt;
 &lt;hr /&gt;
-&lt;h1&gt;结果&lt;/h1&gt;
+&lt;h2&gt;结果&lt;/h2&gt;
 &lt;p&gt;结果就是我发现标签查询效果更好了，标签匹配更吻合了，非常满意
 &lt;img src=&quot;https://blog.yukiryou.icu/_astro/2025-12-02-21-59-34-image.DqpsqFib_tYrrA.webp&quot; alt=&quot;QQ Bot 标签查询优化效果截图&quot; /&gt;&lt;/p&gt;
-</content:encoded></item><item><title>首次提交备案</title><link>https://blog.yukiryou.icu/posts/icp/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/icp/</guid><description>第一次备案，分享一下</description><pubDate>Sat, 29 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h1&gt;准备工作&lt;/h1&gt;
+</content:encoded></item><item><title>个人博客首次备案：从准备材料到审核结束</title><link>https://blog.yukiryou.icu/posts/icp/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/icp/</guid><description>记录个人博客第一次提交 ICP 备案的完整经历，包括前期准备、资料提交、审核过程和最终结果，为首次备案的网站作者提供参考。</description><pubDate>Sat, 29 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;准备工作&lt;/h2&gt;
 &lt;p&gt;我们都知道国内服务器是需要备案的，但备案需要准备些什么呢？&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;首先选择一家合适的域名服务商进行代备案，我选择的是阿里云。&lt;/li&gt;
 &lt;li&gt;其次我们需要准备一个可备案域名和国内云服务器。&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h1&gt;开始&lt;/h1&gt;
+&lt;h2&gt;开始&lt;/h2&gt;
 &lt;p&gt;准备好之后就可以申请备案了，我本以为备案会很复杂，但我提交申请到阿里云提交到管局审核也没花很长时间，不过我申请的时间是在周末，我想应该需要下周六才能通过了吧。&lt;/p&gt;
-&lt;h1&gt;结束&lt;/h1&gt;
+&lt;h2&gt;结束&lt;/h2&gt;
 &lt;p&gt;附一张申请记录做为纪念
 &lt;img src=&quot;https://blog.yukiryou.icu/_astro/2025-11-29-17-12-11-image.DbOeRBQI_1mmqdU.webp&quot; alt=&quot;阿里云备案申请记录截图&quot; /&gt;&lt;/p&gt;
-</content:encoded></item><item><title>关于我对“赞助”的思考</title><link>https://blog.yukiryou.icu/posts/sponsor/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/sponsor/</guid><description>对于自己喜欢的文章、博客、游戏mod，会给予赞助，突然就有了一个思考</description><pubDate>Fri, 28 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h1&gt;开始&lt;/h1&gt;
+</content:encoded></item><item><title>为什么我愿意赞助独立创作者：关于免费内容与支持的思考</title><link>https://blog.yukiryou.icu/posts/sponsor/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/sponsor/</guid><description>从赞助喜欢的文章、独立博客与游戏模组出发，聊聊免费内容背后的创作成本、支持开发者的意义，以及我对赞助这件事的理解。</description><pubDate>Fri, 28 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;开始&lt;/h2&gt;
 &lt;p&gt;首先我们要弄明白什么叫赞助。在我的常识里，赞助就是用户为了某个活动、某个项目、某篇文章(具体来说就是某件事或物)提供经济支持。当我对别人赞助时，我不禁在思考，别人收到我的赞助会有什么心情和想法。虽然我知道我赞助的不算多，也并不是为了什么而去选择赞助。我仅仅是因为看到某些对我有帮助的文章，才会选择赞助对方，也希望对方能够提供更多有趣有帮助的文章。&lt;/p&gt;
-</content:encoded></item><item><title>Ciallo～ (∠・ω&lt; )⌒★，搭建博客，重新开始</title><link>https://blog.yukiryou.icu/posts/admin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/admin/</guid><description>发现自己一直以来还是没有好好搭建一个自己的博客，就重新搞一下</description><pubDate>Wed, 26 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h1&gt;开始&lt;/h1&gt;
+</content:encoded></item><item><title>重新搭建个人博客：雪涼的扣扣空间再次出发</title><link>https://blog.yukiryou.icu/posts/admin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/admin/</guid><description>记录重新搭建个人博客「雪涼的扣扣空间」的起点，说明为什么决定整理旧内容、重新选择博客方案，并开始持续记录开发与日常。</description><pubDate>Wed, 26 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;开始&lt;/h2&gt;
 &lt;p&gt;闲着没事做，就想着好好搭建一个博客玩一下，正好觉得平时比较喜欢的&lt;a href=&quot;https://2x.nz&quot;&gt;博主:2x树树&lt;/a&gt;魔改的博客网站还不错，自己也部署一个试试。不过我也没啥文笔，没什么说的就这样吧。&lt;/p&gt;
 </content:encoded></item></channel></rss>
