@@ -157,7 +157,7 @@ const wrapperProps = embedded
 
     const result = root.querySelector("#setu-result");
     const error = root.querySelector("#setu-error");
-    const thumb = root.querySelector("#setu-thumb");
+    const thumb = root.querySelector<HTMLImageElement>("#setu-thumb");
     const thumbWrapper = root.querySelector("#setu-thumb-wrapper");
     const titleEl = root.querySelector("#setu-title");
     const authorEl = root.querySelector("#setu-author");
@@ -165,7 +165,7 @@ const wrapperProps = embedded
 
     const preview = document.getElementById("setu-preview");
     const previewStage = document.getElementById("setu-preview-stage");
-    const previewImg = document.getElementById("setu-preview-img");
+    const previewImg = document.querySelector<HTMLImageElement>("#setu-preview-img");
     const previewClose = document.getElementById("setu-preview-close");
 
     function openPreview() {

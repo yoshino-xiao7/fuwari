@@ -20,6 +20,7 @@ const { pageTitle, description, setOGTypeArticle, ogImage } = Astro.props;
 
 const favicons: Favicon[] =
 	siteConfig.favicon.length > 0 ? siteConfig.favicon : defaultFavicons;
+const keywords = siteConfig.keywords ?? [];
 
 const canonicalUrl = getCanonicalUrl(Astro.url.pathname, Astro.site);
 const fallbackOgImage =
@@ -40,8 +41,8 @@ const absoluteOgImage = getAbsoluteUrl(ogImage || fallbackOgImage, Astro.site);
 {siteConfig.seo?.msValidate && (
 	<meta name="msvalidate.01" content={siteConfig.seo.msValidate}>
 )}
-{siteConfig.keywords?.length > 0 && (
-	<meta name="keywords" content={siteConfig.keywords.join(", ")}>
+{keywords.length > 0 && (
+	<meta name="keywords" content={keywords.join(", ")}>
 )}
 <link rel="canonical" href={canonicalUrl} />
 

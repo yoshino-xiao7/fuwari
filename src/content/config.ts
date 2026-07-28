@@ -1,6 +1,39 @@
-import { defineCollection, z } from "astro:content";
+import { type CollectionConfig, defineCollection, z } from "astro:content";
 
-const postsCollection: ReturnType<typeof defineCollection> = defineCollection({
+type PostsSchema = z.ZodObject<{
+	title: z.ZodString;
+	published: z.ZodDate;
+	updated: z.ZodOptional<z.ZodDate>;
+	draft: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
+	description: z.ZodDefault<z.ZodOptional<z.ZodString>>;
+	image: z.ZodDefault<z.ZodOptional<z.ZodString>>;
+	tags: z.ZodDefault<z.ZodOptional<z.ZodArray<z.ZodString>>>;
+	category: z.ZodDefault<z.ZodOptional<z.ZodString>>;
+	lang: z.ZodDefault<z.ZodOptional<z.ZodString>>;
+	pinned: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
+	prevTitle: z.ZodDefault<z.ZodString>;
+	prevSlug: z.ZodDefault<z.ZodString>;
+	nextTitle: z.ZodDefault<z.ZodString>;
+	nextSlug: z.ZodDefault<z.ZodString>;
+}>;
+
+type SpecSchema = z.ZodObject<{
+	title: z.ZodOptional<z.ZodString>;
+	published: z.ZodOptional<z.ZodDate>;
+	updated: z.ZodOptional<z.ZodDate>;
+	draft: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
+}>;
+
+type AssetsSchema = z.ZodObject<Record<string, never>>;
+
+type DevlogsSchema = z.ZodObject<{
+	title: z.ZodString;
+	published: z.ZodDate;
+	project: z.ZodString;
+	summary: z.ZodDefault<z.ZodOptional<z.ZodString>>;
+}>;
+
+const postsCollection: CollectionConfig<PostsSchema> = defineCollection({
 	schema: z.object({
 		title: z.string(),
 		published: z.date(),
@@ -21,7 +54,7 @@ const postsCollection: ReturnType<typeof defineCollection> = defineCollection({
 	}),
 });
 
-const specCollection: ReturnType<typeof defineCollection> = defineCollection({
+const specCollection: CollectionConfig<SpecSchema> = defineCollection({
 	schema: z.object({
 		title: z.string().optional(),
 		published: z.date().optional(),
@@ -30,26 +63,26 @@ const specCollection: ReturnType<typeof defineCollection> = defineCollection({
 	}),
 });
 
-const assetsCollection: ReturnType<typeof defineCollection> = defineCollection({
+const assetsCollection: CollectionConfig<AssetsSchema> = defineCollection({
 	loader: () => [],
 	schema: z.object({}),
 });
 
-const devlogsCollection: ReturnType<typeof defineCollection> = defineCollection(
-	{
-		schema: z.object({
-			title: z.string(),
-			published: z.date(),
-			project: z.string(), // 项目ID，如 'xueliangyun' 或 'endfield-yunzai'
-			summary: z.string().optional().default(""),
-		}),
-	},
-);
+const devlogsCollection: CollectionConfig<DevlogsSchema> = defineCollection({
+	schema: z.object({
+		title: z.string(),
+		published: z.date(),
+		project: z.string(), // 项目ID，如 'xueliangyun' 或 'endfield-yunzai'
+		summary: z.string().optional().default(""),
+	}),
+});
 
-export const collections: Record<
-	string,
-	ReturnType<typeof defineCollection>
-> = {
+export const collections: {
+	posts: typeof postsCollection;
+	spec: typeof specCollection;
+	assets: typeof assetsCollection;
+	devlogs: typeof devlogsCollection;
+} = {
 	posts: postsCollection,
 	spec: specCollection,
 	assets: assetsCollection,

@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 
 import { formatDateToYYYYMMDD } from "../utils/date-utils";
-import { url, getDir } from "../utils/url-utils";
+import { url } from "../utils/url-utils";
 
 interface Props {
 	class: string;
@@ -21,7 +21,6 @@ const {
 	category,
 	hideTagsForMobile = false,
 	hideUpdateDate = false,
-	slug,
 } = Astro.props;
 const className = Astro.props.class;
 ---

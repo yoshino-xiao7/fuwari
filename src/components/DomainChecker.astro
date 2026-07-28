@@ -12,7 +12,7 @@ const officialSites = siteConfig.officialSites?.map((s) => s.url) ?? [
 ];
 ---
 
-<script define:vars={{ officialSites }}>
+<script is:inline define:vars={{ officialSites }}>
 	(function() {
 		const sites = officialSites || [];
 

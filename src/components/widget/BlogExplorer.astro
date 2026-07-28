@@ -202,12 +202,20 @@ const oldestPost = posts.at(-1);
 </style>
 
 <script>
+	type ExplorerPost = {
+		title: string;
+		url: string;
+		date: string;
+		description: string;
+		tags: string[];
+	};
+
 	function initBlogExplorer() {
 		const root = document.querySelector(".blog-explorer");
 		if (!(root instanceof HTMLElement)) return;
 		if (root.dataset.explorerReady === "true") return;
 
-		const posts = JSON.parse(root.dataset.posts || "[]");
+		const posts = JSON.parse(root.dataset.posts || "[]") as ExplorerPost[];
 		if (posts.length === 0) return;
 
 		const featuredLink = document.getElementById("explorer-featured-link");
@@ -229,20 +237,28 @@ const oldestPost = posts.at(-1);
 			return;
 		}
 
+		const safeFeaturedLink = featuredLink;
+		const safeReadLink = readLink;
+		const safeTitleEl = titleEl;
+		const safeDateEl = dateEl;
+		const safeDescEl = descEl;
+		const safeTagsEl = tagsEl;
+
 		root.dataset.explorerReady = "true";
 		let currentIndex = 0;
 
-		function renderPost(index) {
+		function renderPost(index: number) {
 			const post = posts[index];
+			if (!post) return;
 			currentIndex = index;
-			featuredLink.href = post.url;
-			featuredLink.setAttribute("aria-label", `阅读 ${post.title}`);
-			readLink.href = post.url;
-			readLink.setAttribute("aria-label", `阅读 ${post.title}`);
-			titleEl.textContent = post.title;
-			dateEl.textContent = post.date;
-			descEl.textContent = post.description;
-			tagsEl.replaceChildren(
+			safeFeaturedLink.href = post.url;
+			safeFeaturedLink.setAttribute("aria-label", `阅读 ${post.title}`);
+			safeReadLink.href = post.url;
+			safeReadLink.setAttribute("aria-label", `阅读 ${post.title}`);
+			safeTitleEl.textContent = post.title;
+			safeDateEl.textContent = post.date;
+			safeDescEl.textContent = post.description;
+			safeTagsEl.replaceChildren(
 				...post.tags.map((tag) => {
 					const tagEl = document.createElement("span");
 					tagEl.className = "explorer-tag";

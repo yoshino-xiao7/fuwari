@@ -222,7 +222,7 @@ for (const proj of projects) {
   }
 </style>
 
-<script define:vars={{ projects, logsByProject }}>
+<script is:inline define:vars={{ projects, logsByProject }}>
 function initProjectProgress() {
   const nameEl = document.getElementById("proj-name");
   const descEl = document.getElementById("proj-desc");
