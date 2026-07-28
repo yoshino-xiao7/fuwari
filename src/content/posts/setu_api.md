@@ -1,7 +1,7 @@
 ---
-title: 二次元随机美图api
+title: 二次元随机图片 API：Pixiv 数据入库、标签筛选与代理服务
 published: 2025-12-04T02:22:00
-description: 把pixiv的图片信息存储在数据库中，并提供代理服务
+description: 介绍二次元随机图片 API 的设计与使用方式：将 Pixiv 图片信息存入数据库，支持标签组合筛选、批量查询、图片尺寸选择与代理访问。
 image: ../assets/images/2025-12-04-01-36-18-image.png
 tags:
   - api
@@ -10,11 +10,11 @@ draft: false
 lang: ""
 ---
 
-# 起因
+## 起因
 一直以来总想根据自己的性趣去部署一个图片api，最近购置了阿里云服务器进行备案，就干脆把阿里云的服务器拿来搭建好了。
 
 ---
-# API v2
+## API v2
 [https://api.yukiryou.icu/setu/v2](https://www.pixiv.net/)
 
 - **接口地址（GET / POST 通用）**
@@ -28,7 +28,7 @@ lang: ""
 
 ---
 
-# 请求参数说明
+## 请求参数说明
 
 | 参数名           | 数据类型     | 默认值          | 描述                   |
 | ------------- | -------- | ------------ | -------------------- |
@@ -47,7 +47,7 @@ lang: ""
 
 ---
 
-# 标签（tag）高级匹配规则
+## 标签（tag）高级匹配规则
 
   
 
@@ -55,7 +55,7 @@ lang: ""
 
   
 
-## AND 规则（数组之间）
+### AND 规则（数组之间）
 
 例如：
 
@@ -83,7 +83,7 @@ tag=黑丝|白丝
 
   
 
-## OR 规则（同一个字符串内用 `|` 分隔）
+### OR 规则（同一个字符串内用 `|` 分隔）
 
   
 
@@ -103,7 +103,7 @@ tag=巨乳|おっぱい
 
   
 
-## 匹配范围：
+### 匹配范围：
 
   
 
@@ -125,11 +125,11 @@ tag=巨乳|おっぱい
 
 ---
 
-# GET 示例
+## GET 示例
 
   
 
-## 1️⃣ 获取 1 个非 R18 的随机图（默认 original 尺寸）
+### 1️⃣ 获取 1 个非 R18 的随机图（默认 original 尺寸）
 
 ```
 
@@ -139,7 +139,7 @@ GET https://api.yukiryou.icu/setu/v2
 
   
 
-## 2️⃣ 获取 5 张 original + regular 尺寸图片
+### 2️⃣ 获取 5 张 original + regular 尺寸图片
 
 ```
 
@@ -149,7 +149,7 @@ GET https://api.yukiryou.icu/setu/v2?num=5&size=original&size=regular
 
   
 
-## 3️⃣ 标签高级匹配示例
+### 3️⃣ 标签高级匹配示例
 
 ```
 
@@ -171,7 +171,7 @@ GET https://api.yukiryou.icu/setu/v2?tag=萝莉|少女&tag=白丝|黑丝
 
   
 
-## 4️⃣ 按关键字模糊搜索
+### 4️⃣ 按关键字模糊搜索
 
 ```
 
@@ -181,7 +181,7 @@ GET https://api.yukiryou.icu/setu/v2?keyword=碧蓝航线
 
   
 
-## 5️⃣ 按作者 uid 搜索
+### 5️⃣ 按作者 uid 搜索
 
 ```
 
@@ -191,7 +191,7 @@ GET https://api.yukiryou.icu/setu/v2?uid=12345&uid=67890
 
   
 
-## 6️⃣ 限制长宽比
+### 6️⃣ 限制长宽比
 
 ```
 
@@ -201,7 +201,7 @@ GET https://api.yukiryou.icu/setu/v2?aspectRatio=1.6-1.8
 
   
 
-## 7️⃣ 过滤 AI 图
+### 7️⃣ 过滤 AI 图
 
 ```
 
@@ -215,7 +215,7 @@ GET https://api.yukiryou.icu/setu/v2?excludeAI=true
 
   
 
-# 📨 POST 示例
+## 📨 POST 示例
 
   
 
@@ -267,7 +267,7 @@ tag=黑丝|白丝
 
   
 
-# 返回格式
+## 返回格式
 
   
 
@@ -334,7 +334,7 @@ tag=黑丝|白丝
 
 ---
 
-# 🔄 图片 URL 自动生成逻辑
+## 🔄 图片 URL 自动生成逻辑
 
 你只需要 original，即：
 
@@ -352,7 +352,7 @@ API 会自动生成：
 
 ---
 
-# ⚠️ 注意事项
+## ⚠️ 注意事项
 
   
 
@@ -369,7 +369,7 @@ API 会自动生成：
   
 ---
 
-# 其他服务
+## 其他服务
 
 [QQ Bot](https://yukiryou.icu/posts/api_plugin/)
 

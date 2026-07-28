@@ -11,6 +11,7 @@ export default function rehypeImageFallback(options = {}) {
 		visit(tree, "element", (node) => {
 			if (node.tagName === "img" && node.properties && node.properties.src) {
 				const src = node.properties.src;
+				node.properties.alt = node.properties.alt ?? "";
 				node.properties.loading = node.properties.loading || "lazy";
 				node.properties.decoding = node.properties.decoding || "async";
 

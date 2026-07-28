@@ -13,7 +13,8 @@
 		"clean": "node scripts/clean-unused-images.js",
 		"format": "biome check --write ./src ./scripts ./astro.config.mjs ./package.json ./tsconfig.json ./svelte.config.js ./tailwind.config.cjs ./postcss.config.mjs ./biome.json",
 		"lint": "biome check ./src ./scripts ./astro.config.mjs ./package.json ./tsconfig.json ./svelte.config.js ./tailwind.config.cjs ./postcss.config.mjs ./biome.json",
-		"lint:ci": "biome ci ./src ./scripts ./astro.config.mjs ./package.json ./tsconfig.json ./svelte.config.js ./tailwind.config.cjs ./postcss.config.mjs ./biome.json"
+		"lint:ci": "biome ci ./src ./scripts ./astro.config.mjs ./package.json ./tsconfig.json ./svelte.config.js ./tailwind.config.cjs ./postcss.config.mjs ./biome.json",
+		"indexnow": "node scripts/submit-indexnow.js"
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.9.4",

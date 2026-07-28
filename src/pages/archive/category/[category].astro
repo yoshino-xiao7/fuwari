@@ -17,7 +17,10 @@ export async function getStaticPaths() {
 const category = Astro.params.category as string;
 ---
 
-<MainGridLayout title={`${category} - 分类`} description={`分类归档 - ${category}`}>
+<MainGridLayout
+    title={`${category}分类文章与内容归档`}
+    description={`浏览雪涼（YukiRyou）博客中的${category}分类文章，汇总相关开发实践、项目记录、技术分享与个人经验，方便集中查找和阅读。`}
+>
     <h1 class="sr-only">{category} 分类文章归档</h1>
     <ArchivePanel category={category}></ArchivePanel>
 </MainGridLayout>

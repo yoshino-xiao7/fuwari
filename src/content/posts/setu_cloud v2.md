@@ -1,7 +1,7 @@
 ---
-title: Setu Cloud v2正式上线！
+title: Setu Cloud v2 正式上线：用户端、API Key 与服务升级
 published: 2025-12-13T22:30:00
-description: setu_cloud用户端正式上线，主要还是以学习为目的
+description: 记录 Setu Cloud v2 用户端正式上线后的主要变化，包括界面升级、API Key 管理、服务稳定性优化、快速上手方式与项目技术栈。
 image: ../assets/images/2025-12-13-23-14-59-image.png
 tags:
   - api
@@ -9,7 +9,7 @@ category: 建站分享
 draft: false
 lang: ""
 ---
-# 序言
+## 序言
 最近一段时间没有更新博客了主要原因就是在写需求文档然后空闲时间在给setu_api完善好并写一个用户端和管理端。时间紧每天太累了，懒得更新了就。不过现在也是正式完工了。不过写什么都是以学习为目的，以交流为主，有问题希望锐评我。
 
 Setu Cloud地址:[https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
@@ -18,7 +18,7 @@ Setu Cloud地址:[https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 ---
 
-# 核心更新
+## 核心更新
 
 ### 1.UI设计
 
@@ -59,7 +59,7 @@ Setu Cloud地址:[https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 
 ---
-# 快速上手指南
+## 快速上手指南
 
 想要使用 Setu Cloud v2 的服务非常简单，只需三步：
 
@@ -72,12 +72,12 @@ Setu Cloud地址:[https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 Bash
 
 ```
-# 示例：使用 cURL 调用
+## 示例：使用 cURL 调用
 curl -X GET "https://api.yukiryou.icu/setu/v2" \
      -H "X-API-Key: sk-你的密钥"
 ```
 
-# 技术栈一览
+## 技术栈一览
 
 对于感兴趣的开发者，Setu Cloud v2 的前端构建于以下现代技术栈之上：
 
@@ -92,7 +92,7 @@ curl -X GET "https://api.yukiryou.icu/setu/v2" \
 - **语言**：TypeScript
     
 
-# 结语
+## 结语
 
 Setu Cloud 的初衷是提供简单、好用的二次元图片接口服务。v2 的上线是一个新的开始，未来我们将持续引入更多实用的功能（如更多维度的图片筛选、图库搜索等）。
 

@@ -1,7 +1,7 @@
 ---
-title: QQbot插件优化
+title: QQ Bot 插件优化：接入 Pixiv 官方 API 与本地数据库回退
 published: 2025-12-02T02:22:00
-description: 通过pixiv官方refresh_token去获取图片
+description: 记录 QQ Bot 图片插件的完整优化过程：使用 Pixiv refresh_token 获取官方数据，并加入第三方 API 与本地数据库回退链路。
 image: ../assets/images/2025-12-02-21-59-34-image.png
 tags:
   - qqbot
@@ -10,19 +10,19 @@ draft: false
 lang: ""
 ---
 
-# 起因
+## 起因
 最近一直在做p站的api，目前进度只有6000+的图片信息，数据库部分信息类似下图
 ![Pixiv 图片数据库信息示例截图](../assets/images/2025-12-02-21-25-14-image.png)
 1. 所有图片均来自 [Pixiv](https://www.pixiv.net/)，版权也归作品的作者所有，API 仅储存了作品的基本信息，不提供图片的储存服务
 2. 为保证质量的话，所有图片信息都是根据本人xp来的，这里不过多解释了
 总之就是任务还没完成，只能偷工减料了。
 
-# QQ Bot
+## QQ Bot
 **qq号:2830323446**
 
 ---
 
-# 成果一览
+## 成果一览
 
 - **发图插件**
 
@@ -32,7 +32,7 @@ lang: ""
 
   - 随机策略：**随机跳页 + 水库采样**，避免“第一页偏置”；
 
-# 优化过程
+## 优化过程
 ::github{repo="Tsuk1ko/pxder"}
 通过以上项目可以获取到你自己账号的refresh_token，然后就可以愉快的获取pixiv的信息了。
 
@@ -40,11 +40,11 @@ lang: ""
 
   
 
-# 具体实现（可直接复用的核心函数）
+## 具体实现（可直接复用的核心函数）
 
   
 
-## 1) Pixiv 官方认证（refresh_token → access_token）
+### 1) Pixiv 官方认证（refresh_token → access_token）
 
   
 
@@ -128,7 +128,7 @@ def make_aapi(refresh_token: str) -> AppPixivAPI:
 
   
 
-## 2) 随机策略：随机跳页 + 水库采样
+### 2) 随机策略：随机跳页 + 水库采样
 
   
 
@@ -234,7 +234,7 @@ def random_one_from_tag(aapi, tag: str, max_jumps: int = 30) -> str | None:
 
   
 
-## 3) 官方→API→DB 回退链路
+### 3) 官方→API→DB 回退链路
 
   
 
@@ -336,7 +336,7 @@ async def get_by_pid_uid_tag_with_fallback(session, bot, event, owner_qq, refres
 
 ---
 
-# 结果
+## 结果
 
 结果就是我发现标签查询效果更好了，标签匹配更吻合了，非常满意
 ![QQ Bot 标签查询优化效果截图](../assets/images/2025-12-02-21-59-34-image.png)

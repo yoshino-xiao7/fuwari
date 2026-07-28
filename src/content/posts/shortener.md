@@ -1,7 +1,7 @@
 ---
 title: 从零构建短链服务：Cloudflare Worker + D1 实践
 published: 2026-01-21T14:00:00
-description: 使用 Cloudflare Serverless 技术栈打造低成本、高性能的短链服务
+description: 从零构建基于 Cloudflare Workers、D1 和 Pages 的短链服务，讲解路由、数据库、访问统计、前端界面、自动部署与常见问题。
 image: ../assets/images/2026-01-21-15-04-40-image.png
 tags:
   - Cloudflare
@@ -12,7 +12,7 @@ draft: false
 lang: ""
 ---
 
-# 起因
+## 起因
 
 一直想拥有自己的短链服务，像 bit.ly 那样简洁的链接看起来既专业又美观。正好最近在探索 Cloudflare 的 Serverless 生态，发现 Worker + D1 的组合简直是天作之合——边缘计算 + SQLite 数据库，零服务器成本就能搞定！
 
@@ -24,7 +24,7 @@ lang: ""
 
 ---
 
-# 功能一览
+## 功能一览
 
 - **公开创建** - 无需注册，输入长链接即可生成短链
 - **管理后台** - 管理员可查看、编辑、删除所有链接
@@ -34,7 +34,7 @@ lang: ""
 
 ---
 
-# 技术架构
+## 技术架构
 
 整体架构非常简洁：
 
@@ -59,7 +59,7 @@ lang: ""
 
 ---
 
-# 数据库设计
+## 数据库设计
 
 D1 使用 SQLite 语法，设计了两张表：
 
@@ -97,7 +97,7 @@ CREATE INDEX idx_visits_link_id ON visits(link_id);
 
 ---
 
-# 核心实现
+## 核心实现
 
 ### 路由设计
 
@@ -175,7 +175,7 @@ async function recordVisit(linkId: number, request: Request, env: Env): Promise<
 
 ---
 
-# 前端界面
+## 前端界面
 
 采用了粉色玻璃态（Glassmorphism）设计，配合随机图片背景：
 
@@ -203,7 +203,7 @@ body {
 
 ---
 
-# CI/CD 配置
+## CI/CD 配置
 
 ### Worker 自动部署
 
@@ -239,7 +239,7 @@ jobs:
 
 ---
 
-# 踩坑记录
+## 踩坑记录
 
 ### CORS 跨域
 
@@ -271,7 +271,7 @@ const API_URL = import.meta.env.PROD ? 'https://ki1.mom' : '';
 
 ---
 
-# 性能数据
+## 性能数据
 
 简单测了一下，性能非常满意：
 
@@ -283,7 +283,7 @@ const API_URL = import.meta.env.PROD ? 'https://ki1.mom' : '';
 
 ---
 
-# 总结
+## 总结
 
 这个项目让我对 Cloudflare 的 Serverless 生态有了更深的理解：
 

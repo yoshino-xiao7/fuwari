@@ -18,7 +18,9 @@ const { page } = Astro.props;
 
 const len = page.data.length;
 const isFirstPage = page.currentPage === 1;
-const pageTitle = isFirstPage ? undefined : `第 ${page.currentPage} 页`;
+const pageTitle = isFirstPage
+	? undefined
+	: `个人技术博客文章列表（第 ${page.currentPage} 页）`;
 const heading = isFirstPage
 	? siteConfig.title
 	: `${siteConfig.title} - 第 ${page.currentPage} 页`;

@@ -1,7 +1,7 @@
 ---
 title: Setu Cloud v2.5 音乐功能重磅上线！
 published: 2025-12-27T22:00:00
-description: 全新网易云音乐集成功能，打造一站式娱乐控制台
+description: 介绍 Setu Cloud v2.5 新增的网易云音乐集成功能，包括全局播放器、歌曲搜索、歌单管理、播放历史、技术实现与后续优化计划。
 image: ../assets/images/2025-12-27-22-05-32-image.png
 tags:
   - api
@@ -12,7 +12,7 @@ draft: false
 lang: ""
 ---
 
-# 序言
+## 序言
 
 距离 Setu Cloud v2 正式上线已经过去两周了，这段时间收到了很多小伙伴的反馈和建议。在保持原有图片 API 服务稳定运行的基础上，我们决定做一些"不务正业"的事情——给控制台加入音乐播放功能！
 
@@ -22,7 +22,7 @@ Setu Cloud 地址: [https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 ---
 
-# 核心更新
+## 核心更新
 
 ### 1. 全局音乐播放器
 
@@ -114,7 +114,7 @@ Setu Cloud 地址: [https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 ---
 
-# 技术实现细节
+## 技术实现细节
 
 这次音乐功能的实现，涉及了不少技术挑战：
 
@@ -138,7 +138,7 @@ Setu Cloud 地址: [https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 ---
 
-# 快速上手指南
+## 快速上手指南
 
 想要体验音乐功能？只需两步：
 
@@ -156,7 +156,7 @@ Setu Cloud 地址: [https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 ---
 
-# 技术栈更新
+## 技术栈更新
 
 音乐功能基于以下技术实现：
 
@@ -181,7 +181,7 @@ Setu Cloud 地址: [https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 ---
 
-# 已知问题 & 后续计划
+## 已知问题 & 后续计划
 
 **已知问题：**
 - 部分歌曲因版权原因无法播放（网易云 API 限制）
@@ -196,7 +196,7 @@ Setu Cloud 地址: [https://cloud.yukiryou.icu/](https://cloud.yukiryou.icu/)
 
 ---
 
-# 结语
+## 结语
 
 Setu Cloud 从一个简单的图片 API 服务，逐渐演变成了一个多功能的娱乐控制台。音乐功能的加入，让开发者在管理 API 的同时也能享受片刻的放松。
 
