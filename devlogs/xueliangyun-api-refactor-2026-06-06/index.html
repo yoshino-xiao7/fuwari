@@ -383,22 +383,22 @@ document.addEventListener("astro:page-load", initProjectProgress);
 <li>按后端重构路线优先推进 <code>/setu/v2</code> 主链路拆分。</li>
 <li>补齐鉴权计费、外部服务、搜索性能、缓存限流、迁移和测试基线。</li>
 </ul></section></section>
-<section><h2 id="小结">小结<a class="anchor" href="#小结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>这次重构之后，雪涼云 API 项目的前端 Console 已经从“功能可用”推进到更稳定、更适合移动端、更方便继续维护的状态。</p><p>后端接下来会以 <code>/setu/v2</code> 为中心，从主链路拆分开始逐步收口鉴权、计费、日志、外部服务和测试基线。目标不是把项目拆得更复杂，而是让高频接口更可控，让后续功能迭代少一点牵一发动全身的风险。</p><a id="GCursh0o-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/setu_cloud" target="_blank" repo="yoshino-xiao7/setu_cloud" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCursh0o-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">setu_cloud</div></div><div class="github-logo"></div></div><div id="GCursh0o-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCursh0o-stars" class="gc-stars">00K</div><div id="GCursh0o-forks" class="gc-forks">0K</div><div id="GCursh0o-license" class="gc-license">0K</div><span id="GCursh0o-language" class="gc-language">Waiting...</span></div><script id="GCursh0o-script" type="text/javascript" defer>
+<section><h2 id="小结">小结<a class="anchor" href="#小结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>这次重构之后，雪涼云 API 项目的前端 Console 已经从“功能可用”推进到更稳定、更适合移动端、更方便继续维护的状态。</p><p>后端接下来会以 <code>/setu/v2</code> 为中心，从主链路拆分开始逐步收口鉴权、计费、日志、外部服务和测试基线。目标不是把项目拆得更复杂，而是让高频接口更可控，让后续功能迭代少一点牵一发动全身的风险。</p><a id="GCvzhgyx-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/setu_cloud" target="_blank" repo="yoshino-xiao7/setu_cloud" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCvzhgyx-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">setu_cloud</div></div><div class="github-logo"></div></div><div id="GCvzhgyx-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCvzhgyx-stars" class="gc-stars">00K</div><div id="GCvzhgyx-forks" class="gc-forks">0K</div><div id="GCvzhgyx-license" class="gc-license">0K</div><span id="GCvzhgyx-language" class="gc-language">Waiting...</span></div><script id="GCvzhgyx-script" type="text/javascript" defer>
       fetch('https://api.github.com/repos/yoshino-xiao7/setu_cloud', { referrerPolicy: "no-referrer" }).then(response => response.json()).then(data => {
-        document.getElementById('GCursh0o-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
-        document.getElementById('GCursh0o-language').innerText = data.language;
-        document.getElementById('GCursh0o-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
-        document.getElementById('GCursh0o-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
-        const avatarEl = document.getElementById('GCursh0o-avatar');
+        document.getElementById('GCvzhgyx-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
+        document.getElementById('GCvzhgyx-language').innerText = data.language;
+        document.getElementById('GCvzhgyx-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
+        document.getElementById('GCvzhgyx-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
+        const avatarEl = document.getElementById('GCvzhgyx-avatar');
         avatarEl.style.backgroundImage = 'url(' + data.owner.avatar_url + ')';
         avatarEl.style.backgroundColor = 'transparent';
-        document.getElementById('GCursh0o-license').innerText = data.license?.spdx_id || "no-license";
-        document.getElementById('GCursh0o-card').classList.remove("fetch-waiting");
-        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/setu_cloud | GCursh0o.")
+        document.getElementById('GCvzhgyx-license').innerText = data.license?.spdx_id || "no-license";
+        document.getElementById('GCvzhgyx-card').classList.remove("fetch-waiting");
+        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/setu_cloud | GCvzhgyx.")
       }).catch(err => {
-        const c = document.getElementById('GCursh0o-card');
+        const c = document.getElementById('GCvzhgyx-card');
         c?.classList.add("fetch-error");
-        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/setu_cloud | GCursh0o.")
+        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/setu_cloud | GCvzhgyx.")
       })
     </script></a></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
 `?"":e).join(`
