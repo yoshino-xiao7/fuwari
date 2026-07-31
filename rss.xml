@@ -1,4 +1,120 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>Apple 开发者申请通过：雪涼云 iOS 版进度 70%</title><link>https://blog.yukiryou.icu/posts/2026-07-10-xueliangyun-ios-progress/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-10-xueliangyun-ios-progress/</guid><description>Apple Developer Program 申请历时两天终于通过，记录雪涼云 iOS 版目前的开发进度，以及播放器、刷图体验、Apple 登录和 AI 绘画完成通知等移动端适配。</description><pubDate>Fri, 10 Jul 2026 10:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 苹果开发者申请终于通过了&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>把二游社区签到装进一个 Yunzai 插件：A-game-checkin 开发记录</title><link>https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</guid><description>记录 A-game-checkin 的第一阶段开发：为 Yunzai 接入米游社、森空岛和库街区，统一多游戏账号绑定、角色发现、自动签到、奖励记录与图片卡片，并聊聊兑换码推送和更多社区游戏的后续计划。</description><pubDate>Fri, 31 Jul 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：不想再为每个游戏装一套签到插件&lt;/h2&gt;
+&lt;p&gt;最近在开发一个新的 Yunzai 插件：&lt;strong&gt;A-game-checkin&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;它的目标很直接——把不同二游社区的每日签到统一到一个插件里。用户不需要记住每个社区不同的绑定方式，也不用为每款游戏单独寻找、安装和配置插件；绑定社区账号后，插件会自动发现账号下的游戏角色，并负责之后的每日签到。&lt;/p&gt;
+&lt;p&gt;第一阶段已经接入了三个社区：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;米游社&lt;/strong&gt;：原神、崩坏 3、崩坏学园 2、未定事件簿、崩坏：星穹铁道、绝区零。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;森空岛&lt;/strong&gt;：明日方舟、明日方舟：终末地。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;库街区&lt;/strong&gt;：战双帕弥什、鸣潮。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;目前插件可以运行在 &lt;strong&gt;Yunzai v3、Miao-Yunzai 和 TRSS-Yunzai&lt;/strong&gt;。从最初的想法到现在，主体功能已经基本落地，这篇就记录一下这一阶段做了什么，以及后面准备把它扩展成什么样子。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 为什么要做统一签到&lt;/h2&gt;
+&lt;p&gt;二游的社区签到并不是什么新功能，但真正用起来时，体验往往比较零散。&lt;/p&gt;
+&lt;p&gt;米哈游的游戏在米游社，鹰角的游戏在森空岛，库洛的游戏又在库街区。不同社区有自己的登录方式、账号结构、接口规则和风控逻辑。对于同时玩几款游戏的人来说，每天挨个打开 App 签到很麻烦；对于机器人开发者来说，为每个游戏维护一套重复的绑定、定时任务和消息卡片也不太优雅。&lt;/p&gt;
+&lt;p&gt;所以这次没有按“一个游戏一个插件”的思路去做，而是把&lt;strong&gt;社区&lt;/strong&gt;作为接入边界：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Yunzai 命令
+    ↓
+统一签到协调层
+    ↓
+米游社 / 森空岛 / 库街区适配器
+    ↓
+各社区下的游戏与角色
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;社区自己的凭证、接口和错误码都留在适配器内部，核心逻辑只关心几个统一的问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;这个账号下有哪些角色？&lt;/li&gt;
+&lt;li&gt;哪些角色开启了自动签到？&lt;/li&gt;
+&lt;li&gt;今天是否已经签到成功？&lt;/li&gt;
+&lt;li&gt;实际拿到了什么奖励？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这样以后继续接入新社区时，不需要重新写一遍账号管理、定时任务、日志和卡片系统，只要补充新的社区适配器即可。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 绑定一次，自动发现账号里的游戏&lt;/h2&gt;
+&lt;p&gt;这次最希望做好的体验，是尽量减少手动配置。&lt;/p&gt;
+&lt;p&gt;用户绑定社区账号后，插件会自动发现该账号下的游戏角色。新发现的角色默认开启自动签到，并在每天 &lt;code&gt;09:00&lt;/code&gt;（&lt;code&gt;Asia/Shanghai&lt;/code&gt;）执行。调度器每 10 分钟扫描一次待执行任务，同时按业务日期记录签到结果，避免同一个角色当天重复签到。&lt;/p&gt;
+&lt;p&gt;当然，自动签到也可以按角色单独暂停。即使关闭了自动签到，仍然可以随时手动执行，不会因为订阅状态而被拦住。&lt;/p&gt;
+&lt;p&gt;手动签到支持按游戏名称、别名或卡片编号选择。账号编号和游戏编号分开处理，卡片里也会展示稳定编号，尽量避免多账号、多角色时出现“到底签的是哪一个”的歧义。&lt;/p&gt;
+&lt;p&gt;除了签到以外，目前还完成了：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;查看已经绑定的社区账号。&lt;/li&gt;
+&lt;li&gt;查看自动发现的游戏与角色。&lt;/li&gt;
+&lt;li&gt;一键执行全部签到。&lt;/li&gt;
+&lt;li&gt;查询签到日志和奖励记录。&lt;/li&gt;
+&lt;li&gt;开启或暂停单个角色的自动签到。&lt;/li&gt;
+&lt;li&gt;删除社区账号，并通过 60 秒二次确认避免误操作。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;整体思路就是：第一次绑定稍微花一点时间，之后尽量让它安静地自动运行。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 三个社区，三套完全不同的登录方式&lt;/h2&gt;
+&lt;p&gt;真正麻烦的部分并不是定时签到，而是如何把三个社区差异很大的登录流程放进 QQ Bot 的交互里。&lt;/p&gt;
+&lt;h3&gt;米游社：扫码为主，Cookie 兜底&lt;/h3&gt;
+&lt;p&gt;米游社支持 App 扫码登录，同时保留 Cookie 绑定作为备用入口。&lt;/p&gt;
+&lt;p&gt;扫码对于普通用户更友好，不需要学习如何抓取 Cookie；Cookie 入口则方便已经熟悉相关工具的用户。在签到结果处理上，也对“今天已经签到”做了统一归一化，避免社区接口返回重复签到时，被插件错误显示成失败。&lt;/p&gt;
+&lt;h3&gt;森空岛：短信验证码与 Token&lt;/h3&gt;
+&lt;p&gt;森空岛支持手机号加短信验证码登录，同时保留 Token 绑定。&lt;/p&gt;
+&lt;p&gt;开发时还遇到了登录换取凭证时签名 Token 缺失的问题。现在插件会在需要时主动刷新凭证，并统一识别重复签到响应。奖励解析也根据资源类型做了适配，能够正确展示明日方舟签到奖励的图标。&lt;/p&gt;
+&lt;h3&gt;库街区：最特别的一次性登录页&lt;/h3&gt;
+&lt;p&gt;库街区的手机号登录要处理极验验证，这对没有公网地址的 QQ Bot 来说比较棘手。&lt;/p&gt;
+&lt;p&gt;最后采用的方案是：机器人生成一个&lt;strong&gt;一次性本地 HTML 页面&lt;/strong&gt;，用户用浏览器打开，在页面里完成极验，并由浏览器直接请求库洛官方接口发送验证码。&lt;/p&gt;
+&lt;p&gt;这个页面有效期只有 10 分钟，不需要给机器人配置公网 IP、域名或内网穿透。登录成功后，插件只保存用户 ID、Token 和设备标识，不会保存手机号、短信验证码或极验结果。&lt;/p&gt;
+&lt;p&gt;它不算最简单的实现，但对部署者很友好：装好插件就能用，不需要额外搭建一套 Web 服务。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 签到成功之外，我还想知道拿到了什么&lt;/h2&gt;
+&lt;p&gt;如果机器人只回复一句“签到成功”，功能当然也能用，但总觉得少了点东西。&lt;/p&gt;
+&lt;p&gt;所以这次把签到奖励也完整记录了下来。每条日志除了社区、游戏、角色和签到状态，还会保留当天实际获得的奖励名称、数量与图片地址。查看结果时，插件会生成奖励卡片，而不是只发一串文本。&lt;/p&gt;
+&lt;p&gt;目前一共做了四类图片卡片：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;账号卡片。&lt;/li&gt;
+&lt;li&gt;游戏与角色卡片。&lt;/li&gt;
+&lt;li&gt;帮助卡片。&lt;/li&gt;
+&lt;li&gt;签到奖励卡片。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;几类卡片共用一套玻璃质感和背景遮罩样式，并为不同游戏准备了对应的主题背景。远程奖励图加载失败时会使用独立占位图；对于早期没有奖励明细的历史记录，也会明确说明数据缺失，不会为了让卡片好看而伪造奖励。&lt;/p&gt;
+&lt;p&gt;我一直觉得，QQ Bot 插件除了“能返回数据”，展示也很重要。一张信息层级清楚的卡片，比十几行挤在一起的文本更容易让人看懂，也更像一个完整的产品。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 凭证不能为了方便就明文保存&lt;/h2&gt;
+&lt;p&gt;多社区插件必然要保存 Cookie、Token、用户 ID 和设备标识。如果这些数据直接写进 JSON，一旦服务器文件泄露，绑定的社区账号也会跟着暴露。&lt;/p&gt;
+&lt;p&gt;A-game-checkin 使用 &lt;strong&gt;AES-256-GCM&lt;/strong&gt; 加密这些凭证，并要求部署者设置 &lt;code&gt;A_GAME_CHECKIN_MASTER_KEY&lt;/code&gt;。如果没有配置主密钥，插件会直接拒绝保存凭证，不会悄悄降级为明文。&lt;/p&gt;
+&lt;p&gt;这也意味着迁移或备份时，必须同时保留：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;data/
+A_GAME_CHECKIN_MASTER_KEY
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;只备份数据文件而丢失密钥，原有凭证将无法恢复；只有密钥而没有数据文件也同样没用。&lt;/p&gt;
+&lt;p&gt;账号、角色、签到订阅和日志目前使用 JSON Store 持久化。对于现阶段的 Yunzai 插件规模来说足够简单，也方便部署与迁移。配置则采用默认值和本地 &lt;code&gt;config/config.json&lt;/code&gt; 深度合并，可以调整签到时间、时区、重试、退避、日志保留天数以及社区开关。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 第一阶段的完成度&lt;/h2&gt;
+&lt;p&gt;截至 2026 年 7 月 31 日，这一轮已经完成了插件主体、三个社区适配器、账号与角色管理、自动和手动签到、凭证加密、奖励日志以及四类图片卡片。&lt;/p&gt;
+&lt;p&gt;当前自动化验证包括：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm test
+npm run check
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;共 23 项自动化测试通过，同时完成了主要入口文件的静态语法检查。测试覆盖了签到日期幂等、手动签到、三社区角色发现与登录、奖励归一化、卡片数据构建以及凭证加解密。&lt;/p&gt;
+&lt;p&gt;不过社区接口和风控规则随时可能调整，模拟响应通过并不等于真实环境永远稳定。接下来仍然需要继续观察真实账号下的登录、Token 刷新、签到响应和图片渲染，尤其是远程图片加载和长列表卡片的表现。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 后续计划：从签到插件走向二游社区助手&lt;/h2&gt;
+&lt;p&gt;签到只是这个插件的第一步。&lt;/p&gt;
+&lt;p&gt;接下来最想做的是&lt;strong&gt;各个游戏前瞻兑换码推送&lt;/strong&gt;。现在很多游戏会在版本前瞻、直播或社区活动期间放出限时兑换码，但有效期通常不长，很容易因为没看直播或忘记兑换而错过。&lt;/p&gt;
+&lt;p&gt;后续计划让插件自动收集并识别不同游戏的前瞻兑换码，再推送到订阅的群或用户。理想状态下，用户不需要一直盯着各个平台：有新兑换码时机器人主动提醒，同时标明所属游戏、兑换内容、有效期和兑换入口。&lt;/p&gt;
+&lt;p&gt;另一条主线是继续接入&lt;strong&gt;更多社区和更多游戏&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;现在的社区适配器结构已经为扩展预留了位置。后续会根据接口稳定性、登录可行性和实际需求，逐步把更多二游社区纳入同一套账号、订阅、通知和卡片体系。除了每日签到，也可以继续扩展：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;前瞻直播与兑换码推送。&lt;/li&gt;
+&lt;li&gt;版本更新和维护提醒。&lt;/li&gt;
+&lt;li&gt;体力、每日任务等游戏状态通知。&lt;/li&gt;
+&lt;li&gt;社区公告与活动信息聚合。&lt;/li&gt;
+&lt;li&gt;更完整的角色与账号信息查询。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;我希望它最后不只是一个“每天帮你点一下签到”的工具，而是一个统一的二游社区入口：绑定一次账号，剩下的信息提醒和日常操作都尽量交给机器人。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 小结&lt;/h2&gt;
+&lt;p&gt;A-game-checkin 的第一阶段，本质上是在解决一个很朴素的问题：&lt;strong&gt;玩的游戏越来越多，但每天不该把时间浪费在重复打开社区 App 上。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;从米游社、森空岛到库街区，三个社区背后是完全不同的登录方式、凭证体系和接口规则。把它们接进同一个 Yunzai 插件，比单独做一个签到命令麻烦得多，但统一之后，新增游戏和社区的成本也会越来越低。&lt;/p&gt;
+&lt;p&gt;目前签到主链路已经跑通，下一步就是继续验证稳定性，并开始推进前瞻兑换码推送与更多社区游戏接入。&lt;/p&gt;
+&lt;p&gt;先把每天的签到交给机器人，之后再让它帮我们记住那些容易错过的兑换码和活动。&lt;/p&gt;
+&lt;p&gt;项目已经开源，感兴趣的话可以前往 GitHub 查看源码、提交问题或参与开发：&lt;/p&gt;
+&lt;p&gt;::github{repo=&quot;yoshino-xiao7/A-game_checkin&quot;}&lt;/p&gt;
+</content:encoded></item><item><title>Apple 开发者申请通过：雪涼云 iOS 版进度 70%</title><link>https://blog.yukiryou.icu/posts/2026-07-10-xueliangyun-ios-progress/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-10-xueliangyun-ios-progress/</guid><description>Apple Developer Program 申请历时两天终于通过，记录雪涼云 iOS 版目前的开发进度，以及播放器、刷图体验、Apple 登录和 AI 绘画完成通知等移动端适配。</description><pubDate>Fri, 10 Jul 2026 10:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 苹果开发者申请终于通过了&lt;/h2&gt;
 &lt;p&gt;今天，Apple Developer Program 的申请终于通过了，前后历时两天。&lt;/p&gt;
 &lt;p&gt;虽然等待时间不算特别长，但提交申请之后还是会忍不住时不时看一眼进度。现在开发者资格总算正式开通，雪涼云 iOS 版接下来的开发、测试和分发也可以继续往前推进了。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.icu/_astro/2026-07-10-apple-developer-program-approved.C8qsXzcp_1QSNgp.webp&quot; alt=&quot;Apple Developer Program 会员资格&quot; /&gt;&lt;/p&gt;
