@@ -68,31 +68,25 @@ const bgEnable = "1";
 	offset = offset - offset % 4;
 	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
 
-	// Background image is decorative, so fetch and decode it after the critical
-	// page load. A blob URL lets CSS reuse the same response without requesting
-	// the redirecting image endpoint a second time.
+	// Background image is decorative, so preload it after the critical page
+	// load. We use a plain <img> (not fetch + blob URL): some image hosts don't
+	// send Access-Control-Allow-Origin on the final response, which makes fetch
+	// fail CORS checks even though the image itself is reachable. <img> and CSS
+	// background-image can display cross-origin images without CORS.
 	if (bgSrc && bgEnable === '1') {
-		const loadBackground = async function() {
-			try {
-				const response = await fetch(bgSrc);
-				if (!response.ok) throw new Error('Background request failed: ' + response.status);
-				const objectUrl = URL.createObjectURL(await response.blob());
-				const img = new Image();
-				img.onload = function() {
-					root.style.setProperty('--bg-url', 'url("' + objectUrl + '")');
-					const bgEl = document.getElementById('bg-layer');
-					if (bgEl) bgEl.classList.add('bg-loaded');
-					root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
-					root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
-				};
-				img.onerror = function() {
-					URL.revokeObjectURL(objectUrl);
-					console.warn('Background image failed to decode, keeping cards opaque');
-				};
-				img.src = objectUrl;
-			} catch (error) {
-				console.warn('Background image failed to load, keeping cards opaque', error);
-			}
+		const loadBackground = function() {
+			const img = new Image();
+			img.onload = function() {
+				root.style.setProperty('--bg-url', 'url("' + bgSrc + '")');
+				const bgEl = document.getElementById('bg-layer');
+				if (bgEl) bgEl.classList.add('bg-loaded');
+				root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
+				root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
+			};
+			img.onerror = function() {
+				console.warn('Background image failed to load, keeping cards opaque');
+			};
+			img.src = bgSrc;
 		};
 
 		const scheduleBackground = function() {
@@ -182,22 +176,22 @@ const bgEnable = "1";
 <li>社区公告与活动信息聚合。</li>
 <li>更完整的角色与账号信息查询。</li>
 </ul><p>我希望它最后不只是一个“每天帮你点一下签到”的工具，而是一个统一的二游社区入口：绑定一次账号，剩下的信息提醒和日常操作都尽量交给机器人。</p><hr></section>
-<section><h2 id="-小结"># 小结<a class="anchor" href="#-小结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>A-game-checkin 的第一阶段，本质上是在解决一个很朴素的问题：<strong>玩的游戏越来越多，但每天不该把时间浪费在重复打开社区 App 上。</strong></p><p>从米游社、森空岛到库街区，三个社区背后是完全不同的登录方式、凭证体系和接口规则。把它们接进同一个 Yunzai 插件，比单独做一个签到命令麻烦得多，但统一之后，新增游戏和社区的成本也会越来越低。</p><p>目前签到主链路已经跑通，下一步就是继续验证稳定性，并开始推进前瞻兑换码推送与更多社区游戏接入。</p><p>先把每天的签到交给机器人，之后再让它帮我们记住那些容易错过的兑换码和活动。</p><p>项目已经开源，感兴趣的话可以前往 GitHub 查看源码、提交问题或参与开发：</p><a id="GC0j0muk-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/A-game_checkin" target="_blank" repo="yoshino-xiao7/A-game_checkin" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GC0j0muk-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">A-game_checkin</div></div><div class="github-logo"></div></div><div id="GC0j0muk-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GC0j0muk-stars" class="gc-stars">00K</div><div id="GC0j0muk-forks" class="gc-forks">0K</div><div id="GC0j0muk-license" class="gc-license">0K</div><span id="GC0j0muk-language" class="gc-language">Waiting...</span></div><script id="GC0j0muk-script" type="text/javascript" defer>
+<section><h2 id="-小结"># 小结<a class="anchor" href="#-小结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>A-game-checkin 的第一阶段，本质上是在解决一个很朴素的问题：<strong>玩的游戏越来越多，但每天不该把时间浪费在重复打开社区 App 上。</strong></p><p>从米游社、森空岛到库街区，三个社区背后是完全不同的登录方式、凭证体系和接口规则。把它们接进同一个 Yunzai 插件，比单独做一个签到命令麻烦得多，但统一之后，新增游戏和社区的成本也会越来越低。</p><p>目前签到主链路已经跑通，下一步就是继续验证稳定性，并开始推进前瞻兑换码推送与更多社区游戏接入。</p><p>先把每天的签到交给机器人，之后再让它帮我们记住那些容易错过的兑换码和活动。</p><p>项目已经开源，感兴趣的话可以前往 GitHub 查看源码、提交问题或参与开发：</p><a id="GC1k8ptw-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/A-game_checkin" target="_blank" repo="yoshino-xiao7/A-game_checkin" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GC1k8ptw-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">A-game_checkin</div></div><div class="github-logo"></div></div><div id="GC1k8ptw-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GC1k8ptw-stars" class="gc-stars">00K</div><div id="GC1k8ptw-forks" class="gc-forks">0K</div><div id="GC1k8ptw-license" class="gc-license">0K</div><span id="GC1k8ptw-language" class="gc-language">Waiting...</span></div><script id="GC1k8ptw-script" type="text/javascript" defer>
       fetch('https://api.github.com/repos/yoshino-xiao7/A-game_checkin', { referrerPolicy: "no-referrer" }).then(response => response.json()).then(data => {
-        document.getElementById('GC0j0muk-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
-        document.getElementById('GC0j0muk-language').innerText = data.language;
-        document.getElementById('GC0j0muk-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
-        document.getElementById('GC0j0muk-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
-        const avatarEl = document.getElementById('GC0j0muk-avatar');
+        document.getElementById('GC1k8ptw-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
+        document.getElementById('GC1k8ptw-language').innerText = data.language;
+        document.getElementById('GC1k8ptw-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
+        document.getElementById('GC1k8ptw-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
+        const avatarEl = document.getElementById('GC1k8ptw-avatar');
         avatarEl.style.backgroundImage = 'url(' + data.owner.avatar_url + ')';
         avatarEl.style.backgroundColor = 'transparent';
-        document.getElementById('GC0j0muk-license').innerText = data.license?.spdx_id || "no-license";
-        document.getElementById('GC0j0muk-card').classList.remove("fetch-waiting");
-        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/A-game_checkin | GC0j0muk.")
+        document.getElementById('GC1k8ptw-license').innerText = data.license?.spdx_id || "no-license";
+        document.getElementById('GC1k8ptw-card').classList.remove("fetch-waiting");
+        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/A-game_checkin | GC1k8ptw.")
       }).catch(err => {
-        const c = document.getElementById('GC0j0muk-card');
+        const c = document.getElementById('GC1k8ptw-card');
         c?.classList.add("fetch-error");
-        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/A-game_checkin | GC0j0muk.")
+        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/A-game_checkin | GC1k8ptw.")
       })
     </script></a></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
 `?"":e).join(`

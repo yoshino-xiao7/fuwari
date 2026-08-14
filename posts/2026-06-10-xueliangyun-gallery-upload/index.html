@@ -68,31 +68,25 @@ const bgEnable = "1";
 	offset = offset - offset % 4;
 	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
 
-	// Background image is decorative, so fetch and decode it after the critical
-	// page load. A blob URL lets CSS reuse the same response without requesting
-	// the redirecting image endpoint a second time.
+	// Background image is decorative, so preload it after the critical page
+	// load. We use a plain <img> (not fetch + blob URL): some image hosts don't
+	// send Access-Control-Allow-Origin on the final response, which makes fetch
+	// fail CORS checks even though the image itself is reachable. <img> and CSS
+	// background-image can display cross-origin images without CORS.
 	if (bgSrc && bgEnable === '1') {
-		const loadBackground = async function() {
-			try {
-				const response = await fetch(bgSrc);
-				if (!response.ok) throw new Error('Background request failed: ' + response.status);
-				const objectUrl = URL.createObjectURL(await response.blob());
-				const img = new Image();
-				img.onload = function() {
-					root.style.setProperty('--bg-url', 'url("' + objectUrl + '")');
-					const bgEl = document.getElementById('bg-layer');
-					if (bgEl) bgEl.classList.add('bg-loaded');
-					root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
-					root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
-				};
-				img.onerror = function() {
-					URL.revokeObjectURL(objectUrl);
-					console.warn('Background image failed to decode, keeping cards opaque');
-				};
-				img.src = objectUrl;
-			} catch (error) {
-				console.warn('Background image failed to load, keeping cards opaque', error);
-			}
+		const loadBackground = function() {
+			const img = new Image();
+			img.onload = function() {
+				root.style.setProperty('--bg-url', 'url("' + bgSrc + '")');
+				const bgEl = document.getElementById('bg-layer');
+				if (bgEl) bgEl.classList.add('bg-loaded');
+				root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
+				root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
+			};
+			img.onerror = function() {
+				console.warn('Background image failed to load, keeping cards opaque');
+			};
+			img.src = bgSrc;
 		};
 
 		const scheduleBackground = function() {
@@ -206,22 +200,22 @@ const bgEnable = "1";
 <li>通过后能发布。</li>
 <li>发布后能被 <code>/setu/v2</code> 查询。</li>
 </ul><p>这才是一个可长期维护的投稿功能。</p><hr></section>
-<section><h2 id="-小结"># 小结<a class="anchor" href="#-小结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p><code>setu-api 2.5.0</code> 算是雪涼云图库能力的一次关键补强。</p><p>前面几轮更新主要在做控制台体验、移动端适配和后端主链路整理。这一次则把“内容从哪里来”这件事往前推了一步：图库不再只能由管理员单点维护，用户也可以在审核流程内参与进来。</p><p>后面如果继续做下去，还可以围绕标签规范、投稿质量评分、重复图片检测、批量审核体验这些方向继续打磨。图库类项目真正难的从来不是把图存进去，而是让它们被正确地整理、审核、检索和使用。</p><p>相关项目：</p><a id="GC38wtek-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/setu_cloud" target="_blank" repo="yoshino-xiao7/setu_cloud" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GC38wtek-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">setu_cloud</div></div><div class="github-logo"></div></div><div id="GC38wtek-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GC38wtek-stars" class="gc-stars">00K</div><div id="GC38wtek-forks" class="gc-forks">0K</div><div id="GC38wtek-license" class="gc-license">0K</div><span id="GC38wtek-language" class="gc-language">Waiting...</span></div><script id="GC38wtek-script" type="text/javascript" defer>
+<section><h2 id="-小结"># 小结<a class="anchor" href="#-小结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p><code>setu-api 2.5.0</code> 算是雪涼云图库能力的一次关键补强。</p><p>前面几轮更新主要在做控制台体验、移动端适配和后端主链路整理。这一次则把“内容从哪里来”这件事往前推了一步：图库不再只能由管理员单点维护，用户也可以在审核流程内参与进来。</p><p>后面如果继续做下去，还可以围绕标签规范、投稿质量评分、重复图片检测、批量审核体验这些方向继续打磨。图库类项目真正难的从来不是把图存进去，而是让它们被正确地整理、审核、检索和使用。</p><p>相关项目：</p><a id="GCqkd98e-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/setu_cloud" target="_blank" repo="yoshino-xiao7/setu_cloud" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCqkd98e-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">setu_cloud</div></div><div class="github-logo"></div></div><div id="GCqkd98e-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCqkd98e-stars" class="gc-stars">00K</div><div id="GCqkd98e-forks" class="gc-forks">0K</div><div id="GCqkd98e-license" class="gc-license">0K</div><span id="GCqkd98e-language" class="gc-language">Waiting...</span></div><script id="GCqkd98e-script" type="text/javascript" defer>
       fetch('https://api.github.com/repos/yoshino-xiao7/setu_cloud', { referrerPolicy: "no-referrer" }).then(response => response.json()).then(data => {
-        document.getElementById('GC38wtek-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
-        document.getElementById('GC38wtek-language').innerText = data.language;
-        document.getElementById('GC38wtek-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
-        document.getElementById('GC38wtek-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
-        const avatarEl = document.getElementById('GC38wtek-avatar');
+        document.getElementById('GCqkd98e-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
+        document.getElementById('GCqkd98e-language').innerText = data.language;
+        document.getElementById('GCqkd98e-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
+        document.getElementById('GCqkd98e-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
+        const avatarEl = document.getElementById('GCqkd98e-avatar');
         avatarEl.style.backgroundImage = 'url(' + data.owner.avatar_url + ')';
         avatarEl.style.backgroundColor = 'transparent';
-        document.getElementById('GC38wtek-license').innerText = data.license?.spdx_id || "no-license";
-        document.getElementById('GC38wtek-card').classList.remove("fetch-waiting");
-        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/setu_cloud | GC38wtek.")
+        document.getElementById('GCqkd98e-license').innerText = data.license?.spdx_id || "no-license";
+        document.getElementById('GCqkd98e-card').classList.remove("fetch-waiting");
+        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/setu_cloud | GCqkd98e.")
       }).catch(err => {
-        const c = document.getElementById('GC38wtek-card');
+        const c = document.getElementById('GCqkd98e-card');
         c?.classList.add("fetch-error");
-        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/setu_cloud | GC38wtek.")
+        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/setu_cloud | GCqkd98e.")
       })
     </script></a></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
 `?"":e).join(`

@@ -68,31 +68,25 @@ const bgEnable = "1";
 	offset = offset - offset % 4;
 	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
 
-	// Background image is decorative, so fetch and decode it after the critical
-	// page load. A blob URL lets CSS reuse the same response without requesting
-	// the redirecting image endpoint a second time.
+	// Background image is decorative, so preload it after the critical page
+	// load. We use a plain <img> (not fetch + blob URL): some image hosts don't
+	// send Access-Control-Allow-Origin on the final response, which makes fetch
+	// fail CORS checks even though the image itself is reachable. <img> and CSS
+	// background-image can display cross-origin images without CORS.
 	if (bgSrc && bgEnable === '1') {
-		const loadBackground = async function() {
-			try {
-				const response = await fetch(bgSrc);
-				if (!response.ok) throw new Error('Background request failed: ' + response.status);
-				const objectUrl = URL.createObjectURL(await response.blob());
-				const img = new Image();
-				img.onload = function() {
-					root.style.setProperty('--bg-url', 'url("' + objectUrl + '")');
-					const bgEl = document.getElementById('bg-layer');
-					if (bgEl) bgEl.classList.add('bg-loaded');
-					root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
-					root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
-				};
-				img.onerror = function() {
-					URL.revokeObjectURL(objectUrl);
-					console.warn('Background image failed to decode, keeping cards opaque');
-				};
-				img.src = objectUrl;
-			} catch (error) {
-				console.warn('Background image failed to load, keeping cards opaque', error);
-			}
+		const loadBackground = function() {
+			const img = new Image();
+			img.onload = function() {
+				root.style.setProperty('--bg-url', 'url("' + bgSrc + '")');
+				const bgEl = document.getElementById('bg-layer');
+				if (bgEl) bgEl.classList.add('bg-loaded');
+				root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
+				root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
+			};
+			img.onerror = function() {
+				console.warn('Background image failed to load, keeping cards opaque');
+			};
+			img.src = bgSrc;
 		};
 
 		const scheduleBackground = function() {
@@ -309,22 +303,22 @@ const bgEnable = "1";
 <li>双角色任务历史能看到生成模式和第二 LoRA。</li>
 <li>手绘 A/B 区域不会再触发默认区域 mask。</li>
 <li>Worker 上传 OSS 成功后，本机临时输出图会被清理。</li>
-</ul><a id="GCiu3pk8-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/setu_cloud" target="_blank" repo="yoshino-xiao7/setu_cloud" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCiu3pk8-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">setu_cloud</div></div><div class="github-logo"></div></div><div id="GCiu3pk8-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCiu3pk8-stars" class="gc-stars">00K</div><div id="GCiu3pk8-forks" class="gc-forks">0K</div><div id="GCiu3pk8-license" class="gc-license">0K</div><span id="GCiu3pk8-language" class="gc-language">Waiting...</span></div><script id="GCiu3pk8-script" type="text/javascript" defer>
+</ul><a id="GCf2wwo2-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/setu_cloud" target="_blank" repo="yoshino-xiao7/setu_cloud" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCf2wwo2-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">setu_cloud</div></div><div class="github-logo"></div></div><div id="GCf2wwo2-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCf2wwo2-stars" class="gc-stars">00K</div><div id="GCf2wwo2-forks" class="gc-forks">0K</div><div id="GCf2wwo2-license" class="gc-license">0K</div><span id="GCf2wwo2-language" class="gc-language">Waiting...</span></div><script id="GCf2wwo2-script" type="text/javascript" defer>
       fetch('https://api.github.com/repos/yoshino-xiao7/setu_cloud', { referrerPolicy: "no-referrer" }).then(response => response.json()).then(data => {
-        document.getElementById('GCiu3pk8-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
-        document.getElementById('GCiu3pk8-language').innerText = data.language;
-        document.getElementById('GCiu3pk8-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
-        document.getElementById('GCiu3pk8-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
-        const avatarEl = document.getElementById('GCiu3pk8-avatar');
+        document.getElementById('GCf2wwo2-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
+        document.getElementById('GCf2wwo2-language').innerText = data.language;
+        document.getElementById('GCf2wwo2-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
+        document.getElementById('GCf2wwo2-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
+        const avatarEl = document.getElementById('GCf2wwo2-avatar');
         avatarEl.style.backgroundImage = 'url(' + data.owner.avatar_url + ')';
         avatarEl.style.backgroundColor = 'transparent';
-        document.getElementById('GCiu3pk8-license').innerText = data.license?.spdx_id || "no-license";
-        document.getElementById('GCiu3pk8-card').classList.remove("fetch-waiting");
-        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/setu_cloud | GCiu3pk8.")
+        document.getElementById('GCf2wwo2-license').innerText = data.license?.spdx_id || "no-license";
+        document.getElementById('GCf2wwo2-card').classList.remove("fetch-waiting");
+        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/setu_cloud | GCf2wwo2.")
       }).catch(err => {
-        const c = document.getElementById('GCiu3pk8-card');
+        const c = document.getElementById('GCf2wwo2-card');
         c?.classList.add("fetch-error");
-        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/setu_cloud | GCiu3pk8.")
+        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/setu_cloud | GCf2wwo2.")
       })
     </script></a></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
 `?"":e).join(`

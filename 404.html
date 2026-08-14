@@ -68,31 +68,25 @@ const bgEnable = "1";
 	offset = offset - offset % 4;
 	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
 
-	// Background image is decorative, so fetch and decode it after the critical
-	// page load. A blob URL lets CSS reuse the same response without requesting
-	// the redirecting image endpoint a second time.
+	// Background image is decorative, so preload it after the critical page
+	// load. We use a plain <img> (not fetch + blob URL): some image hosts don't
+	// send Access-Control-Allow-Origin on the final response, which makes fetch
+	// fail CORS checks even though the image itself is reachable. <img> and CSS
+	// background-image can display cross-origin images without CORS.
 	if (bgSrc && bgEnable === '1') {
-		const loadBackground = async function() {
-			try {
-				const response = await fetch(bgSrc);
-				if (!response.ok) throw new Error('Background request failed: ' + response.status);
-				const objectUrl = URL.createObjectURL(await response.blob());
-				const img = new Image();
-				img.onload = function() {
-					root.style.setProperty('--bg-url', 'url("' + objectUrl + '")');
-					const bgEl = document.getElementById('bg-layer');
-					if (bgEl) bgEl.classList.add('bg-loaded');
-					root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
-					root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
-				};
-				img.onerror = function() {
-					URL.revokeObjectURL(objectUrl);
-					console.warn('Background image failed to decode, keeping cards opaque');
-				};
-				img.src = objectUrl;
-			} catch (error) {
-				console.warn('Background image failed to load, keeping cards opaque', error);
-			}
+		const loadBackground = function() {
+			const img = new Image();
+			img.onload = function() {
+				root.style.setProperty('--bg-url', 'url("' + bgSrc + '")');
+				const bgEl = document.getElementById('bg-layer');
+				if (bgEl) bgEl.classList.add('bg-loaded');
+				root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
+				root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
+			};
+			img.onerror = function() {
+				console.warn('Background image failed to load, keeping cards opaque');
+			};
+			img.src = bgSrc;
 		};
 
 		const scheduleBackground = function() {
@@ -183,31 +177,25 @@ const bgEnable = "1";
 	offset = offset - offset % 4;
 	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
 
-	// Background image is decorative, so fetch and decode it after the critical
-	// page load. A blob URL lets CSS reuse the same response without requesting
-	// the redirecting image endpoint a second time.
+	// Background image is decorative, so preload it after the critical page
+	// load. We use a plain <img> (not fetch + blob URL): some image hosts don't
+	// send Access-Control-Allow-Origin on the final response, which makes fetch
+	// fail CORS checks even though the image itself is reachable. <img> and CSS
+	// background-image can display cross-origin images without CORS.
 	if (bgSrc && bgEnable === '1') {
-		const loadBackground = async function() {
-			try {
-				const response = await fetch(bgSrc);
-				if (!response.ok) throw new Error('Background request failed: ' + response.status);
-				const objectUrl = URL.createObjectURL(await response.blob());
-				const img = new Image();
-				img.onload = function() {
-					root.style.setProperty('--bg-url', 'url("' + objectUrl + '")');
-					const bgEl = document.getElementById('bg-layer');
-					if (bgEl) bgEl.classList.add('bg-loaded');
-					root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
-					root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
-				};
-				img.onerror = function() {
-					URL.revokeObjectURL(objectUrl);
-					console.warn('Background image failed to decode, keeping cards opaque');
-				};
-				img.src = objectUrl;
-			} catch (error) {
-				console.warn('Background image failed to load, keeping cards opaque', error);
-			}
+		const loadBackground = function() {
+			const img = new Image();
+			img.onload = function() {
+				root.style.setProperty('--bg-url', 'url("' + bgSrc + '")');
+				const bgEl = document.getElementById('bg-layer');
+				if (bgEl) bgEl.classList.add('bg-loaded');
+				root.style.setProperty('--card-bg', 'var(--card-bg-transparent)');
+				root.style.setProperty('--float-panel-bg', 'var(--float-panel-bg-transparent)');
+			};
+			img.onerror = function() {
+				console.warn('Background image failed to load, keeping cards opaque');
+			};
+			img.src = bgSrc;
 		};
 
 		const scheduleBackground = function() {
