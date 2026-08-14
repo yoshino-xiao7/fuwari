@@ -71,6 +71,11 @@ let isFavorite = $derived(musicStore.isFavorite(musicStore.currentSong?.id));
 		position: absolute;
 		inset: 0;
 		overflow: hidden;
+		/* 内部 img 带 filter: blur()，WebKit 中 filter 合成层不随父容器
+		   overflow 裁剪，必须自身圆角 + clip-path 强制裁剪，否则模糊封面
+		   以矩形从播放器上半部分圆角溢出 */
+		border-radius: var(--player-radius, 16px) var(--player-radius, 16px) 0 0;
+		clip-path: inset(0 round var(--player-radius, 16px) var(--player-radius, 16px) 0 0);
 		background:
 			radial-gradient(circle at 24% 8%, oklch(0.7 0.18 var(--hue) / 0.28), transparent 45%),
 			linear-gradient(to bottom, oklch(0.65 0.15 var(--hue) / 0.22), transparent);

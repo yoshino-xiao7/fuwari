@@ -521,7 +521,8 @@ function handleQuickControl(e: MouseEvent, action: "prev" | "next") {
 	.player-full {
 		position: relative;
 		width: 100%;
-		border-radius: 16px;
+		--player-radius: 16px;
+		border-radius: var(--player-radius);
 		overflow: hidden;
 		isolation: isolate;
 		transform-origin: top center;
@@ -545,8 +546,10 @@ function handleQuickControl(e: MouseEvent, action: "prev" | "next") {
 		position: absolute;
 		inset: 0;
 		/* WebKit 中 backdrop-filter 元素不随父容器 overflow 裁剪，
-		   必须自身带圆角，否则背景以矩形渲染溢出圆角 */
-		border-radius: inherit;
+		   且即使自身有 border-radius，backdrop 模糊区域仍以矩形渲染，
+		   必须用 clip-path 强制裁剪成圆角 */
+		border-radius: var(--player-radius);
+		clip-path: inset(0 round var(--player-radius));
 		overflow: hidden;
 		-webkit-backdrop-filter: var(--glass-panel-filter, blur(20px) saturate(200%));
 		backdrop-filter: var(--glass-panel-filter, blur(20px) saturate(200%));
