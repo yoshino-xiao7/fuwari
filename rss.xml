@@ -1,4 +1,124 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>把二游社区签到装进一个 Yunzai 插件：A-game-checkin 开发记录</title><link>https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</guid><description>记录 A-game-checkin 的第一阶段开发：为 Yunzai 接入米游社、森空岛和库街区，统一多游戏账号绑定、角色发现、自动签到、奖励记录与图片卡片，并聊聊兑换码推送和更多社区游戏的后续计划。</description><pubDate>Fri, 31 Jul 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：不想再为每个游戏装一套签到插件&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>A-game-checkin 更新记录：前瞻兑换码订阅与统一账号库</title><link>https://blog.yukiryou.icu/posts/2026-08-14-a-game-checkin-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-14-a-game-checkin-update/</guid><description>从 1.0.0 到 1.2.3，记录 A-game-checkin 半个月来的更新：前瞻兑换码订阅落地、第四个社区塔吉多接入、SQLite 持久化与 Redis 临时状态分工、凭证权限包加密，以及和 genshin / StarRail / ZZZ 插件的登录共享兼容桥。</description><pubDate>Fri, 14 Aug 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：第一篇文章里的&quot;后续计划&quot;落地了&lt;/h2&gt;
+&lt;p&gt;上个月末写了 A-game-checkin 的第一阶段开发记录，当时的结论是：&lt;strong&gt;签到主链路已经跑通，下一步是验证稳定性，并开始推进前瞻兑换码推送与更多社区游戏接入。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;半个月过去，这两件事都做了，而且做了更多。&lt;/p&gt;
+&lt;p&gt;版本从 &lt;code&gt;1.0.0&lt;/code&gt; 走到了 &lt;code&gt;1.2.3&lt;/code&gt;，除了把前瞻兑换码订阅正式上线，还新增了第四个社区&lt;strong&gt;塔吉多&lt;/strong&gt;，并把底层的账号存储整个重做了一遍：从 JSON Store 迁到了 SQLite，把临时状态交给 Redis，把凭证拆成权限包加密，还给 genshin、StarRail-plugin、ZZZ-Plugin 之间打通了一条登录共享的兼容桥。&lt;/p&gt;
+&lt;p&gt;这篇记录一下这半个月里插件到底变了什么。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 前瞻兑换码订阅：从&quot;想做的&quot;到&quot;在用的&quot;&lt;/h2&gt;
+&lt;p&gt;第一篇文章里说，最想做的下一步是&lt;strong&gt;各个游戏前瞻兑换码推送&lt;/strong&gt;。这次它正式落地了，成为 &lt;code&gt;1.1.1&lt;/code&gt; 开始的主线功能之一。&lt;/p&gt;
+&lt;p&gt;目前支持九款游戏的前瞻兑换码订阅：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;米游社系&lt;/strong&gt;：原神、崩坏：星穹铁道、绝区零、崩坏 3。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;森空岛系&lt;/strong&gt;：明日方舟、明日方舟：终末地。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;库街区系&lt;/strong&gt;：鸣潮、战双帕弥什。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;塔吉多系&lt;/strong&gt;：异环。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;兑换码只从&lt;strong&gt;国服官方社区&lt;/strong&gt;获取，不接国际服，也不接第三方聚合站：米哈游游戏读取官方前瞻活动接口，明日方舟和终末地读取森空岛公开搜索结果，鸣潮和战双读取库街区官方资讯及评论，异环读取塔吉多异环社区的公开前瞻内容。来源要求官方身份或不同用户重复确认，并且会过滤邀请码和平台专属码。&lt;/p&gt;
+&lt;h3&gt;订阅与推送&lt;/h3&gt;
+&lt;p&gt;使用上很简单：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#订阅前瞻兑换码          # 订阅全部九款受支持游戏
+#订阅前瞻兑换码 原神      # 只订阅指定游戏
+#取消订阅前瞻兑换码 原神  # 取消指定游戏订阅
+#订阅前瞻兑换码状态       # 图片卡片查看订阅情况
+#签到兑换码 原神          # 立即查询当前前瞻兑换码
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;发现新兑换码后，机器人会主动私聊发送图片卡片，并另发一份可以直接复制的纯文字兑换码，同一用户不会重复收到同一个兑换码。整个过程只需要机器人能访问官方接口，不要求公网 IP 或回调地址。&lt;/p&gt;
+&lt;h3&gt;一个克制：只通知，不自动兑换&lt;/h3&gt;
+&lt;p&gt;设计上有一件事是明确的：&lt;strong&gt;只通知，不自动兑换&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;自动兑换听起来很方便，但涉及在用户账号上执行操作，风险和责任都大得多——兑换到错误的账号、接口变动导致误操作、风控误判，这些都不该让一个签到插件去背。所以插件只负责把兑换码及时、准确地送到用户面前，点不点、换不换，由用户自己决定。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 第四个社区：塔吉多&lt;/h2&gt;
+&lt;p&gt;第一阶段接入的是米游社、森空岛、库街区，这次补上了&lt;strong&gt;塔吉多&lt;/strong&gt;，覆盖幻塔和异环。&lt;/p&gt;
+&lt;p&gt;塔吉多走的是完美世界账号体系，登录方式是手机号加短信验证码，不需要公网 IP。登录成功后自动发现账号下已绑定的幻塔和异环角色（前提是先在塔吉多 App 里完成游戏角色绑定）。&lt;/p&gt;
+&lt;p&gt;备用入口是 Token 绑定，使用包含 &lt;code&gt;uid&lt;/code&gt;、&lt;code&gt;deviceId&lt;/code&gt;、&lt;code&gt;accessToken&lt;/code&gt; 或 &lt;code&gt;refreshToken&lt;/code&gt; 的登录 JSON。&lt;/p&gt;
+&lt;p&gt;到这里，四个社区的登录方式刚好凑齐了四种形态：米游社的扫码、森空岛的短信、库街区的一次性 HTML 页面加极验、塔吉多的纯短信。每种都留在各自的适配器里，核心的账号管理、调度和卡片逻辑完全复用。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 统一账号库：SQLite 存长期数据，Redis 只放临时状态&lt;/h2&gt;
+&lt;p&gt;这次更新里最重的一块，是把账号存储从 JSON Store 换成了&lt;strong&gt;统一账号库&lt;/strong&gt;：SQLite 管持久数据，Redis 管临时状态，社区凭证按权限包分别加密。&lt;/p&gt;
+&lt;h3&gt;为什么换&lt;/h3&gt;
+&lt;p&gt;第一阶段的 JSON Store 简单、方便迁移，但插件规模上来之后，它的短板开始变得明显：多账号、多社区、多订阅数据揉在一个文件里，写操作没有事务保证，也没有办法支撑&quot;登录共享&quot;这种跨插件的凭证能力。&lt;/p&gt;
+&lt;p&gt;升级方案在 &lt;code&gt;1.1.7&lt;/code&gt; 时以文档形式定下来，&lt;code&gt;1.2.0&lt;/code&gt; 开始落地，技术路线是固定的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;SQLite&lt;/strong&gt; 保存必须长期存在的数据，使用插件独立的数据库文件（&lt;code&gt;data/accounts.sqlite&lt;/code&gt;），不与其他插件共用。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Redis&lt;/strong&gt; 只保存可丢失、可重建且带过期时间的临时状态，并复用 TRSS-Yunzai 已连接的全局 Redis，插件不自己启动第二个 Redis。&lt;/li&gt;
+&lt;li&gt;社区凭证按权限包分别加密，数据库里不存明文。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;SQLite：带校验的迁移&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;1.2.0&lt;/code&gt; 首次启动时会自动做一次迁移：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;先把 &lt;code&gt;accounts.json&lt;/code&gt; 复制到 &lt;code&gt;data/backups/json&lt;/code&gt; 备份。&lt;/li&gt;
+&lt;li&gt;在事务中把数据导入 SQLite。&lt;/li&gt;
+&lt;li&gt;对数量、语义摘要、外键和完整性逐一核对。&lt;/li&gt;
+&lt;li&gt;全部通过才写入切换标记，之后 &lt;code&gt;accounts.json&lt;/code&gt; 只作为迁移源和人工回滚参考，不再读写。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;迁移失败且尚未切换时，插件会继续使用原 JSON，并在下次启动重试。一旦切换到 SQLite 后数据库损坏，也会拒绝退回 JSON，避免旧数据覆盖新记录。&lt;/p&gt;
+&lt;p&gt;ORM 用的是 Sequelize 6，SQLite 驱动是 &lt;code&gt;@karinjs/sqlite3&lt;/code&gt;，开启了外键约束、WAL 模式和合理的 &lt;code&gt;busy_timeout&lt;/code&gt;，写操作必须进入事务。&lt;/p&gt;
+&lt;h3&gt;Redis：会话、锁、限流&lt;/h3&gt;
+&lt;p&gt;Redis 里只放可以丢的东西：二维码和短信登录的短期会话、分布式操作锁和幂等键、接口限流和退避状态、可重新获取的角色和接口缓存。所有键都带命名空间和 TTL，比如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;agame:prod:login:qr:&amp;lt;sessionId&amp;gt;
+agame:prod:lock:checkin:&amp;lt;targetId&amp;gt;:&amp;lt;businessDate&amp;gt;
+agame:prod:rate:miyoushe:&amp;lt;accountId&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Redis 不可用时，登录和签到会安全停止，账号查询仍然可用。也就是说，即使 Redis 被清空或重启，账号、授权、签到历史和订阅都不会丢。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 凭证权限包：不再是一把钥匙开所有门&lt;/h2&gt;
+&lt;p&gt;旧的凭证存储是&quot;一个 Cookie 整段加密保存&quot;。这次升级把它拆成了四个权限包：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;basic     # 签到必需的基础凭证，如 cookie / token / uid
+device    # 设备标识
+refresh   # 刷新令牌
+advanced  # 高权限凭证，如 stoken
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;每个权限包用带账号 AAD 的 AES-256-GCM v2 密文保存在独立凭证表里，并记录 &lt;code&gt;key_id&lt;/code&gt;、不可逆 HMAC 指纹、状态和修订号。密文被复制到另一个账号或另一个权限包时将无法解密。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;普通登录只创建签到所需的最小权限包，不会自动取得或生成 &lt;code&gt;advanced&lt;/code&gt; 高权限凭证。&lt;/strong&gt; 这也是&quot;最小权限&quot;原则在凭证层面的一次落地：第三方插件即使通过某种方式拿到了授权，也只能访问它被允许的那部分。&lt;/p&gt;
+&lt;p&gt;密钥轮换时，可以临时通过 &lt;code&gt;A_GAME_CHECKIN_OLD_KEYS&lt;/code&gt; 提供旧 key ID 到密钥的 JSON 映射，新写入只使用当前 &lt;code&gt;A_GAME_CHECKIN_MASTER_KEY&lt;/code&gt; 和 &lt;code&gt;A_GAME_CHECKIN_KEY_ID&lt;/code&gt;。从旧版本升级后，v1 凭证保持可读，账号下一次执行签到时会在调用社区接口前原子升级为分包 v2。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 登录共享：一条 genshin 兼容桥&lt;/h2&gt;
+&lt;p&gt;统一账号库的另一个目标，是让第三方插件也能复用这里的登录。&lt;/p&gt;
+&lt;p&gt;现状是 &lt;code&gt;StarRail-plugin&lt;/code&gt; 和 &lt;code&gt;ZZZ-Plugin&lt;/code&gt; 都复用 genshin 的普通米游社 Cookie 库，所以 A-game-checkin 只维护一条 &lt;strong&gt;genshin 兼容桥&lt;/strong&gt;，不重复维护三份凭证：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#登录共享状态                # 查看各插件与登录共享状态
+#导入插件登录                # 把 genshin 已有登录在线验证后导入统一账号库
+#授权 genshin 登录共享       # 显式授权向 genshin 导出
+#同步插件登录                # 把统一账号库同步到 genshin
+#同步插件登录 确认覆盖        # 统一账号库为准，覆盖前先在线验证源凭证
+#开启登录同步 / #关闭登录同步
+#撤销授权 genshin 登录共享
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;几个边界细节：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;首次迁移建议先发 &lt;code&gt;#导入插件登录&lt;/code&gt;，把 genshin 已有的登录&lt;strong&gt;在线验证后&lt;/strong&gt;导入统一账号库。&lt;/li&gt;
+&lt;li&gt;向 genshin 导出必须先显式授权；两边凭证首次出现差异时&lt;strong&gt;拒绝覆盖&lt;/strong&gt;，避免误伤。&lt;/li&gt;
+&lt;li&gt;撤销授权只停止后续同步，不会删除 genshin 中独立建立的登录。&lt;/li&gt;
+&lt;li&gt;兼容桥只覆盖普通 Cookie 层，不包含 &lt;code&gt;stoken&lt;/code&gt;、&lt;code&gt;authkey&lt;/code&gt; 或其他高级权限。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这也是为什么这轮存储升级值得做：同一个用户在多个游戏插件之间共享一套登录，省掉的是重复抓 Cookie、重复绑定、重复失效的折腾。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 其他值得记的细节&lt;/h2&gt;
+&lt;p&gt;除了主线功能，这半个月还修了一批体验细节：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;自动签到结果也渲染成卡片&lt;/strong&gt;：之前自动签到只发文本，现在定时任务跑完的结果同样会生成奖励卡片。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;月度签到统计&lt;/strong&gt;：开始追踪每个游戏当月的签到情况。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;终末地重复签到奖励恢复&lt;/strong&gt;：修掉了重复签到响应下奖励没有正确归位的问题。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;明日方舟奖励图标本地打包&lt;/strong&gt;：按森空岛返回的具体道具 ID 匹配随插件维护的本地图标，未知道具不会猜图。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;横版卡片背景扩展&lt;/strong&gt;：为横版布局准备了更多游戏主题背景。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;帮助卡片紧凑化&lt;/strong&gt;：常用命令改成三列布局，一屏看得完。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;自更新命令&lt;/strong&gt;：&lt;code&gt;#插件更新agame&lt;/code&gt; 可以从当前 GitHub / Gitee 仓库拉取更新，Gitee 作为国内镜像同步维护。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;测试也从第一阶段的 23 项扩到了完整的测试套件，新增的覆盖点包括：SQLite 基础与迁移、统一账号库、凭证 vault、Redis 临时存储、登录共享兼容桥、各社区兑换码数据源和手机号登录流程。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm test
+npm run check
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;h2&gt;# 小结&lt;/h2&gt;
+&lt;p&gt;从 &lt;code&gt;1.0.0&lt;/code&gt; 到 &lt;code&gt;1.2.3&lt;/code&gt;，A-game-checkin 的变化可以概括成三条线：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;功能变多&lt;/strong&gt;：前瞻兑换码订阅上线，覆盖九款游戏；第四个社区塔吉多接入，补齐幻塔和异环。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;架构变重&lt;/strong&gt;：账号存储从 JSON 迁到 SQLite，临时状态交给 Redis，凭证按权限包加密，迁移过程带校验和回滚。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;生态变宽&lt;/strong&gt;：通过 genshin 兼容桥实现登录共享，StarRail-plugin 和 ZZZ-Plugin 可以复用同一套米游社登录，统一账号库开始真正承担&quot;多社区统一入口&quot;的角色。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;第一篇文章里说&quot;它最后不只是一个每天帮你点一下签到的工具，而是一个统一的二游社区入口&quot;。现在签到、兑换码、登录共享都在这条路上，而且每一步都有对应的自动化测试兜底。&lt;/p&gt;
+&lt;p&gt;下一步会继续观察真实账号下的稳定性，并跟着社区接口的变化持续维护。项目依然开源，欢迎到 GitHub 提 issue 或参与开发：&lt;/p&gt;
+&lt;p&gt;::github{repo=&quot;yoshino-xiao7/A-game_checkin&quot;}&lt;/p&gt;
+</content:encoded></item><item><title>把二游社区签到装进一个 Yunzai 插件：A-game-checkin 开发记录</title><link>https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</guid><description>记录 A-game-checkin 的第一阶段开发：为 Yunzai 接入米游社、森空岛和库街区，统一多游戏账号绑定、角色发现、自动签到、奖励记录与图片卡片，并聊聊兑换码推送和更多社区游戏的后续计划。</description><pubDate>Fri, 31 Jul 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：不想再为每个游戏装一套签到插件&lt;/h2&gt;
 &lt;p&gt;最近在开发一个新的 Yunzai 插件：&lt;strong&gt;A-game-checkin&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;它的目标很直接——把不同二游社区的每日签到统一到一个插件里。用户不需要记住每个社区不同的绑定方式，也不用为每款游戏单独寻找、安装和配置插件；绑定社区账号后，插件会自动发现账号下的游戏角色，并负责之后的每日签到。&lt;/p&gt;
 &lt;p&gt;第一阶段已经接入了三个社区：&lt;/p&gt;
