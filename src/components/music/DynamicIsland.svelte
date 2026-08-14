@@ -544,6 +544,10 @@ function handleQuickControl(e: MouseEvent, action: "prev" | "next") {
 	.player-lg-backdrop {
 		position: absolute;
 		inset: 0;
+		/* WebKit 中 backdrop-filter 元素不随父容器 overflow 裁剪，
+		   必须自身带圆角，否则背景以矩形渲染溢出圆角 */
+		border-radius: inherit;
+		overflow: hidden;
 		-webkit-backdrop-filter: var(--glass-panel-filter, blur(20px) saturate(200%));
 		backdrop-filter: var(--glass-panel-filter, blur(20px) saturate(200%));
 		background: var(--glass-panel-bg, rgba(255, 255, 255, 0.34));

@@ -105,6 +105,10 @@ const className = Astro.props.class;
   .glass-backdrop {
     position: absolute;
     inset: 0;
+    /* WebKit 中 backdrop-filter 元素不随父容器 overflow 裁剪，
+       必须自身带圆角，否则背景以矩形渲染溢出圆角 */
+    border-radius: inherit;
+    overflow: hidden;
     -webkit-backdrop-filter: var(--glass-filter, blur(16px) saturate(180%));
     backdrop-filter: var(--glass-filter, blur(16px) saturate(180%));
     background: var(--glass-surface-bg);
