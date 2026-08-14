@@ -84,10 +84,15 @@ const wrapperProps = embedded
   .glass-search-bar {
     display: flex;
     gap: 8px;
+    width: 100%;
+    min-width: 0;
   }
 
   .glass-input {
     flex: 1;
+    /* flex 子项默认 min-width: auto，input 会按内容(placeholder)宽度拒绝收缩，
+       把右侧搜索按钮挤出容器被裁剪，必须允许收缩 */
+    min-width: 0;
     height: 36px;
     padding: 0 14px;
     border-radius: 12px;
