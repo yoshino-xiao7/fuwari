@@ -1,4 +1,99 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>DeepSeek YukiRyou：把 DeepSeek Harness 装进一个真正的 Mac 应用</title><link>https://blog.yukiryou.icu/posts/2026-08-17-deepseek-yukiryou/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-17-deepseek-yukiryou/</guid><description>记录 DeepSeek YukiRyou 从零到可发布的一天：Electron 桌面壳怎么搭的、运行时为什么要固定内置、故障怎么自恢复、启动页和设置页怎么做的，以及晚上被 Apple 公证教育出来的两段式发布流水线。</description><pubDate>Mon, 17 Aug 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>DeepSeek YukiRyou 更新：真的发出来了，还多了个工作区审阅</title><link>https://blog.yukiryou.icu/posts/2026-08-18-deepseek-yukiryou-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-18-deepseek-yukiryou-update/</guid><description>记录 DeepSeek YukiRyou 的第二个发布日：发布流水线重构出多 runner 门禁、一口气发出 v0.1.1 和 v0.2.0 两个 Beta，以及今天最大的功能 Desktop Companion——账户余额、工作区文件树、Git 变更审阅和文件预览，还有它背后那一堆安全设计。</description><pubDate>Tue, 18 Aug 2026 23:55:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
+&lt;p&gt;昨天的博客写的是&quot;把壳做完&quot;，今天这篇写&quot;真的发出去了 + 加了个大功能&quot;。&lt;/p&gt;
+&lt;p&gt;两天下来，DeepSeek YukiRyou 已经从 v0.1.0 走到了 v0.2.1-beta.1，公开 Beta 发了三个：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;v0.1.0-beta.1（昨天）：第一个公开 Beta，只有 ZIP；&lt;/li&gt;
+&lt;li&gt;v0.1.1-beta.1（今天中午）：补上 DMG 和应用内更新；&lt;/li&gt;
+&lt;li&gt;v0.2.0-beta.1（今天晚上）：Desktop Companion 工作区审阅，今天的大头。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;仓库也顺便改了个更正经的名字：&lt;code&gt;deepseek-harness-desktop-yukiryou&lt;/code&gt;。&lt;/p&gt;
+&lt;h2&gt;# 上午：发布流水线第一次见真章&lt;/h2&gt;
+&lt;p&gt;昨天那套 &lt;code&gt;release:mac&lt;/code&gt; 脚本是在本机跑的。今天上午把它搬上 GitHub Actions，改成多 runner 门禁，然后就被现实教育了一上午。&lt;/p&gt;
+&lt;h3&gt;门禁链&lt;/h3&gt;
+&lt;p&gt;现在发一个版本，要过这么一串：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;quality（版本号/发布说明检查）
+  → build_candidate（签名、出候选包）
+  → verify_candidate（全新 runner 装进 /Applications 真实启动）
+  → soak_candidate（装好的应用跑 30 分钟健康探测）
+  → notarize（公证）
+  → verify_final（另一个全新 runner 验收 DMG 和 ZIP，要求公证票据）
+  → release（创建 draft）
+  → publish（独立工作流发布）
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;踩的坑&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;签名跨机器复制就坏&lt;/strong&gt;。本机签名完，拷到 CI runner 上 &lt;code&gt;codesign --verify&lt;/code&gt; 直接不过。查了半天是签名在打包归档后变得不可移植，最后把签名改成确定性、可移植的，并在归档后专门验证一次。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;fresh runner 是干净的&lt;/strong&gt;。CI 机器上啥都没有，跑集成测试之前得先把 runtime 准备好，不然上来就红。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;公证要能恢复&lt;/strong&gt;。昨天设计的两段式（提交一次、存 state 走人）在 CI 上也得配套：专门加了个 &lt;code&gt;resume-macos-release.yml&lt;/code&gt;，跑挂了能从上次的 state 继续，不会傻乎乎地重提一遍。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;版本不可变&lt;/strong&gt;。quality gate 里直接检查：这个 tag 或 release 已经存在就拒绝。发布说明没写、写了 H1、或者没有中英双语，也拒绝。发出去的版本不允许覆盖。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;一堆命名和渠道的细节&lt;/strong&gt;。GitHub asset 名不能用带空格的（&lt;code&gt;DeepSeek YukiRyou&lt;/code&gt; → &lt;code&gt;DeepSeek.YukiRyou&lt;/code&gt;）；beta 版本要发到 updater 的 beta channel，不然正式版用户会被推送测试版；发布前还要先验证 draft 目标存在，别发了个寂寞。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;v0.1.1-beta.1 就是在这轮折腾里发出去的：DMG + ZIP，多台全新 runner 装到 /Applications 验收，跨机器复制后的签名稳定性也修了。&lt;/p&gt;
+&lt;h2&gt;# 晚上：v0.2.0-beta.1 —— Desktop Companion 工作区审阅&lt;/h2&gt;
+&lt;p&gt;这才是今天真正的大功能。以前用 Harness，工作区里到底改了哪些文件、diff 长什么样，全靠猜；Agent 干了啥只能翻对话。今天给应用加了一个 &lt;strong&gt;Desktop Companion 右栏&lt;/strong&gt;，把这些东西全摆到桌面上。&lt;/p&gt;
+&lt;h3&gt;账户余额&lt;/h3&gt;
+&lt;p&gt;Harness 的&quot;设置&quot;上方现在会显示当前凭据所属账户的余额（CNY/USD），走官方接口。这里有个克制：&lt;strong&gt;只显示余额，不显示今日消费&lt;/strong&gt;——官方接口给不出精确的今日消费，硬猜没意义。&lt;/p&gt;
+&lt;p&gt;实现上是走官方 &lt;code&gt;sidebar.footer.action&lt;/code&gt; 插槽离线注册的，主进程每次 Runtime 启动轮换 token，拉的是脱敏快照，密钥只在 Runtime 的 credential service 里解析。&lt;/p&gt;
+&lt;h3&gt;文件树、变更和 diff&lt;/h3&gt;
+&lt;p&gt;右栏是一整套工作区审阅：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当前工作区的文件树，懒加载；&lt;/li&gt;
+&lt;li&gt;相对 HEAD 的 Git 变更，目录化折叠，带增删行数；&lt;/li&gt;
+&lt;li&gt;单文件 diff：双侧行号、hunk、未修改行折叠、整行红绿背景；&lt;/li&gt;
+&lt;li&gt;文件预览：Markdown 支持排版/源码切换，纯文本和 PNG/JPEG/GIF/WebP 图片都能看；&lt;/li&gt;
+&lt;li&gt;官方&quot;产物&quot;行保留不动，下面新增逐轮变更卡——消费 Harness rc.7 的 tool 事件，只认成功的 mutation，升级前的旧轮次只回填官方 deliverables 路径，不伪造增删统计。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;窗口够宽时预览和右栏并排，窄窗口进入 Review Focus，不 reload Harness。点开变更卡，主进程会重新核对当前 worktree 再打开只读 diff。&lt;/p&gt;
+&lt;h3&gt;安全：这条线花的心思最多&lt;/h3&gt;
+&lt;p&gt;桌面壳要碰用户的文件系统，这是把双刃剑，所以边界设计得很细：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;独立 preload&lt;/strong&gt;。本地 shell 和 Harness 页面现在是两个完全独立的 preload 产物，文件审阅能力只在 shell 侧，Harness 页面摸不到。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Workspace Authority&lt;/strong&gt;。&quot;当前工作区&quot;不是 renderer 说了算：先通过官方 Session/Workspace store 识别上下文，再由带鉴权的 Runtime registry 复核归属；主进程复核通过才建立 Workspace Capability，renderer 只能提交随机节点 ID，不能提交 root、绝对路径或 shell 命令。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;文件读取&lt;/strong&gt;。用 &lt;code&gt;O_NOFOLLOW&lt;/code&gt; 句柄读取，读取前后校验文件身份，防止读到一半文件被换掉；非法 UTF-8 直接拒绝，不渲染替换字符。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SafeMarkdown&lt;/strong&gt;。Markdown 预览只消费白名单结构：HTML、SVG/MathML、远程图片、iframe、事件属性、&lt;code&gt;javascript:&lt;/code&gt; 链接，全部当普通文本显示，绝不执行。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;图片像素炸弹&lt;/strong&gt;。解码前限制单边尺寸和总像素，避免一张超大的图把 renderer 拖死。&lt;/li&gt;
+&lt;li&gt;切换工作区会立刻关掉旧预览、清空 preload 缓存的正文和图片 data URL。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Runtime 也升了&lt;/h3&gt;
+&lt;p&gt;内置 Harness 从 rc.6 升到 &lt;strong&gt;rc.7&lt;/strong&gt;，带来 node-pty、sharp、koffi 这些原生依赖。新增的门禁逐项验证：arm64 原生装配、真实 PTY 往返、sharp/koffi 探针、发布包里 &lt;code&gt;pty.node&lt;/code&gt; 和 &lt;code&gt;spawn-helper&lt;/code&gt; 的架构一致性。&lt;code&gt;runtime:verify&lt;/code&gt; 现在还会拒绝残留的旧 Runtime。&lt;/p&gt;
+&lt;h3&gt;测试数字见长&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;Unit:        71 passed
+Integration: 21 passed
+E2E arm64:   3 passed
+Stress:      100/100
+Companion:   100/100（审核/切换/收起展开状态循环）
+Memory:      2500/2500（working set 480.2 → 476.9 MiB，无线性增长）
+Upgrade:     0.1.0 布局升级通过（Runtime Home 与 settings 字节保留）
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;2500 次侧栏/标签长会话内存门禁，working set 不涨反降，这个我很满意。发布门禁里那个 30 分钟 soak，60 秒资格版本已经过了，正式版跑在异机安装和公证之间；独立 5 小时扩展 soak 支持手动和每周低峰触发，不阻塞普通 Beta。&lt;/p&gt;
+&lt;h2&gt;# 深夜：v0.2.1-beta.1 在准备&lt;/h2&gt;
+&lt;p&gt;晚上十一点之后还在改更新相关的体验，几个提交全是 v0.2.1 的内容：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;下载状态误报&lt;/strong&gt;。之前下载更新的时候界面显示的是&quot;检查中&quot;，等得人一头雾水。现在下载阶段有不定进度动画和明确的&quot;下载中&quot;状态。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;签名验证失败卡死&lt;/strong&gt;。macOS 校验更新签名失败时，应用之前会一直停在失败状态。现在会明确提示，并给出官方已公证 DMG 的下载入口——注意是下载官方 DMG，不是绕过系统签名验证，这个底线没动。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;更新入口位置&lt;/strong&gt;。固定在展开后的品牌行里，不再出现在交通灯下方的空白工具栏。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;# 双语文档和路线图&lt;/h2&gt;
+&lt;p&gt;晚上还补了一批文档：新增独立英文 README（&lt;code&gt;README_EN.md&lt;/code&gt;，中英文首页互切），GitHub Release Notes 改成同一文件里同时放简体中文和英文，应用内&quot;关于&quot;的描述也做了双语。&lt;/p&gt;
+&lt;p&gt;顺便把产品路线图画清楚了，免得 README 里什么都像&quot;已上线&quot;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;DeepSeek 宠物&lt;/strong&gt;：开发中，等角色素材冻结后进高帧率动画；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;手机远程控制&lt;/strong&gt;：规划中，明确配对和权限边界后再做；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;插件市场&lt;/strong&gt;：规划中，设计好签名、来源验证、兼容性和回滚边界后再开放；&lt;/li&gt;
+&lt;li&gt;通知功能继续延期——Harness 还是没有稳定的任务事件接口。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;# 小结&lt;/h2&gt;
+&lt;p&gt;两天，三个公开 Beta。昨天是把&quot;能做出来&quot;走通，今天是&quot;能发出去&quot;和&quot;好用一点&quot;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;发布从本机脚本变成了多 runner 门禁流水线：版本不可变、全新机器验收、公证可恢复；&lt;/li&gt;
+&lt;li&gt;Desktop Companion 落地：余额、文件树、Git 变更审阅、文件预览，全部只读；&lt;/li&gt;
+&lt;li&gt;安全边界认真做了：独立 preload、Workspace Authority、O_NOFOLLOW、SafeMarkdown、像素炸弹防护；&lt;/li&gt;
+&lt;li&gt;中英双语文档和明确的路线图。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;还没做的也摆着：宠物动画在等素材、插件市场和手机控制还在规划、通知仍然延期；CI 的 Secrets 还没配，下一步是把&quot;出包&quot;也彻底交到 CI 手里。&lt;/p&gt;
+&lt;p&gt;仓库（已改名）：&lt;/p&gt;
+&lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;}&lt;/p&gt;
+</content:encoded></item><item><title>DeepSeek YukiRyou：把 DeepSeek Harness 装进一个真正的 Mac 应用</title><link>https://blog.yukiryou.icu/posts/2026-08-17-deepseek-yukiryou/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-17-deepseek-yukiryou/</guid><description>记录 DeepSeek YukiRyou 从零到可发布的一天：Electron 桌面壳怎么搭的、运行时为什么要固定内置、故障怎么自恢复、启动页和设置页怎么做的，以及晚上被 Apple 公证教育出来的两段式发布流水线。</description><pubDate>Mon, 17 Aug 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
 &lt;p&gt;先交代一下今天干了啥：我把 DeepSeek Harness 打包成了一个正经的 macOS 应用，叫 &lt;strong&gt;DeepSeek YukiRyou&lt;/strong&gt;。下午两点多写到晚上九点多，9 个提交，从零到一个能签名、能公证、能自动更新的桌面应用。&lt;/p&gt;
 &lt;p&gt;为什么做这个？说白了，Harness 本身是个 Web UI，用是能用，但&quot;能用&quot;和&quot;像个应用&quot;差得挺远：要自己装 Node、记启动命令、管端口，进程挂了还得自己发现。我就想把这一堆破事全收进一个 &lt;code&gt;.app&lt;/code&gt; 里——双击打开就能干活，关掉窗口进程自己回收，崩了还能自己爬起来。&lt;/p&gt;
 &lt;p&gt;它不是 Harness 的重写，Agent 该怎么跑还怎么跑，我干的只是外壳那层。&lt;/p&gt;
@@ -91,7 +186,7 @@ out/make/zip/darwin/arm64/DeepSeek YukiRyou-darwin-arm64-0.1.0.zip
 &lt;p&gt;正式对外发还差三样东西：Apple Developer 证书、App Store Connect API Key（或 Keychain 公证 profile）、更新包托管地址。流水线已经把位置留好了，拿到就能发。&lt;/p&gt;
 &lt;p&gt;没做完的也记着：8 小时 soak 还没实跑；x64 的 E2E 没跑（手头都是 Apple Silicon）；还有通知功能我直接砍了——Harness 没有稳定的任务事件接口，用 DOM 文本猜测太容易误报，与其做出来天天误报，不如不做。&lt;/p&gt;
 &lt;p&gt;项目开源了，欢迎来逛：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-yukiryou&quot;}&lt;/p&gt;
+&lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;}&lt;/p&gt;
 </content:encoded></item><item><title>A-game-checkin 更新记录：前瞻兑换码订阅与统一账号库</title><link>https://blog.yukiryou.icu/posts/2026-08-14-a-game-checkin-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-14-a-game-checkin-update/</guid><description>从 1.0.0 到 1.2.3，记录 A-game-checkin 半个月来的更新：前瞻兑换码订阅落地、第四个社区塔吉多接入、SQLite 持久化与 Redis 临时状态分工、凭证权限包加密，以及和 genshin / StarRail / ZZZ 插件的登录共享兼容桥。</description><pubDate>Fri, 14 Aug 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：第一篇文章里的&quot;后续计划&quot;落地了&lt;/h2&gt;
 &lt;p&gt;上个月末写了 A-game-checkin 的第一阶段开发记录，当时的结论是：&lt;strong&gt;签到主链路已经跑通，下一步是验证稳定性，并开始推进前瞻兑换码推送与更多社区游戏接入。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;半个月过去，这两件事都做了，而且做了更多。&lt;/p&gt;
