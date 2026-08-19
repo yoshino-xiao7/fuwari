@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>DeepSeek YukiRyou 更新：发布跑顺了，官网也上线了</title><link>https://blog.yukiryou.icu/posts/2026-08-19-deepseek-yukiryou-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-19-deepseek-yukiryou-update/</guid><description>记录 DeepSeek YukiRyou 的第三个开发日：Companion 非宠物阶段收口、v0.2.1-beta.2 带着一次&quot;版本限定可逆临时补丁&quot;的实践发布、CI 发布链彻底跑顺，以及官网 deepseek.yukiryou.icu 上线。</description><pubDate>Wed, 19 Aug 2026 18:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>DeepSeek YukiRyou 更新：发布跑顺了，官网也上线了</title><link>https://blog.yukiryou.icu/posts/2026-08-19-deepseek-yukiryou-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-19-deepseek-yukiryou-update/</guid><description>记录 DeepSeek YukiRyou 的第三个开发日：Companion 非宠物阶段收口、v0.2.1-beta.2 带着一次&quot;版本限定可逆临时补丁&quot;的实践发布、CI 发布链彻底跑顺，以及官网 deepseek.yukiryou.icu 上线。</description><pubDate>Wed, 19 Aug 2026 10:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
 &lt;p&gt;昨天的博客结尾说&quot;v0.2.1-beta.1 在准备&quot;，今天凌晨六点多它就发了，下午又发了 v0.2.1-beta.2。加上官网上线，三天时间，从&quot;能不能做出来&quot;到&quot;能稳定发出去&quot;，再到&quot;有门面了&quot;。&lt;/p&gt;
 &lt;p&gt;今天没有昨天那种大功能，但有几件事挺值得记：一次&quot;版本限定可逆临时补丁&quot;的实践、Companion 非宠物阶段收口、还有 CI 发布链终于跑顺。&lt;/p&gt;
 &lt;h2&gt;# 上午：仓库开始像个正经开源项目&lt;/h2&gt;
@@ -68,7 +68,7 @@ Memory:      2500/2500（无线性增长）
 &lt;p&gt;仓库和官网：&lt;/p&gt;
 &lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;}&lt;/p&gt;
 &lt;p&gt;官网：&lt;a href=&quot;https://deepseek.yukiryou.icu&quot;&gt;deepseek.yukiryou.icu&lt;/a&gt;&lt;/p&gt;
-</content:encoded></item><item><title>DeepSeek YukiRyou 更新：真的发出来了，还多了个工作区审阅</title><link>https://blog.yukiryou.icu/posts/2026-08-18-deepseek-yukiryou-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-18-deepseek-yukiryou-update/</guid><description>记录 DeepSeek YukiRyou 的第二个发布日：发布流水线重构出多 runner 门禁、一口气发出 v0.1.1 和 v0.2.0 两个 Beta，以及今天最大的功能 Desktop Companion——账户余额、工作区文件树、Git 变更审阅和文件预览，还有它背后那一堆安全设计。</description><pubDate>Tue, 18 Aug 2026 23:55:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
+</content:encoded></item><item><title>DeepSeek YukiRyou 更新：真的发出来了，还多了个工作区审阅</title><link>https://blog.yukiryou.icu/posts/2026-08-18-deepseek-yukiryou-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-18-deepseek-yukiryou-update/</guid><description>记录 DeepSeek YukiRyou 的第二个发布日：发布流水线重构出多 runner 门禁、一口气发出 v0.1.1 和 v0.2.0 两个 Beta，以及今天最大的功能 Desktop Companion——账户余额、工作区文件树、Git 变更审阅和文件预览，还有它背后那一堆安全设计。</description><pubDate>Tue, 18 Aug 2026 15:55:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
 &lt;p&gt;昨天的博客写的是&quot;把壳做完&quot;，今天这篇写&quot;真的发出去了 + 加了个大功能&quot;。&lt;/p&gt;
 &lt;p&gt;两天下来，DeepSeek YukiRyou 已经从 v0.1.0 走到了 v0.2.1-beta.1，公开 Beta 发了三个：&lt;/p&gt;
 &lt;ul&gt;
@@ -163,7 +163,7 @@ Upgrade:     0.1.0 布局升级通过（Runtime Home 与 settings 字节保留�
 &lt;p&gt;还没做的也摆着：宠物动画在等素材、插件市场和手机控制还在规划、通知仍然延期；CI 的 Secrets 还没配，下一步是把&quot;出包&quot;也彻底交到 CI 手里。&lt;/p&gt;
 &lt;p&gt;仓库（已改名）：&lt;/p&gt;
 &lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;}&lt;/p&gt;
-</content:encoded></item><item><title>DeepSeek YukiRyou：把 DeepSeek Harness 装进一个真正的 Mac 应用</title><link>https://blog.yukiryou.icu/posts/2026-08-17-deepseek-yukiryou/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-17-deepseek-yukiryou/</guid><description>记录 DeepSeek YukiRyou 从零到可发布的一天：Electron 桌面壳怎么搭的、运行时为什么要固定内置、故障怎么自恢复、启动页和设置页怎么做的，以及晚上被 Apple 公证教育出来的两段式发布流水线。</description><pubDate>Mon, 17 Aug 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
+</content:encoded></item><item><title>DeepSeek YukiRyou：把 DeepSeek Harness 装进一个真正的 Mac 应用</title><link>https://blog.yukiryou.icu/posts/2026-08-17-deepseek-yukiryou/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-17-deepseek-yukiryou/</guid><description>记录 DeepSeek YukiRyou 从零到可发布的一天：Electron 桌面壳怎么搭的、运行时为什么要固定内置、故障怎么自恢复、启动页和设置页怎么做的，以及晚上被 Apple 公证教育出来的两段式发布流水线。</description><pubDate>Mon, 17 Aug 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
 &lt;p&gt;先交代一下今天干了啥：我把 DeepSeek Harness 打包成了一个正经的 macOS 应用，叫 &lt;strong&gt;DeepSeek YukiRyou&lt;/strong&gt;。下午两点多写到晚上九点多，9 个提交，从零到一个能签名、能公证、能自动更新的桌面应用。&lt;/p&gt;
 &lt;p&gt;为什么做这个？说白了，Harness 本身是个 Web UI，用是能用，但&quot;能用&quot;和&quot;像个应用&quot;差得挺远：要自己装 Node、记启动命令、管端口，进程挂了还得自己发现。我就想把这一堆破事全收进一个 &lt;code&gt;.app&lt;/code&gt; 里——双击打开就能干活，关掉窗口进程自己回收，崩了还能自己爬起来。&lt;/p&gt;
 &lt;p&gt;它不是 Harness 的重写，Agent 该怎么跑还怎么跑，我干的只是外壳那层。&lt;/p&gt;
@@ -257,7 +257,7 @@ out/make/zip/darwin/arm64/DeepSeek YukiRyou-darwin-arm64-0.1.0.zip
 &lt;p&gt;没做完的也记着：8 小时 soak 还没实跑；x64 的 E2E 没跑（手头都是 Apple Silicon）；还有通知功能我直接砍了——Harness 没有稳定的任务事件接口，用 DOM 文本猜测太容易误报，与其做出来天天误报，不如不做。&lt;/p&gt;
 &lt;p&gt;项目开源了，欢迎来逛：&lt;/p&gt;
 &lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;}&lt;/p&gt;
-</content:encoded></item><item><title>A-game-checkin 更新记录：前瞻兑换码订阅与统一账号库</title><link>https://blog.yukiryou.icu/posts/2026-08-14-a-game-checkin-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-14-a-game-checkin-update/</guid><description>从 1.0.0 到 1.2.3，记录 A-game-checkin 半个月来的更新：前瞻兑换码订阅落地、第四个社区塔吉多接入、SQLite 持久化与 Redis 临时状态分工、凭证权限包加密，以及和 genshin / StarRail / ZZZ 插件的登录共享兼容桥。</description><pubDate>Fri, 14 Aug 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：第一篇文章里的&quot;后续计划&quot;落地了&lt;/h2&gt;
+</content:encoded></item><item><title>A-game-checkin 更新记录：前瞻兑换码订阅与统一账号库</title><link>https://blog.yukiryou.icu/posts/2026-08-14-a-game-checkin-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-14-a-game-checkin-update/</guid><description>从 1.0.0 到 1.2.3，记录 A-game-checkin 半个月来的更新：前瞻兑换码订阅落地、第四个社区塔吉多接入、SQLite 持久化与 Redis 临时状态分工、凭证权限包加密，以及和 genshin / StarRail / ZZZ 插件的登录共享兼容桥。</description><pubDate>Fri, 14 Aug 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：第一篇文章里的&quot;后续计划&quot;落地了&lt;/h2&gt;
 &lt;p&gt;上个月末写了 A-game-checkin 的第一阶段开发记录，当时的结论是：&lt;strong&gt;签到主链路已经跑通，下一步是验证稳定性，并开始推进前瞻兑换码推送与更多社区游戏接入。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;半个月过去，这两件事都做了，而且做了更多。&lt;/p&gt;
 &lt;p&gt;版本从 &lt;code&gt;1.0.0&lt;/code&gt; 走到了 &lt;code&gt;1.2.3&lt;/code&gt;，除了把前瞻兑换码订阅正式上线，还新增了第四个社区&lt;strong&gt;塔吉多&lt;/strong&gt;，并把底层的账号存储整个重做了一遍：从 JSON Store 迁到了 SQLite，把临时状态交给 Redis，把凭证拆成权限包加密，还给 genshin、StarRail-plugin、ZZZ-Plugin 之间打通了一条登录共享的兼容桥。&lt;/p&gt;
@@ -377,7 +377,7 @@ npm run check
 &lt;p&gt;第一篇文章里说&quot;它最后不只是一个每天帮你点一下签到的工具，而是一个统一的二游社区入口&quot;。现在签到、兑换码、登录共享都在这条路上，而且每一步都有对应的自动化测试兜底。&lt;/p&gt;
 &lt;p&gt;下一步会继续观察真实账号下的稳定性，并跟着社区接口的变化持续维护。项目依然开源，欢迎到 GitHub 提 issue 或参与开发：&lt;/p&gt;
 &lt;p&gt;::github{repo=&quot;yoshino-xiao7/A-game_checkin&quot;}&lt;/p&gt;
-</content:encoded></item><item><title>把二游社区签到装进一个 Yunzai 插件：A-game-checkin 开发记录</title><link>https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</guid><description>记录 A-game-checkin 的第一阶段开发：为 Yunzai 接入米游社、森空岛和库街区，统一多游戏账号绑定、角色发现、自动签到、奖励记录与图片卡片，并聊聊兑换码推送和更多社区游戏的后续计划。</description><pubDate>Fri, 31 Jul 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：不想再为每个游戏装一套签到插件&lt;/h2&gt;
+</content:encoded></item><item><title>把二游社区签到装进一个 Yunzai 插件：A-game-checkin 开发记录</title><link>https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</guid><description>记录 A-game-checkin 的第一阶段开发：为 Yunzai 接入米游社、森空岛和库街区，统一多游戏账号绑定、角色发现、自动签到、奖励记录与图片卡片，并聊聊兑换码推送和更多社区游戏的后续计划。</description><pubDate>Fri, 31 Jul 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：不想再为每个游戏装一套签到插件&lt;/h2&gt;
 &lt;p&gt;最近在开发一个新的 Yunzai 插件：&lt;strong&gt;A-game-checkin&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;它的目标很直接——把不同二游社区的每日签到统一到一个插件里。用户不需要记住每个社区不同的绑定方式，也不用为每款游戏单独寻找、安装和配置插件；绑定社区账号后，插件会自动发现账号下的游戏角色，并负责之后的每日签到。&lt;/p&gt;
 &lt;p&gt;第一阶段已经接入了三个社区：&lt;/p&gt;
@@ -493,7 +493,7 @@ npm run check
 &lt;p&gt;先把每天的签到交给机器人，之后再让它帮我们记住那些容易错过的兑换码和活动。&lt;/p&gt;
 &lt;p&gt;项目已经开源，感兴趣的话可以前往 GitHub 查看源码、提交问题或参与开发：&lt;/p&gt;
 &lt;p&gt;::github{repo=&quot;yoshino-xiao7/A-game_checkin&quot;}&lt;/p&gt;
-</content:encoded></item><item><title>Apple 开发者申请通过：雪涼云 iOS 版进度 70%</title><link>https://blog.yukiryou.icu/posts/2026-07-10-xueliangyun-ios-progress/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-10-xueliangyun-ios-progress/</guid><description>Apple Developer Program 申请历时两天终于通过，记录雪涼云 iOS 版目前的开发进度，以及播放器、刷图体验、Apple 登录和 AI 绘画完成通知等移动端适配。</description><pubDate>Fri, 10 Jul 2026 10:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 苹果开发者申请终于通过了&lt;/h2&gt;
+</content:encoded></item><item><title>Apple 开发者申请通过：雪涼云 iOS 版进度 70%</title><link>https://blog.yukiryou.icu/posts/2026-07-10-xueliangyun-ios-progress/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-10-xueliangyun-ios-progress/</guid><description>Apple Developer Program 申请历时两天终于通过，记录雪涼云 iOS 版目前的开发进度，以及播放器、刷图体验、Apple 登录和 AI 绘画完成通知等移动端适配。</description><pubDate>Fri, 10 Jul 2026 02:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 苹果开发者申请终于通过了&lt;/h2&gt;
 &lt;p&gt;今天，Apple Developer Program 的申请终于通过了，前后历时两天。&lt;/p&gt;
 &lt;p&gt;虽然等待时间不算特别长，但提交申请之后还是会忍不住时不时看一眼进度。现在开发者资格总算正式开通，雪涼云 iOS 版接下来的开发、测试和分发也可以继续往前推进了。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.icu/_astro/2026-07-10-apple-developer-program-approved.C8qsXzcp_1QSNgp.webp&quot; alt=&quot;Apple Developer Program 会员资格&quot; /&gt;&lt;/p&gt;
@@ -528,7 +528,7 @@ npm run check
 &lt;p&gt;后续应该还会做一些小玩意，不过主要还是为了方便我自己日常使用。个人项目就是这样，很多功能的起点往往只是“我自己觉得这里不太方便”，然后顺手把它做出来。做完之后如果也能给其他人带来一点便利，那就更好了。&lt;/p&gt;
 &lt;p&gt;总之，开发者账号已经准备就绪，雪涼云 iOS 版也推进到了 70%。&lt;/p&gt;
 &lt;p&gt;继续慢慢做，把剩下的 30% 补完。&lt;/p&gt;
-</content:encoded></item><item><title>周一补一下周末记录：QQ Bot 本地化和 AI 绘画提示词链路</title><link>https://blog.yukiryou.icu/posts/2026-07-06-weekend-local-qqbot-and-ai-prompt/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-06-weekend-local-qqbot-and-ai-prompt/</guid><description>周末太懒没有及时写文章，周一补一篇记录：QQ Bot 本地化部署、雪涼云管理员页面启停 AI 绘画、本地开机自运行，以及 AI 绘画提示词生成从单链路改成 Grok2API 和 Ollama 双链路赛跑。</description><pubDate>Mon, 06 Jul 2026 21:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：周末太懒，只好周一补文章&lt;/h2&gt;
+</content:encoded></item><item><title>周一补一下周末记录：QQ Bot 本地化和 AI 绘画提示词链路</title><link>https://blog.yukiryou.icu/posts/2026-07-06-weekend-local-qqbot-and-ai-prompt/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-06-weekend-local-qqbot-and-ai-prompt/</guid><description>周末太懒没有及时写文章，周一补一篇记录：QQ Bot 本地化部署、雪涼云管理员页面启停 AI 绘画、本地开机自运行，以及 AI 绘画提示词生成从单链路改成 Grok2API 和 Ollama 双链路赛跑。</description><pubDate>Mon, 06 Jul 2026 13:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：周末太懒，只好周一补文章&lt;/h2&gt;
 &lt;p&gt;今天已经是周一了，所以这篇算是给上周末补一篇记录。&lt;/p&gt;
 &lt;p&gt;本来周末就应该写的，但是人一懒起来真的很难把自己从椅子上拎起来。结果事情倒是做了一堆，文章拖到了今天才补。那就干脆当成一次周末开发小结，简单记录一下这两天主要折腾了什么。&lt;/p&gt;
 &lt;p&gt;这周末主要做了几件事：&lt;/p&gt;
@@ -633,7 +633,7 @@ npm run check
 &lt;/ul&gt;
 &lt;p&gt;这篇就当作周一补交的周末作业吧。&lt;/p&gt;
 &lt;p&gt;虽然周末人很懒，但项目还是往前推了一点。只要每周都能补上几块拼图，雪涼云这些功能就会慢慢变得更完整。&lt;/p&gt;
-</content:encoded></item><item><title>雪涼云 AI 绘画正式版上线：给新手的上手指南</title><link>https://blog.yukiryou.icu/posts/2026-07-01-xueliangyun-ai-drawing-release/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-01-xueliangyun-ai-drawing-release/</guid><description>雪涼云 AI 绘画正式版上线了。这篇记录目前的生成效果，并用单角色生图为例，讲讲新手如何通过模型、画幅、LoRA、角色预设和风格预设快速生成效果不错的图片。</description><pubDate>Wed, 01 Jul 2026 23:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：正式版终于准备上线了&lt;/h2&gt;
+</content:encoded></item><item><title>雪涼云 AI 绘画正式版上线：给新手的上手指南</title><link>https://blog.yukiryou.icu/posts/2026-07-01-xueliangyun-ai-drawing-release/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-01-xueliangyun-ai-drawing-release/</guid><description>雪涼云 AI 绘画正式版上线了。这篇记录目前的生成效果，并用单角色生图为例，讲讲新手如何通过模型、画幅、LoRA、角色预设和风格预设快速生成效果不错的图片。</description><pubDate>Wed, 01 Jul 2026 15:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：正式版终于准备上线了&lt;/h2&gt;
 &lt;p&gt;今天终于打算把雪涼云 &lt;strong&gt;AI 绘画&lt;/strong&gt;上线正式版啦。&lt;/p&gt;
 &lt;p&gt;目前整体效果我自己还算挺满意，生成出来的图也比前几个版本稳定了不少。当然，这里只展示能展示的部分，NSFW 内容就不放出来了，大家自己去体验就好。&lt;/p&gt;
 &lt;p&gt;先放两张这次生成出来的图：&lt;/p&gt;
@@ -726,7 +726,7 @@ npm run check
 &lt;p&gt;&lt;s&gt;希望能睡个好觉。&lt;/s&gt;&lt;/p&gt;
 &lt;p&gt;&lt;s&gt;希望你天天开心。&lt;/s&gt;&lt;/p&gt;
 &lt;p&gt;说梦话呢。&lt;/p&gt;
-</content:encoded></item><item><title>一个周末都在折腾 AI 绘图：雪涼云 Beta2 和双角色绘制</title><link>https://blog.yukiryou.icu/posts/2026-06-28-xueliangyun-ai-drawing-beta2/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-28-xueliangyun-ai-drawing-beta2/</guid><description>记录雪涼云 AI 绘图这个周末的开发：昨天完成 Beta1 主链路，今天继续推进 Beta2，重点补上双角色绘制、角色 LoRA 和预设、提示词生成优化，以及那些让人头疼的双角色问题。</description><pubDate>Sun, 28 Jun 2026 22:20:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：游戏没怎么玩，图倒是画了一堆&lt;/h2&gt;
+</content:encoded></item><item><title>一个周末都在折腾 AI 绘图：雪涼云 Beta2 和双角色绘制</title><link>https://blog.yukiryou.icu/posts/2026-06-28-xueliangyun-ai-drawing-beta2/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-28-xueliangyun-ai-drawing-beta2/</guid><description>记录雪涼云 AI 绘图这个周末的开发：昨天完成 Beta1 主链路，今天继续推进 Beta2，重点补上双角色绘制、角色 LoRA 和预设、提示词生成优化，以及那些让人头疼的双角色问题。</description><pubDate>Sun, 28 Jun 2026 14:20:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：游戏没怎么玩，图倒是画了一堆&lt;/h2&gt;
 &lt;p&gt;这个周末基本都在折腾雪涼云的 AI 绘画功能。&lt;/p&gt;
 &lt;p&gt;先把时间说清楚一点：我写这篇的时候是周日晚上，所以文里的“昨天”就是周六，也就是 Beta1；“今天”就是周日，也就是 Beta2。&lt;/p&gt;
 &lt;p&gt;昨天先把 AI 绘图 Beta1 做出来，让基础链路能跑通；今天继续做 Beta2，把重点放在双角色绘制、服务状态、提示词生成和角色预设这些体验上。&lt;/p&gt;
@@ -873,7 +873,7 @@ npm run check
 &lt;p&gt;所以后续更新频率大概率会低一点，只能下班之后慢慢继续优化。能补模型就补模型，能补 LoRA 就补 LoRA，能把双角色稳定性往前推一点是一点。&lt;/p&gt;
 &lt;p&gt;总之，先这样。&lt;/p&gt;
 &lt;p&gt;这个周末的闲置电脑，很忙。&lt;/p&gt;
-</content:encoded></item><item><title>把闲置电脑接进雪涼云：AI 绘图 Beta 上线了</title><link>https://blog.yukiryou.icu/posts/2026-06-27-xueliangyun-ai-drawing-beta/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-27-xueliangyun-ai-drawing-beta/</guid><description>记录雪涼云 2.6.0 AI 绘图 Beta 的上线过程：把闲置电脑改造成 ComfyUI Worker，接入云端任务队列、积分、历史、AI 广场和审核流程，并简单说明目前怎么使用。</description><pubDate>Sat, 27 Jun 2026 23:50:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：闲置电脑终于有活干了&lt;/h2&gt;
+</content:encoded></item><item><title>把闲置电脑接进雪涼云：AI 绘图 Beta 上线了</title><link>https://blog.yukiryou.icu/posts/2026-06-27-xueliangyun-ai-drawing-beta/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-27-xueliangyun-ai-drawing-beta/</guid><description>记录雪涼云 2.6.0 AI 绘图 Beta 的上线过程：把闲置电脑改造成 ComfyUI Worker，接入云端任务队列、积分、历史、AI 广场和审核流程，并简单说明目前怎么使用。</description><pubDate>Sat, 27 Jun 2026 15:50:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：闲置电脑终于有活干了&lt;/h2&gt;
 &lt;p&gt;今天雪涼云更新了一个新功能：&lt;strong&gt;AI 绘图&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;这次我把闲置的电脑拿出来跑 AI 绘图，本机负责 ComfyUI 和 Worker，雪涼云云端负责用户、积分、任务、历史、OSS 存储、广场审核这些业务流程。&lt;/p&gt;
 &lt;p&gt;目前这个功能还是 &lt;strong&gt;Beta 版本&lt;/strong&gt;。能用，能出图，也已经接上了历史和广场，但很多地方还不成熟：自然语言提示词转换、模型预设、LoRA 预设、生成稳定性、排队体验、广场生态都还需要继续打磨。&lt;/p&gt;
@@ -992,7 +992,7 @@ npm run check
 &lt;p&gt;对我来说，它更像是一次基础设施实验：把闲置电脑变成 AI Worker，让云端只负责业务和调度，不直接承担 GPU 推理成本。&lt;/p&gt;
 &lt;p&gt;现在它还只是 Beta 版本，效果不会每次都稳定，也还有很多细节要补。但这条链路已经跑通了，后面就可以继续加模型、加 LoRA、调提示词、补广场和审核体验。&lt;/p&gt;
 &lt;p&gt;先让闲置电脑开始上班。&lt;/p&gt;
-</content:encoded></item><item><title>雪涼云 API 生产数据库迁移到阿里云 RDS：一次顺利的正式切换</title><link>https://blog.yukiryou.icu/posts/2026-06-24-xueliangyun-rds-migration/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-24-xueliangyun-rds-migration/</guid><description>记录雪涼云 API 生产环境数据库迁移至阿里云 RDS MySQL 的过程：备份原库、本地导入校验、导入 RDS、切换生产环境，以及正式图片库第一轮筛查即将结束的近况。</description><pubDate>Wed, 24 Jun 2026 21:30:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：今天迁了生产数据库&lt;/h2&gt;
+</content:encoded></item><item><title>雪涼云 API 生产数据库迁移到阿里云 RDS：一次顺利的正式切换</title><link>https://blog.yukiryou.icu/posts/2026-06-24-xueliangyun-rds-migration/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-24-xueliangyun-rds-migration/</guid><description>记录雪涼云 API 生产环境数据库迁移至阿里云 RDS MySQL 的过程：备份原库、本地导入校验、导入 RDS、切换生产环境，以及正式图片库第一轮筛查即将结束的近况。</description><pubDate>Wed, 24 Jun 2026 13:30:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：今天迁了生产数据库&lt;/h2&gt;
 &lt;p&gt;今天把 &lt;strong&gt;雪涼云 API 的生产环境数据库&lt;/strong&gt; 正式迁移到了 &lt;strong&gt;阿里云 RDS MySQL&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;这种事情看起来只是一句“换个数据库”，但真正做的时候还是会下意识绷紧一点。毕竟这是生产环境，里面不只是用户数据，还有图片库、投稿、审核、调用记录、音乐相关数据，以及一堆支撑雪涼云正常运行的状态信息。&lt;/p&gt;
 &lt;p&gt;好在这次迁移过程很顺利。&lt;/p&gt;
@@ -1056,7 +1056,7 @@ npm run check
 &lt;p&gt;雪涼云最近做的事情，很多都不是用户一眼能看到的新功能：GitHub 工作流自动部署、RDS 数据库迁移、图库机审和人工复审、后台审核流程整理。这些更像是把地基重新夯一遍。&lt;/p&gt;
 &lt;p&gt;地基稳一点，后面继续做图库投稿、图片更新、音乐服务和其他 API 功能时，心里也会踏实一点。&lt;/p&gt;
 &lt;p&gt;总之，今天心情愉悦。&lt;/p&gt;
-</content:encoded></item><item><title>清理 3.7 万张图片之后：雪涼云图库审核、终末地 Wiki 和继续维护这件事</title><link>https://blog.yukiryou.icu/posts/2026-06-21-xueliangyun-gallery-review-and-endfield/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-21-xueliangyun-gallery-review-and-endfield/</guid><description>记录最近对雪涼云图片库进行人工审核、上线机审辅助失效判断、更新终末地插件 Wiki beta，以及继续为少量用户维护免费服务的一点近况。</description><pubDate>Sun, 21 Jun 2026 23:10:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：今天的眼睛有点累&lt;/h2&gt;
+</content:encoded></item><item><title>清理 3.7 万张图片之后：雪涼云图库审核、终末地 Wiki 和继续维护这件事</title><link>https://blog.yukiryou.icu/posts/2026-06-21-xueliangyun-gallery-review-and-endfield/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-21-xueliangyun-gallery-review-and-endfield/</guid><description>记录最近对雪涼云图片库进行人工审核、上线机审辅助失效判断、更新终末地插件 Wiki beta，以及继续为少量用户维护免费服务的一点近况。</description><pubDate>Sun, 21 Jun 2026 15:10:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：今天的眼睛有点累&lt;/h2&gt;
 &lt;p&gt;今天主要在处理雪涼云的图片库审核。&lt;/p&gt;
 &lt;p&gt;目前图库里大概有接近 &lt;strong&gt;3.7 万张图片&lt;/strong&gt;。这个数量说大不大，说小也绝对不小。平时作为 API 随机返回还好，一旦真的要重新整理质量、来源和可用性，就会发现这不是一个“点几下按钮”能解决的事情。&lt;/p&gt;
 &lt;p&gt;这轮主要筛的是几类图片：&lt;/p&gt;
@@ -1141,7 +1141,7 @@ npm run check
 &lt;p&gt;节奏可能不会像刚开始那样快，也不一定每个功能都能马上做到理想状态。但雪涼云 API、终末地 API、终末地插件，以及后续可能推出的服务，只要还在我的维护范围内，就会继续尽量保持免费。&lt;/p&gt;
 &lt;p&gt;这轮图片库筛完之后，再继续做图库新增和更新。终末地 Wiki 也会继续从 beta 慢慢往更完整的版本推进。&lt;/p&gt;
 &lt;p&gt;先把眼睛休息一下。&lt;/p&gt;
-</content:encoded></item><item><title>给终末地 Wiki 换一套底座：为了 Yunzai 插件和资源来源</title><link>https://blog.yukiryou.icu/posts/2026-06-14-endfield-wiki-yunzai-foundation/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-14-endfield-wiki-yunzai-foundation/</guid><description>记录本轮终末地 Wiki 更新：独立 Wiki 站、普通浏览与管理员同步分离、森空岛原始详情渲染，以及它为什么是后续 Yunzai Wiki 功能和资源来源治理的基础。</description><pubDate>Sun, 14 Jun 2026 20:20:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：这次不是单纯做一个 Wiki 页面&lt;/h2&gt;
+</content:encoded></item><item><title>给终末地 Wiki 换一套底座：为了 Yunzai 插件和资源来源</title><link>https://blog.yukiryou.icu/posts/2026-06-14-endfield-wiki-yunzai-foundation/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-14-endfield-wiki-yunzai-foundation/</guid><description>记录本轮终末地 Wiki 更新：独立 Wiki 站、普通浏览与管理员同步分离、森空岛原始详情渲染，以及它为什么是后续 Yunzai Wiki 功能和资源来源治理的基础。</description><pubDate>Sun, 14 Jun 2026 12:20:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：这次不是单纯做一个 Wiki 页面&lt;/h2&gt;
 &lt;p&gt;最近把终末地 Wiki 相关功能又整理了一轮。&lt;/p&gt;
 &lt;p&gt;表面上看，这次更新像是给站点加了一个独立 Wiki 页面：能看首页、分类、搜索、分页、条目详情，管理员也能在后台同步数据。但它真正要解决的事情不只是“网页上能看资料”，而是后续 &lt;strong&gt;Yunzai 插件的 Wiki 功能&lt;/strong&gt; 和 &lt;strong&gt;资源来源问题&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;之前终末地相关功能已经有网页端，也有 Yunzai Bot 插件。网页端适合浏览和管理，Bot 适合在群里快速查资料。但只要两个入口都要查同一批资料，就必须先回答一个问题：&lt;/p&gt;
@@ -1348,7 +1348,7 @@ WikiItem.cover
 &lt;p&gt;对网页端来说，它让普通用户可以用独立入口浏览 Wiki，也让管理员同步和维护资源时有清晰的后台。&lt;/p&gt;
 &lt;p&gt;对 Yunzai 插件来说，它先把资源来源、接口结构和原始详情解析稳定下来。后面插件要做 Wiki 查询，就可以站在这套数据底座上继续扩展，而不是重新处理一遍森空岛复杂的原始结构。&lt;/p&gt;
 &lt;p&gt;目前最重要的目标不是“一步做到官网级还原”，而是先保证资料来源稳定、详情不丢内容、未知结构不空白。只要这层打稳，后续无论是网页 Wiki、QQ 群查询，还是更多终末地工具，都能从同一份数据里长出来。&lt;/p&gt;
-</content:encoded></item><item><title>把五台云服务器整理成三台：一次个人项目的成本账</title><link>https://blog.yukiryou.icu/posts/2026-06-13-cloud-server-cleanup/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-13-cloud-server-cleanup/</guid><description>最近重新梳理了一下雪涼云和终末地相关服务的服务器部署、代理下载、OSS 成本和后续规划，顺便给个人项目算了一笔更现实的长期维护账。</description><pubDate>Sat, 13 Jun 2026 20:40:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：又到了整理服务器的时候&lt;/h2&gt;
+</content:encoded></item><item><title>把五台云服务器整理成三台：一次个人项目的成本账</title><link>https://blog.yukiryou.icu/posts/2026-06-13-cloud-server-cleanup/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-13-cloud-server-cleanup/</guid><description>最近重新梳理了一下雪涼云和终末地相关服务的服务器部署、代理下载、OSS 成本和后续规划，顺便给个人项目算了一笔更现实的长期维护账。</description><pubDate>Sat, 13 Jun 2026 12:40:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：又到了整理服务器的时候&lt;/h2&gt;
 &lt;p&gt;最近把手里的云服务器重新盘了一遍，突然发现自己不知不觉已经养了 &lt;strong&gt;五台服务器&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;两台在阿里云，其中一台快到期；一台在腾讯云；另外还有两台香港服务器。单看每台其实都不算贵，都是一些小规格机器，用来跑雪涼云、终末地相关后端、QQ Bot、代理下载，还有一些零零碎碎的小服务。但加起来之后，年付成本大概已经到了 &lt;strong&gt;3000 元左右&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;这笔钱说多也不算特别夸张，毕竟不是大规格机器，也没有上什么豪华配置。但作为个人项目长期维护成本，确实到了应该认真整理一下的程度。&lt;/p&gt;
@@ -1434,7 +1434,7 @@ WikiItem.cover
 &lt;p&gt;不然项目越做越多，服务器越买越散，最后不是功能先撑不住，而是人先被账单和维护任务拖住。&lt;/p&gt;
 &lt;p&gt;现在的目标很简单：先把五台服务器收缩到三台，把年付成本压到一个自己能接受的范围，再继续慢慢打磨雪涼云和终末地的服务。&lt;/p&gt;
 &lt;p&gt;最近工作也进入了新的阶段，事情变多，脑子也有点满。项目当然还会继续做，但节奏上可能要更现实一点：能稳定的先稳定，能省下来的先省下来，新的坑等有余力了再开。&lt;/p&gt;
-</content:encoded></item><item><title>雪涼云图库投稿上线：从上传按钮到审核发布闭环</title><link>https://blog.yukiryou.icu/posts/2026-06-10-xueliangyun-gallery-upload/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-10-xueliangyun-gallery-upload/</guid><description>记录雪涼云 setu-api 2.5.0 图库投稿功能的设计与实现：用户批量投稿、OSS 直传、人工审核、发布入库，以及为什么这不是简单做一个上传按钮。</description><pubDate>Wed, 10 Jun 2026 21:20:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：图库终于可以投稿了&lt;/h2&gt;
+</content:encoded></item><item><title>雪涼云图库投稿上线：从上传按钮到审核发布闭环</title><link>https://blog.yukiryou.icu/posts/2026-06-10-xueliangyun-gallery-upload/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-10-xueliangyun-gallery-upload/</guid><description>记录雪涼云 setu-api 2.5.0 图库投稿功能的设计与实现：用户批量投稿、OSS 直传、人工审核、发布入库，以及为什么这不是简单做一个上传按钮。</description><pubDate>Wed, 10 Jun 2026 13:20:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：图库终于可以投稿了&lt;/h2&gt;
 &lt;p&gt;雪涼云这次更新了一个我一直想补上的能力：&lt;strong&gt;图库投稿&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;以前图库内容基本还是管理员维护。这个模式很稳，但也有一个很明显的问题：内容增长和整理都集中在后台，普通用户即使想贡献图片，也没有一个足够完整、足够可控的流程。&lt;/p&gt;
 &lt;p&gt;所以 &lt;code&gt;setu-api 2.5.0&lt;/code&gt; 这次做的事情，不只是给页面加一个“上传图片”按钮，而是把整个流程补完整：&lt;/p&gt;
@@ -1567,7 +1567,7 @@ WikiItem.cover
 &lt;p&gt;后面如果继续做下去，还可以围绕标签规范、投稿质量评分、重复图片检测、批量审核体验这些方向继续打磨。图库类项目真正难的从来不是把图存进去，而是让它们被正确地整理、审核、检索和使用。&lt;/p&gt;
 &lt;p&gt;相关项目：&lt;/p&gt;
 &lt;p&gt;::github{repo=&quot;yoshino-xiao7/setu_cloud&quot;}&lt;/p&gt;
-</content:encoded></item><item><title>用 Svelte 5 重写了博客的音乐播放器系统：一次 8 阶段的全面重构</title><link>https://blog.yukiryou.icu/posts/2026-06-04-fuwari-refactor/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-04-fuwari-refactor/</guid><description>记录对 Fuwari 博客主题的 8 阶段全面重构，重点是用 Svelte 5 runes 替代 1400 行 DOM 操作的播放器系统，以及过程中发现的 CSS 外部化时序 bug 和灵动岛状态同步问题。</description><pubDate>Thu, 04 Jun 2026 17:49:33 GMT</pubDate><content:encoded>&lt;h2&gt;# 起因：1400 行的单文件组件&lt;/h2&gt;
+</content:encoded></item><item><title>用 Svelte 5 重写了博客的音乐播放器系统：一次 8 阶段的全面重构</title><link>https://blog.yukiryou.icu/posts/2026-06-04-fuwari-refactor/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-04-fuwari-refactor/</guid><description>记录对 Fuwari 博客主题的 8 阶段全面重构，重点是用 Svelte 5 runes 替代 1400 行 DOM 操作的播放器系统，以及过程中发现的 CSS 外部化时序 bug 和灵动岛状态同步问题。</description><pubDate>Thu, 04 Jun 2026 09:49:33 GMT</pubDate><content:encoded>&lt;h2&gt;# 起因：1400 行的单文件组件&lt;/h2&gt;
 &lt;p&gt;这个博客用的是 Fuwari 主题，一套基于 Astro 的日系博客框架。功能够用，但代码积累久了，有些地方开始变得难以维护。&lt;/p&gt;
 &lt;p&gt;最让我头疼的是音乐播放器。&lt;code&gt;GlobalMusicPlayer.astro&lt;/code&gt; 一个文件塞了 1033 行——一个完整的 TypeScript class，用纯 DOM 操作管理播放、暂停、进度条、播放列表、音质切换。灵动岛 &lt;code&gt;DynamicIsland.astro&lt;/code&gt; 又是 383 行，靠 &lt;code&gt;setInterval&lt;/code&gt; 每 3 秒轮询同步播放状态。两个组件之间只通过 &lt;code&gt;CustomEvent&lt;/code&gt; 松散耦合，没有类型安全可言。&lt;/p&gt;
 &lt;p&gt;播放列表用 &lt;code&gt;innerHTML&lt;/code&gt; 拼接 HTML 字符串，SVG 图标全部硬编码在模板里，动画定义散落在两个组件的 &lt;code&gt;&amp;lt;style&amp;gt;&lt;/code&gt; 块中互相重复。每次想改个小功能，都得在一大堆 DOM 查询和事件绑定里小心翼翼。&lt;/p&gt;
@@ -1657,7 +1657,7 @@ export const musicStore = new MusicStore();
 &lt;/ul&gt;
 &lt;p&gt;构建验证：&lt;code&gt;pnpm type-check&lt;/code&gt; 零错误（&lt;code&gt;--isolatedDeclarations&lt;/code&gt; 严格模式），&lt;code&gt;pnpm lint&lt;/code&gt; 87 个文件零问题，&lt;code&gt;pnpm build&lt;/code&gt; 50 页 8 秒完成。&lt;/p&gt;
 &lt;p&gt;如果你也在维护一个逐渐膨胀的 Astro 项目，我的建议是：先做低风险的结构清理（拆分大文件、去重配置），再动核心组件的重写。这样核心重写时面对的是一个干净、可预测的代码基，出问题时也容易定位。&lt;/p&gt;
-</content:encoded></item><item><title>五一星铁LAND嘉年华游玩体验：人很多，队很长，也很快乐</title><link>https://blog.yukiryou.icu/posts/2026-05-05-star-rail-land-experience/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-05-05-star-rail-land-experience/</guid><description>五一参加星铁 LAND 嘉年华的完整体验记录，包括现场排队、活动项目、周边内容与游玩感受，也留下一份属于这次线下旅行的纪念。</description><pubDate>Tue, 05 May 2026 20:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 五一去星铁LAND嘉年华了&lt;/h2&gt;
+</content:encoded></item><item><title>五一星铁LAND嘉年华游玩体验：人很多，队很长，也很快乐</title><link>https://blog.yukiryou.icu/posts/2026-05-05-star-rail-land-experience/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-05-05-star-rail-land-experience/</guid><description>五一参加星铁 LAND 嘉年华的完整体验记录，包括现场排队、活动项目、周边内容与游玩感受，也留下一份属于这次线下旅行的纪念。</description><pubDate>Tue, 05 May 2026 12:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 五一去星铁LAND嘉年华了&lt;/h2&gt;
 &lt;p&gt;五一假期第一天，去了期待已久的星铁LAND嘉年华。&lt;/p&gt;
 &lt;p&gt;体验总结：&lt;strong&gt;人很多，队很长，也很快乐。&lt;/strong&gt;&lt;/p&gt;
 &lt;hr /&gt;
@@ -1690,7 +1690,7 @@ export const musicStore = new MusicStore();
 &lt;p&gt;下次如果还来，可能会提前做好更充分的准备——比如穿一双更舒服的鞋。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;总之，这趟五一星铁LAND嘉年华之旅，累是真的累，但快乐也是真的快乐。&lt;/p&gt;
-</content:encoded></item><item><title>把自己的角色雪涼做成 Codex 小宠物：YukiRyou</title><link>https://blog.yukiryou.icu/posts/2026-05-05-making-codex-pet-yukiryou/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-05-05-making-codex-pet-yukiryou/</guid><description>用 hatch-pet 把自己的角色雪涼（YukiRyou）做成 Codex 小宠物，从主形象、动作行、镜像、QA 到最终打包，顺便记录一下制作过程。</description><pubDate>Tue, 05 May 2026 13:40:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 先看成品：雪涼入住 Codex&lt;/h2&gt;
+</content:encoded></item><item><title>把自己的角色雪涼做成 Codex 小宠物：YukiRyou</title><link>https://blog.yukiryou.icu/posts/2026-05-05-making-codex-pet-yukiryou/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-05-05-making-codex-pet-yukiryou/</guid><description>用 hatch-pet 把自己的角色雪涼（YukiRyou）做成 Codex 小宠物，从主形象、动作行、镜像、QA 到最终打包，顺便记录一下制作过程。</description><pubDate>Tue, 05 May 2026 05:40:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 先看成品：雪涼入住 Codex&lt;/h2&gt;
 &lt;p&gt;今天给 Codex 做了一只自己的小宠物，名字叫 &lt;strong&gt;YukiRyou&lt;/strong&gt;，中文名是 &lt;strong&gt;雪涼&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;先说明一下，YukiRyou 不是这次临时起的名字，而是我早就确认好的角色名。雪涼也是我专门找人设计过的原创角色，所以这次与其说是“随便生成一只宠物”，不如说是把自己的角色做成 Codex 里的小伙伴。&lt;/p&gt;
 &lt;p&gt;简单来说，就是把雪涼的角色头像参考图，转换成 Codex 可以识别的 8×9 动画宠物图集，最后安装到本地的 &lt;code&gt;~/.codex/pets/YukiRyou&lt;/code&gt; 里。&lt;/p&gt;
@@ -1872,7 +1872,7 @@ export const musicStore = new MusicStore();
 &lt;/blockquote&gt;
 &lt;p&gt;总之，YukiRyou 正式入住 Codex。&lt;/p&gt;
 &lt;p&gt;欢迎来到我的工作区。&lt;/p&gt;
-</content:encoded></item><item><title>五一准备去星铁 LAND 嘉年华：票是抢到了，人也快出发了</title><link>https://blog.yukiryou.icu/posts/2026-04-30-star-rail-land-carnival/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-04-30-star-rail-land-carnival/</guid><description>4 月 24 日抢到了星铁 LAND 嘉年华的票，五一准备去线下看看。至于为什么今天才更新，答案很简单：懒。</description><pubDate>Thu, 30 Apr 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 先说结论：五一去星铁 LAND 嘉年华&lt;/h2&gt;
+</content:encoded></item><item><title>五一准备去星铁 LAND 嘉年华：票是抢到了，人也快出发了</title><link>https://blog.yukiryou.icu/posts/2026-04-30-star-rail-land-carnival/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-04-30-star-rail-land-carnival/</guid><description>4 月 24 日抢到了星铁 LAND 嘉年华的票，五一准备去线下看看。至于为什么今天才更新，答案很简单：懒。</description><pubDate>Thu, 30 Apr 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 先说结论：五一去星铁 LAND 嘉年华&lt;/h2&gt;
 &lt;p&gt;五一假期终于要来了。&lt;/p&gt;
 &lt;p&gt;这次的计划也很简单：&lt;strong&gt;去星铁 LAND 嘉年华&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;作为一个平时就会被各种游戏活动、联动周边、线下展会吸引过去的人，看到星铁这次搞嘉年华，说完全不心动肯定是假的。毕竟平时在游戏里跑列车、刷材料、看剧情，突然有机会去线下看看，总感觉还是挺有仪式感的。&lt;/p&gt;
@@ -1936,7 +1936,7 @@ export const musicStore = new MusicStore();
 &lt;p&gt;当然，就算真的排队排到怀疑人生，应该也挺有节目效果的。&lt;/p&gt;
 &lt;p&gt;总之，票已经有了，人也差不多该准备出发了。&lt;/p&gt;
 &lt;p&gt;五一见，星铁 LAND。&lt;/p&gt;
-</content:encoded></item><item><title>苹果 Apple Store 异环联动周边 &amp; 终末地插件近况</title><link>https://blog.yukiryou.icu/posts/2026-04-08-endfield-daily/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-04-08-endfield-daily/</guid><description>记录在 Apple Store 参加《异环》联动活动并领取周边徽章的经历，同时分享终末地插件近期的开发进展、功能调整与一些个人感想。</description><pubDate>Wed, 08 Apr 2026 20:30:00 GMT</pubDate><content:encoded>&lt;h2&gt;# Apple Store × 异环：周边到手了&lt;/h2&gt;
+</content:encoded></item><item><title>苹果 Apple Store 异环联动周边 &amp; 终末地插件近况</title><link>https://blog.yukiryou.icu/posts/2026-04-08-endfield-daily/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-04-08-endfield-daily/</guid><description>记录在 Apple Store 参加《异环》联动活动并领取周边徽章的经历，同时分享终末地插件近期的开发进展、功能调整与一些个人感想。</description><pubDate>Wed, 08 Apr 2026 12:30:00 GMT</pubDate><content:encoded>&lt;h2&gt;# Apple Store × 异环：周边到手了&lt;/h2&gt;
 &lt;p&gt;今天去 Apple Store 逛了一圈，顺手薅到了 &lt;strong&gt;异环（Hotta Studio）&lt;/strong&gt; 的联动周边——&lt;strong&gt;两枚角色徽章&lt;/strong&gt;！&lt;/p&gt;
 &lt;p&gt;异环是 Hotta Studio（就是做幻塔的那家）正在开发的新作，目前还没正式上线，但已经开始跟 Apple 搞线下联动了。不得不说宣发这块确实可以，游戏还在预热阶段就先把周边铺出来了，这波属于&lt;strong&gt;先用周边把你拿下，上线之后你不玩都不好意思&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;拿到手的是两枚圆形亚克力徽章，包装是黑色底卡配上「异环」的 logo，简洁利落。&lt;/p&gt;
@@ -1992,7 +1992,7 @@ export const musicStore = new MusicStore();
 &lt;p&gt;&lt;s&gt;异环上线之后大概率又要写一套新插件……到时候又是新一轮的循环。&lt;/s&gt;&lt;/p&gt;
 &lt;p&gt;&lt;s&gt;希望有人帮我做 UI。&lt;/s&gt;&lt;/p&gt;
 &lt;p&gt;晚安！🌙&lt;/p&gt;
-</content:encoded></item><item><title>新年重新开工：雪涼云、个人博客与待办计划</title><link>https://blog.yukiryou.icu/posts/2026-03-05-back-to-work/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-03-05-back-to-work/</guid><description>年后重新开工，整理雪涼云、个人博客与其他开发项目的近期更新、后续计划，以及准备逐步补完的长期任务和技术欠账。</description><pubDate>Thu, 05 Mar 2026 17:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：假期？什么假期？&lt;/h2&gt;
+</content:encoded></item><item><title>新年重新开工：雪涼云、个人博客与待办计划</title><link>https://blog.yukiryou.icu/posts/2026-03-05-back-to-work/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-03-05-back-to-work/</guid><description>年后重新开工，整理雪涼云、个人博客与其他开发项目的近期更新、后续计划，以及准备逐步补完的长期任务和技术欠账。</description><pubDate>Thu, 05 Mar 2026 09:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：假期？什么假期？&lt;/h2&gt;
 &lt;p&gt;各位好，我回来了。&lt;/p&gt;
 &lt;p&gt;说起来这个&quot;新年假期&quot;过得是真的快。感觉前两天还在研究怎么让终末地的电线走得更整齐，一转眼就已经三月了。期间虽然嘴上说着&quot;放假要好好休息&quot;，但实际上手一直没停——只不过从拉电线变成了敲代码。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -2077,7 +2077,7 @@ export const musicStore = new MusicStore();
 &lt;blockquote&gt;
 &lt;p&gt;不过如果你找到我的时候我没回复，那我大概率在睡觉。&lt;/p&gt;
 &lt;/blockquote&gt;
-</content:encoded></item><item><title>给终末地写了个 QQ 机器人插件：踩坑实录</title><link>https://blog.yukiryou.icu/posts/endfield-yunzai-plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/endfield-yunzai-plugin/</guid><description>为 Yunzai Bot 开发终末地插件，对接自建后端 API，实现游戏数据查询、自动签到、体力提醒等功能。顺便记录一下开发过程中踩过的各种坑。</description><pubDate>Wed, 11 Feb 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：助手做完了，机器人也得安排上&lt;/h2&gt;
+</content:encoded></item><item><title>给终末地写了个 QQ 机器人插件：踩坑实录</title><link>https://blog.yukiryou.icu/posts/endfield-yunzai-plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/endfield-yunzai-plugin/</guid><description>为 Yunzai Bot 开发终末地插件，对接自建后端 API，实现游戏数据查询、自动签到、体力提醒等功能。顺便记录一下开发过程中踩过的各种坑。</description><pubDate>Wed, 11 Feb 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：助手做完了，机器人也得安排上&lt;/h2&gt;
 &lt;p&gt;上一篇文章聊了 Endfield Cloud 网页端助手的开发进度，但光有网页版总觉得差点意思——毕竟大家平时泡在 QQ 群里的时间明显更多。&lt;/p&gt;
 &lt;p&gt;于是就有了这个想法：&lt;strong&gt;给 Yunzai Bot 写个终末地插件&lt;/strong&gt;。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -2259,7 +2259,7 @@ let msg = `✅ ${signinData || &apos;签到成功！&apos;}`
 &lt;blockquote&gt;
 &lt;p&gt;电线要拉，插件也要写。工业党的快乐，就是这么朴实无华且枯燥。&lt;/p&gt;
 &lt;/blockquote&gt;
-</content:encoded></item><item><title>手搓一个终末地助手：开发碎碎念与功能总结</title><link>https://blog.yukiryou.icu/posts/endfield-cloud-dev/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/endfield-cloud-dev/</guid><description>既然沉迷终末地拉电线，不如顺手写个助手？深度解析 Endfield Cloud 目前的开发进度与功能亮点。</description><pubDate>Sun, 08 Feb 2026 12:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：当工业党开始写代码&lt;/h2&gt;
+</content:encoded></item><item><title>手搓一个终末地助手：开发碎碎念与功能总结</title><link>https://blog.yukiryou.icu/posts/endfield-cloud-dev/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/endfield-cloud-dev/</guid><description>既然沉迷终末地拉电线，不如顺手写个助手？深度解析 Endfield Cloud 目前的开发进度与功能亮点。</description><pubDate>Sun, 08 Feb 2026 04:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：当工业党开始写代码&lt;/h2&gt;
 &lt;p&gt;前段时间我也说过，自从《明日方舟：终末地》上线后，我就彻底沉迷于&lt;strong&gt;拉电线&lt;/strong&gt;不可自拔。每天醒来第一件事就是规划电力布局，研究怎么让生产线跑得更顺畅。&lt;/p&gt;
 &lt;p&gt;但这几天，我把这股劲头转移到了另一个地方——&lt;strong&gt;搓代码&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;既然官方的助手还有提升空间，不如自己动手丰衣足食？经过一番折腾，基于项目代码结构的深度分析，&lt;strong&gt;终末地云 (Endfield Cloud)&lt;/strong&gt; 的核心功能模块终于算是有了个样子。今天就来盘点一下，这个&quot;副业&quot;到底实现了哪些功能。&lt;/p&gt;
@@ -2325,7 +2325,7 @@ let msg = `✅ ${signinData || &apos;签到成功！&apos;}`
 &lt;p&gt;接下来？也许会继续优化一下性能，或者看看能不能挖掘出更多有趣的数据玩法。&lt;/p&gt;
 &lt;p&gt;反正，&lt;strong&gt;电线要拉，代码也要写&lt;/strong&gt;。工业党的快乐，就是这么朴实无华。&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;(本文图片均为开发中截图，实际效果以上线版本为准)&lt;/em&gt;&lt;/p&gt;
-</content:encoded></item><item><title>沉迷终末地基建与第二个域名备案：一周开发碎碎念</title><link>https://blog.yukiryou.icu/posts/2026-02-04-daily/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-02-04-daily/</guid><description>记录最近沉迷《明日方舟：终末地》基建玩法的日常，也整理第二个备案域名 suzuki.ink 审核通过后的站点规划与个人项目近况。</description><pubDate>Wed, 04 Feb 2026 23:52:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 拉电线上瘾了&lt;/h2&gt;
+</content:encoded></item><item><title>沉迷终末地基建与第二个域名备案：一周开发碎碎念</title><link>https://blog.yukiryou.icu/posts/2026-02-04-daily/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-02-04-daily/</guid><description>记录最近沉迷《明日方舟：终末地》基建玩法的日常，也整理第二个备案域名 suzuki.ink 审核通过后的站点规划与个人项目近况。</description><pubDate>Wed, 04 Feb 2026 15:52:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 拉电线上瘾了&lt;/h2&gt;
 &lt;p&gt;最近日子过得比较&quot;充实&quot;——充实在《明日方舟：终末地》里。&lt;/p&gt;
 &lt;p&gt;自从终末地上线之后，我就沉迷于一件事：&lt;strong&gt;拉电线&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;不知道有没有人和我一样，在游戏里可以花几个小时规划电力布局，研究怎么让电线走得最省材料、最整齐、最合理。虽然说游戏本身内容很丰富，但我偏偏对这种&quot;基建规划&quot;类的玩法有一种近乎变态的执念。&lt;/p&gt;
@@ -2372,7 +2372,7 @@ let msg = `✅ ${signinData || &apos;签到成功！&apos;}`
 &lt;p&gt;再拉一会儿电线也不是不行。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;就这样，今天的流水账到此结束。各位晚安！🌙&lt;/p&gt;
-</content:encoded></item><item><title>从零构建短链服务：Cloudflare Worker + D1 实践</title><link>https://blog.yukiryou.icu/posts/shortener/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/shortener/</guid><description>从零构建基于 Cloudflare Workers、D1 和 Pages 的短链服务，讲解路由、数据库、访问统计、前端界面、自动部署与常见问题。</description><pubDate>Wed, 21 Jan 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;起因&lt;/h2&gt;
+</content:encoded></item><item><title>从零构建短链服务：Cloudflare Worker + D1 实践</title><link>https://blog.yukiryou.icu/posts/shortener/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/shortener/</guid><description>从零构建基于 Cloudflare Workers、D1 和 Pages 的短链服务，讲解路由、数据库、访问统计、前端界面、自动部署与常见问题。</description><pubDate>Wed, 21 Jan 2026 06:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;起因&lt;/h2&gt;
 &lt;p&gt;一直想拥有自己的短链服务，像 bit.ly 那样简洁的链接看起来既专业又美观。正好最近在探索 Cloudflare 的 Serverless 生态，发现 Worker + D1 的组合简直是天作之合——边缘计算 + SQLite 数据库，零服务器成本就能搞定！&lt;/p&gt;
 &lt;p&gt;于是花了几天时间，从零撸了一个完整的短链服务，支持公开创建、管理后台、访问统计等功能。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;在线体验：&lt;/strong&gt;&lt;/p&gt;
@@ -2629,7 +2629,7 @@ jobs:
 &lt;li&gt;短链服务：&lt;a href=&quot;https://ki1.mom&quot;&gt;ki1.mom&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;管理后台：&lt;a href=&quot;https://dl.yukiryou.icu&quot;&gt;dl.yukiryou.icu&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</content:encoded></item><item><title>安卓换苹果：iPhone 17 标准版入坑实录</title><link>https://blog.yukiryou.icu/posts/iphone17/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/iphone17/</guid><description>从安卓手机换到 iPhone 17 标准版后的真实体验，聊聊系统生态、日常使用、功能差异与适应过程，以及我对苹果和安卓的个人感受。</description><pubDate>Tue, 13 Jan 2026 23:11:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 序：拖延症晚期的开箱&lt;/h2&gt;
+</content:encoded></item><item><title>安卓换苹果：iPhone 17 标准版入坑实录</title><link>https://blog.yukiryou.icu/posts/iphone17/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/iphone17/</guid><description>从安卓手机换到 iPhone 17 标准版后的真实体验，聊聊系统生态、日常使用、功能差异与适应过程，以及我对苹果和安卓的个人感受。</description><pubDate>Tue, 13 Jan 2026 15:11:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 序：拖延症晚期的开箱&lt;/h2&gt;
 &lt;p&gt;手机其实已经到手用了两三周了，因为有点懒，这篇文章一直拖到现在才动笔。毕竟是第一台苹果，还是想留点文字记录一下。&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h2&gt;# 为什么选了 iPhone 17？&lt;/h2&gt;
@@ -2661,7 +2661,7 @@ jobs:
 &lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.icu/_astro/e5f143ebf52a62354452227b4d37e56c.DkDJ62aa_Bg2o6.webp&quot; alt=&quot;iPhone 17 随手拍样张一&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;https://blog.yukiryou.icu/_astro/df47bfb496974fa5fa6933b68b33b502.Dahmp-5G_DaW1u.webp&quot; alt=&quot;iPhone 17 随手拍样张二&quot; /&gt;&lt;/p&gt;
 &lt;p&gt;过多的就不说了，想到什么说什么。总的来说，iPhone 17 是好用的，但也没必要把它神话。&lt;/p&gt;
-</content:encoded></item><item><title>Setu Cloud v2.5 音乐功能重磅上线！</title><link>https://blog.yukiryou.icu/posts/setu_cloud_v25/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_cloud_v25/</guid><description>介绍 Setu Cloud v2.5 新增的网易云音乐集成功能，包括全局播放器、歌曲搜索、歌单管理、播放历史、技术实现与后续优化计划。</description><pubDate>Sat, 27 Dec 2025 22:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;序言&lt;/h2&gt;
+</content:encoded></item><item><title>Setu Cloud v2.5 音乐功能重磅上线！</title><link>https://blog.yukiryou.icu/posts/setu_cloud_v25/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_cloud_v25/</guid><description>介绍 Setu Cloud v2.5 新增的网易云音乐集成功能，包括全局播放器、歌曲搜索、歌单管理、播放历史、技术实现与后续优化计划。</description><pubDate>Sat, 27 Dec 2025 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;序言&lt;/h2&gt;
 &lt;p&gt;距离 Setu Cloud v2 正式上线已经过去两周了，这段时间收到了很多小伙伴的反馈和建议。在保持原有图片 API 服务稳定运行的基础上，我们决定做一些&quot;不务正业&quot;的事情——给控制台加入音乐播放功能！&lt;/p&gt;
 &lt;p&gt;没错，现在你可以一边管理 API Key，一边听着网易云音乐放松心情了。这次更新不仅仅是简单的功能堆砌，而是从用户体验出发，打造了一套完整的音乐管理系统。&lt;/p&gt;
 &lt;p&gt;Setu Cloud 地址: &lt;a href=&quot;https://cloud.yukiryou.icu/&quot;&gt;https://cloud.yukiryou.icu/&lt;/a&gt;&lt;/p&gt;
@@ -2838,7 +2838,7 @@ jobs:
 &lt;li&gt;Setu Cloud: &lt;a href=&quot;https://cloud.yukiryou.icu/&quot;&gt;https://cloud.yukiryou.icu/&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;反馈邮箱: yuki@yukiryou.online&lt;/li&gt;
 &lt;/ul&gt;
-</content:encoded></item><item><title>Setu Cloud v2 正式上线：用户端、API Key 与服务升级</title><link>https://blog.yukiryou.icu/posts/setu_cloud-v2/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_cloud-v2/</guid><description>记录 Setu Cloud v2 用户端正式上线后的主要变化，包括界面升级、API Key 管理、服务稳定性优化、快速上手方式与项目技术栈。</description><pubDate>Sat, 13 Dec 2025 22:30:00 GMT</pubDate><content:encoded>&lt;h2&gt;序言&lt;/h2&gt;
+</content:encoded></item><item><title>Setu Cloud v2 正式上线：用户端、API Key 与服务升级</title><link>https://blog.yukiryou.icu/posts/setu_cloud-v2/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_cloud-v2/</guid><description>记录 Setu Cloud v2 用户端正式上线后的主要变化，包括界面升级、API Key 管理、服务稳定性优化、快速上手方式与项目技术栈。</description><pubDate>Sat, 13 Dec 2025 14:30:00 GMT</pubDate><content:encoded>&lt;h2&gt;序言&lt;/h2&gt;
 &lt;p&gt;最近一段时间没有更新博客了主要原因就是在写需求文档然后空闲时间在给setu_api完善好并写一个用户端和管理端。时间紧每天太累了，懒得更新了就。不过现在也是正式完工了。不过写什么都是以学习为目的，以交流为主，有问题希望锐评我。&lt;/p&gt;
 &lt;p&gt;Setu Cloud地址:&lt;a href=&quot;https://cloud.yukiryou.icu/&quot;&gt;https://cloud.yukiryou.icu/&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;相比于 v1 版本，v2 不仅仅是一次简单的版本号迭代，更是从交互体验到底层架构的一次全面升级。引入了全新的设计语言，重写了 API 管理逻辑，旨在为开发者提供更稳定、更美观、更易用的图片 API 服务。&lt;/p&gt;
@@ -2912,7 +2912,7 @@ curl -X GET &quot;https://api.yukiryou.icu/setu/v2&quot; \
 &lt;p&gt;欢迎大家注册体验，如果有任何建议或遇到 BUG，欢迎通过邮件或 QQ 提交反馈！&lt;/p&gt;
 &lt;p&gt;说个题外话，今天打一下午未许之地突袭8，谁能告诉我这玩意到底怎么过，越打越破防。
 &lt;img src=&quot;https://blog.yukiryou.icu/_astro/987f5c8f6b10836f7f3c05ac51e0bcbb.lVS1t2i0_Z1g18at.webp&quot; alt=&quot;未许之地突袭8游戏截图&quot; /&gt;&lt;/p&gt;
-</content:encoded></item><item><title>二次元随机图片 API：Pixiv 数据入库、标签筛选与代理服务</title><link>https://blog.yukiryou.icu/posts/setu_api/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_api/</guid><description>介绍二次元随机图片 API 的设计与使用方式：将 Pixiv 图片信息存入数据库，支持标签组合筛选、批量查询、图片尺寸选择与代理访问。</description><pubDate>Thu, 04 Dec 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;起因&lt;/h2&gt;
+</content:encoded></item><item><title>二次元随机图片 API：Pixiv 数据入库、标签筛选与代理服务</title><link>https://blog.yukiryou.icu/posts/setu_api/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/setu_api/</guid><description>介绍二次元随机图片 API 的设计与使用方式：将 Pixiv 图片信息存入数据库，支持标签组合筛选、批量查询、图片尺寸选择与代理访问。</description><pubDate>Wed, 03 Dec 2025 18:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;起因&lt;/h2&gt;
 &lt;p&gt;一直以来总想根据自己的性趣去部署一个图片api，最近购置了阿里云服务器进行备案，就干脆把阿里云的服务器拿来搭建好了。&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h2&gt;API v2&lt;/h2&gt;
@@ -3233,7 +3233,7 @@ tag=黑丝|白丝
 &lt;h2&gt;其他服务&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&quot;https://yukiryou.icu/posts/api_plugin/&quot;&gt;QQ Bot&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;后续可能优化一下并公开插件&lt;/p&gt;
-</content:encoded></item><item><title>QQ Bot 插件优化：接入 Pixiv 官方 API 与本地数据库回退</title><link>https://blog.yukiryou.icu/posts/api_plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/api_plugin/</guid><description>记录 QQ Bot 图片插件的完整优化过程：使用 Pixiv refresh_token 获取官方数据，并加入第三方 API 与本地数据库回退链路。</description><pubDate>Tue, 02 Dec 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;起因&lt;/h2&gt;
+</content:encoded></item><item><title>QQ Bot 插件优化：接入 Pixiv 官方 API 与本地数据库回退</title><link>https://blog.yukiryou.icu/posts/api_plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/api_plugin/</guid><description>记录 QQ Bot 图片插件的完整优化过程：使用 Pixiv refresh_token 获取官方数据，并加入第三方 API 与本地数据库回退链路。</description><pubDate>Mon, 01 Dec 2025 18:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;起因&lt;/h2&gt;
 &lt;p&gt;最近一直在做p站的api，目前进度只有6000+的图片信息，数据库部分信息类似下图
 &lt;img src=&quot;https://blog.yukiryou.icu/_astro/2025-12-02-21-25-14-image.K1QwrchD_Zu4Y8H.webp&quot; alt=&quot;Pixiv 图片数据库信息示例截图&quot; /&gt;&lt;/p&gt;
 &lt;ol&gt;
@@ -3529,7 +3529,7 @@ async def get_by_pid_uid_tag_with_fallback(session, bot, event, owner_qq, refres
 &lt;h2&gt;结果&lt;/h2&gt;
 &lt;p&gt;结果就是我发现标签查询效果更好了，标签匹配更吻合了，非常满意
 &lt;img src=&quot;https://blog.yukiryou.icu/_astro/2025-12-02-21-59-34-image.DqpsqFib_tYrrA.webp&quot; alt=&quot;QQ Bot 标签查询优化效果截图&quot; /&gt;&lt;/p&gt;
-</content:encoded></item><item><title>个人博客首次备案：从准备材料到审核结束</title><link>https://blog.yukiryou.icu/posts/icp/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/icp/</guid><description>记录个人博客第一次提交 ICP 备案的完整经历，包括前期准备、资料提交、审核过程和最终结果，为首次备案的网站作者提供参考。</description><pubDate>Sat, 29 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;准备工作&lt;/h2&gt;
+</content:encoded></item><item><title>个人博客首次备案：从准备材料到审核结束</title><link>https://blog.yukiryou.icu/posts/icp/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/icp/</guid><description>记录个人博客第一次提交 ICP 备案的完整经历，包括前期准备、资料提交、审核过程和最终结果，为首次备案的网站作者提供参考。</description><pubDate>Fri, 28 Nov 2025 18:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;准备工作&lt;/h2&gt;
 &lt;p&gt;我们都知道国内服务器是需要备案的，但备案需要准备些什么呢？&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;首先选择一家合适的域名服务商进行代备案，我选择的是阿里云。&lt;/li&gt;
@@ -3540,8 +3540,8 @@ async def get_by_pid_uid_tag_with_fallback(session, bot, event, owner_qq, refres
 &lt;h2&gt;结束&lt;/h2&gt;
 &lt;p&gt;附一张申请记录做为纪念
 &lt;img src=&quot;https://blog.yukiryou.icu/_astro/2025-11-29-17-12-11-image.DbOeRBQI_1mmqdU.webp&quot; alt=&quot;阿里云备案申请记录截图&quot; /&gt;&lt;/p&gt;
-</content:encoded></item><item><title>为什么我愿意赞助独立创作者：关于免费内容与支持的思考</title><link>https://blog.yukiryou.icu/posts/sponsor/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/sponsor/</guid><description>从赞助喜欢的文章、独立博客与游戏模组出发，聊聊免费内容背后的创作成本、支持开发者的意义，以及我对赞助这件事的理解。</description><pubDate>Fri, 28 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;开始&lt;/h2&gt;
+</content:encoded></item><item><title>为什么我愿意赞助独立创作者：关于免费内容与支持的思考</title><link>https://blog.yukiryou.icu/posts/sponsor/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/sponsor/</guid><description>从赞助喜欢的文章、独立博客与游戏模组出发，聊聊免费内容背后的创作成本、支持开发者的意义，以及我对赞助这件事的理解。</description><pubDate>Thu, 27 Nov 2025 18:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;开始&lt;/h2&gt;
 &lt;p&gt;首先我们要弄明白什么叫赞助。在我的常识里，赞助就是用户为了某个活动、某个项目、某篇文章(具体来说就是某件事或物)提供经济支持。当我对别人赞助时，我不禁在思考，别人收到我的赞助会有什么心情和想法。虽然我知道我赞助的不算多，也并不是为了什么而去选择赞助。我仅仅是因为看到某些对我有帮助的文章，才会选择赞助对方，也希望对方能够提供更多有趣有帮助的文章。&lt;/p&gt;
-</content:encoded></item><item><title>重新搭建个人博客：雪涼的扣扣空间再次出发</title><link>https://blog.yukiryou.icu/posts/admin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/admin/</guid><description>记录重新搭建个人博客「雪涼的扣扣空间」的起点，说明为什么决定整理旧内容、重新选择博客方案，并开始持续记录开发与日常。</description><pubDate>Wed, 26 Nov 2025 02:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;开始&lt;/h2&gt;
+</content:encoded></item><item><title>重新搭建个人博客：雪涼的扣扣空间再次出发</title><link>https://blog.yukiryou.icu/posts/admin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/admin/</guid><description>记录重新搭建个人博客「雪涼的扣扣空间」的起点，说明为什么决定整理旧内容、重新选择博客方案，并开始持续记录开发与日常。</description><pubDate>Tue, 25 Nov 2025 18:22:00 GMT</pubDate><content:encoded>&lt;h2&gt;开始&lt;/h2&gt;
 &lt;p&gt;闲着没事做，就想着好好搭建一个博客玩一下，正好觉得平时比较喜欢的&lt;a href=&quot;https://2x.nz&quot;&gt;博主:2x树树&lt;/a&gt;魔改的博客网站还不错，自己也部署一个试试。不过我也没啥文笔，没什么说的就这样吧。&lt;/p&gt;
 </content:encoded></item></channel></rss>
