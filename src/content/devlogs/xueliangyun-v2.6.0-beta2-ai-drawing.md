@@ -1,6 +1,6 @@
 ---
 title: "雪涼云 2.6.0 Beta2 更新日志：AI 绘图体验优化与双角色支持"
-published: 2026-06-28T21:30:00
+published: 2026-06-28T21:30:00+08:00
 project: "xueliangyun"
 summary: "雪涼云 2.6.0 Beta2 聚焦 AI 绘图体验修复，新增服务状态展示、Ollama 提示词生成队列、LoRA/角色资产选择器、角色预设补充和双角色绘制 Beta。"
 ---

@@ -1,6 +1,6 @@
 ---
 title: "雪涼云 2.6.0 更新日志：AI 绘图 Beta 上线"
-published: 2026-06-27T22:30:00
+published: 2026-06-27T22:30:00+08:00
 project: "xueliangyun"
 summary: "雪涼云 2.6.0 新增 AI 绘图 Beta，接入本机 ComfyUI Worker，支持用户生图、历史记录、AI 广场、审核发布、删除申请、API Key 调用与管理员后台管理。"
 ---

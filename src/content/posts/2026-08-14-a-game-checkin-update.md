@@ -1,6 +1,6 @@
 ---
 title: A-game-checkin 更新记录：前瞻兑换码订阅与统一账号库
-published: 2026-08-14T22:00:00
+published: 2026-08-14T22:00:00+08:00
 description: 从 1.0.0 到 1.2.3，记录 A-game-checkin 半个月来的更新：前瞻兑换码订阅落地、第四个社区塔吉多接入、SQLite 持久化与 Redis 临时状态分工、凭证权限包加密，以及和 genshin / StarRail / ZZZ 插件的登录共享兼容桥。
 tags:
   - Yunzai

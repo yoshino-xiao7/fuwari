@@ -1,6 +1,6 @@
 ---
 title: 苹果 Apple Store 异环联动周边 & 终末地插件近况
-published: 2026-04-08T20:30:00
+published: 2026-04-08T20:30:00+08:00
 description: 记录在 Apple Store 参加《异环》联动活动并领取周边徽章的经历，同时分享终末地插件近期的开发进展、功能调整与一些个人感想。
 image: ../assets/images/b38971c33c8595cab6e0c6f9a12910fe.png
 tags:

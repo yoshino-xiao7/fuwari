@@ -1,6 +1,6 @@
 ---
 title: 把闲置电脑接进雪涼云：AI 绘图 Beta 上线了
-published: 2026-06-27T23:50:00
+published: 2026-06-27T23:50:00+08:00
 description: 记录雪涼云 2.6.0 AI 绘图 Beta 的上线过程：把闲置电脑改造成 ComfyUI Worker，接入云端任务队列、积分、历史、AI 广场和审核流程，并简单说明目前怎么使用。
 image: ../assets/images/2026-06-27-xueliangyun-ai-draw-result.png
 tags:

@@ -1,6 +1,6 @@
 ---
 title: 安卓换苹果：iPhone 17 标准版入坑实录
-published: 2026-01-13T23:11:00
+published: 2026-01-13T23:11:00+08:00
 description: 从安卓手机换到 iPhone 17 标准版后的真实体验，聊聊系统生态、日常使用、功能差异与适应过程，以及我对苹果和安卓的个人感受。
 image: ../assets/images/939359975742068760539697c5c96d36.png
 tags:

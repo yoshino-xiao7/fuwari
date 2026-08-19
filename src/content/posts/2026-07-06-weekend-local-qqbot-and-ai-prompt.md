@@ -1,6 +1,6 @@
 ---
 title: 周一补一下周末记录：QQ Bot 本地化和 AI 绘画提示词链路
-published: 2026-07-06T21:00:00
+published: 2026-07-06T21:00:00+08:00
 description: 周末太懒没有及时写文章，周一补一篇记录：QQ Bot 本地化部署、雪涼云管理员页面启停 AI 绘画、本地开机自运行，以及 AI 绘画提示词生成从单链路改成 Grok2API 和 Ollama 双链路赛跑。
 tags:
   - 雪涼云

@@ -1,6 +1,6 @@
 ---
 title: DeepSeek YukiRyou 更新：真的发出来了，还多了个工作区审阅
-published: 2026-08-18T23:55:00
+published: 2026-08-18T23:55:00+08:00
 description: 记录 DeepSeek YukiRyou 的第二个发布日：发布流水线重构出多 runner 门禁、一口气发出 v0.1.1 和 v0.2.0 两个 Beta，以及今天最大的功能 Desktop Companion——账户余额、工作区文件树、Git 变更审阅和文件预览，还有它背后那一堆安全设计。
 tags:
   - macOS

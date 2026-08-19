@@ -1,6 +1,6 @@
 ---
 title: 雪涼云 AI 绘画正式版上线：给新手的上手指南
-published: 2026-07-01T23:00:00
+published: 2026-07-01T23:00:00+08:00
 description: 雪涼云 AI 绘画正式版上线了。这篇记录目前的生成效果，并用单角色生图为例，讲讲新手如何通过模型、画幅、LoRA、角色预设和风格预设快速生成效果不错的图片。
 image: ../assets/images/2026-07-01-xueliangyun-ai-drawing-release-result-stage.png
 tags:

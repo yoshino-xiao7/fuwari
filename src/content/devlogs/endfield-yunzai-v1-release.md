@@ -1,6 +1,6 @@
 ---
 title: "Endfield Suzuki Plugin v1.0 正式发布"
-published: 2026-03-12T19:00:00
+published: 2026-03-12T19:00:00+08:00
 project: "endfield-yunzai"
 summary: "基于 Endfield Cloud 的 Yunzai-Bot 终末地助手插件正式发布，支持绑定、签到、角色查询、基建、抽卡统计、理智提醒等完整功能。"
 ---

@@ -1,6 +1,6 @@
 ---
 title: 给终末地 Wiki 换一套底座：为了 Yunzai 插件和资源来源
-published: 2026-06-14T20:20:00
+published: 2026-06-14T20:20:00+08:00
 description: 记录本轮终末地 Wiki 更新：独立 Wiki 站、普通浏览与管理员同步分离、森空岛原始详情渲染，以及它为什么是后续 Yunzai Wiki 功能和资源来源治理的基础。
 tags:
   - 终末地

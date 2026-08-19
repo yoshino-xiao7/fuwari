@@ -1,6 +1,6 @@
 ---
 title: 五一准备去星铁 LAND 嘉年华：票是抢到了，人也快出发了
-published: 2026-04-30T22:00:00
+published: 2026-04-30T22:00:00+08:00
 description: 4 月 24 日抢到了星铁 LAND 嘉年华的票，五一准备去线下看看。至于为什么今天才更新，答案很简单：懒。
 image: ../assets/images/2026-04-30-star-rail-land-cover.jpg
 tags:

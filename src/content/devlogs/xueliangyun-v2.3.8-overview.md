@@ -1,6 +1,6 @@
 ---
 title: "雪涼云 Console v2.3.8 — 当前版本功能总览"
-published: 2026-03-12T19:00:00
+published: 2026-03-12T19:00:00+08:00
 project: "xueliangyun"
 summary: "雪涼云 Console 基于 Aurora Glassmorphism 设计风格，提供完整的用户仪表盘、API Key 管理、收藏夹系统、在线音乐播放器及管理员后台。"
 ---

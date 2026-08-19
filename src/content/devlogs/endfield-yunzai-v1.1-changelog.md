@@ -1,6 +1,6 @@
 ---
 title: "Endfield Suzuki Plugin v1.1 更新日志"
-published: 2026-04-08T20:00:00
+published: 2026-04-08T20:00:00+08:00
 project: "endfield-yunzai"
 summary: "v1.1 版本修复帝江号指令 bug、重构全部渲染 UI、增强信息指令展示、修复抽卡同步 524 超时问题。"
 ---

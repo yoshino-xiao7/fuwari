@@ -1,6 +1,6 @@
 ---
 title: QQ Bot 插件优化：接入 Pixiv 官方 API 与本地数据库回退
-published: 2025-12-02T02:22:00
+published: 2025-12-02T02:22:00+08:00
 description: 记录 QQ Bot 图片插件的完整优化过程：使用 Pixiv refresh_token 获取官方数据，并加入第三方 API 与本地数据库回退链路。
 image: ../assets/images/2025-12-02-21-59-34-image.png
 tags:

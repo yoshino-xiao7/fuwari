@@ -1,6 +1,6 @@
 ---
 title: 从零构建短链服务：Cloudflare Worker + D1 实践
-published: 2026-01-21T14:00:00
+published: 2026-01-21T14:00:00+08:00
 description: 从零构建基于 Cloudflare Workers、D1 和 Pages 的短链服务，讲解路由、数据库、访问统计、前端界面、自动部署与常见问题。
 image: ../assets/images/2026-01-21-15-04-40-image.png
 tags:

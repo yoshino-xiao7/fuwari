@@ -27,8 +27,8 @@ schema 定义在 `src/content/config.ts`。必填：`title`、`published`。可�
 ```yaml
 ---
 title: 文章标题
-published: 2026-07-31T22:00:00        # ISO 时间
-updated: 2026-08-01T10:00:00          # 可选，修订时更新
+published: 2026-07-31T22:00:00+08:00  # ISO 时间，必须带时区偏移
+updated: 2026-08-01T10:00:00+08:00    # 可选，修订时更新
 description: 一两句话摘要
 image: ../assets/images/xxx.jpg       # 可选，封面图
 tags: [标签A, 标签B]
@@ -41,7 +41,7 @@ draft: false
 
 注意：
 
-- `published` 必须是合法的日期值；`pnpm new-post` 生成 `YYYY-MM-DDTHH:MM:SS` 格式。
+- `published` 必须是合法的日期值，且**必须带时区偏移**（如 `+08:00`）；`pnpm new-post` 已自动生成带偏移的时间戳。不带时区的时间戳会被 js-yaml 按 UTC 解析，归档按东八区显示时日期会整体晚一天。
 - 文件名惯例：时间性文章用 `YYYY-MM-DD-<slug>.md`；长期有效文章可直接用 `<slug>.md`。
 - 更新已有文章时：修改内容后把 `updated` 更新为当前时间；若改了标题/描述，检查分类与标签是否仍准确。
 - `draft: true` 的文章不会发布，适合未完成的内容。
@@ -53,7 +53,7 @@ draft: false
 ```yaml
 ---
 title: "雪涼云 2.6.0 更新日志：AI 绘图 Beta 上线"
-published: 2026-06-27T22:30:00
+published: 2026-06-27T22:30:00+08:00
 project: "xueliangyun"
 summary: "一句话概括本次更新"
 ---

@@ -1,6 +1,6 @@
 ---
 title: 五一星铁LAND嘉年华游玩体验：人很多，队很长，也很快乐
-published: 2026-05-05T20:00:00
+published: 2026-05-05T20:00:00+08:00
 description: 五一参加星铁 LAND 嘉年华的完整体验记录，包括现场排队、活动项目、周边内容与游玩感受，也留下一份属于这次线下旅行的纪念。
 image: ../assets/images/2026-05-05-star-rail-subway.png
 tags:

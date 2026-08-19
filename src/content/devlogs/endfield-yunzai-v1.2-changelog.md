@@ -1,6 +1,6 @@
 ---
 title: "Endfield Suzuki Plugin v1.2 更新日志"
-published: 2026-06-21T20:00:00
+published: 2026-06-21T20:00:00+08:00
 project: "endfield-yunzai"
 summary: "v1.2 版本新增终末地 Wiki 命令体系，支持 Wiki 搜索、目录、详情、语音和 MV 资源发送，并修复帮助菜单、图片预加载、资源下载与 OneBot 文件发送兼容性问题。"
 ---

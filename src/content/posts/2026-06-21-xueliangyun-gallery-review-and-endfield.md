@@ -1,6 +1,6 @@
 ---
 title: 清理 3.7 万张图片之后：雪涼云图库审核、终末地 Wiki 和继续维护这件事
-published: 2026-06-21T23:10:00
+published: 2026-06-21T23:10:00+08:00
 description: 记录最近对雪涼云图片库进行人工审核、上线机审辅助失效判断、更新终末地插件 Wiki beta，以及继续为少量用户维护免费服务的一点近况。
 image: ../assets/images/2026-06-21-xueliangyun-image-review.png
 tags:

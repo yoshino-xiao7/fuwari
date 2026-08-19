@@ -1,6 +1,6 @@
 ---
 title: Apple 开发者申请通过：雪涼云 iOS 版进度 70%
-published: 2026-07-10T10:00:00
+published: 2026-07-10T10:00:00+08:00
 description: Apple Developer Program 申请历时两天终于通过，记录雪涼云 iOS 版目前的开发进度，以及播放器、刷图体验、Apple 登录和 AI 绘画完成通知等移动端适配。
 image: ../assets/images/2026-07-10-apple-developer-program-approved.jpg
 tags:

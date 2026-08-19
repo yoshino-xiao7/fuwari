@@ -1,6 +1,6 @@
 ---
 title: 雪涼云 API 生产数据库迁移到阿里云 RDS：一次顺利的正式切换
-published: 2026-06-24T21:30:00
+published: 2026-06-24T21:30:00+08:00
 description: 记录雪涼云 API 生产环境数据库迁移至阿里云 RDS MySQL 的过程：备份原库、本地导入校验、导入 RDS、切换生产环境，以及正式图片库第一轮筛查即将结束的近况。
 image: ../assets/images/2026-06-24-xueliangyun-rds-migration.png
 tags:

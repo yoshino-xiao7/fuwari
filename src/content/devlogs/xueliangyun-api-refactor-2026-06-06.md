@@ -1,6 +1,6 @@
 ---
 title: "雪涼云 API 项目重构更新日志"
-published: 2026-06-06T20:00:00
+published: 2026-06-06T20:00:00+08:00
 project: "xueliangyun"
 summary: "雪涼云 API 项目完成 Console 前端重构交付，并同步梳理后端 /setu/v2、鉴权计费、外部服务、数据库迁移与测试回归等后续重构路线。"
 ---

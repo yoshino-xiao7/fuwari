@@ -1,6 +1,6 @@
 ---
 title: 把二游社区签到装进一个 Yunzai 插件：A-game-checkin 开发记录
-published: 2026-07-31T22:00:00
+published: 2026-07-31T22:00:00+08:00
 description: 记录 A-game-checkin 的第一阶段开发：为 Yunzai 接入米游社、森空岛和库街区，统一多游戏账号绑定、角色发现、自动签到、奖励记录与图片卡片，并聊聊兑换码推送和更多社区游戏的后续计划。
 tags:
   - Yunzai

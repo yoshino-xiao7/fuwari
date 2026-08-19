@@ -1,6 +1,6 @@
 ---
 title: 用 Svelte 5 重写了博客的音乐播放器系统：一次 8 阶段的全面重构
-published: 2026-06-04T17:49:33
+published: 2026-06-04T17:49:33+08:00
 description: 记录对 Fuwari 博客主题的 8 阶段全面重构，重点是用 Svelte 5 runes 替代 1400 行 DOM 操作的播放器系统，以及过程中发现的 CSS 外部化时序 bug 和灵动岛状态同步问题。
 tags:
   - 前端

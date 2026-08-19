@@ -1,6 +1,6 @@
 ---
 title: 把自己的角色雪涼做成 Codex 小宠物：YukiRyou
-published: 2026-05-05T13:40:00
+published: 2026-05-05T13:40:00+08:00
 description: 用 hatch-pet 把自己的角色雪涼（YukiRyou）做成 Codex 小宠物，从主形象、动作行、镜像、QA 到最终打包，顺便记录一下制作过程。
 image: ../assets/images/2026-05-05-yukiryou-pet-contact-sheet.png
 tags:

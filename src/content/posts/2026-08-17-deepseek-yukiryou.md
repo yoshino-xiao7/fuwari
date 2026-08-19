@@ -1,7 +1,7 @@
 ---
 title: DeepSeek YukiRyou：把 DeepSeek Harness 装进一个真正的 Mac 应用
-published: 2026-08-17T22:00:00
-updated: 2026-08-18T23:51:00
+published: 2026-08-17T22:00:00+08:00
+updated: 2026-08-18T23:51:00+08:00
 description: 记录 DeepSeek YukiRyou 从零到可发布的一天：Electron 桌面壳怎么搭的、运行时为什么要固定内置、故障怎么自恢复、启动页和设置页怎么做的，以及晚上被 Apple 公证教育出来的两段式发布流水线。
 tags:
   - macOS

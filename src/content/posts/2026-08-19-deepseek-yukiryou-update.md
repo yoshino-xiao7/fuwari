@@ -1,6 +1,6 @@
 ---
 title: DeepSeek YukiRyou 更新：发布跑顺了，官网也上线了
-published: 2026-08-19T18:00:00
+published: 2026-08-19T18:00:00+08:00
 description: 记录 DeepSeek YukiRyou 的第三个开发日：Companion 非宠物阶段收口、v0.2.1-beta.2 带着一次"版本限定可逆临时补丁"的实践发布、CI 发布链彻底跑顺，以及官网 deepseek.yukiryou.icu 上线。
 tags:
   - macOS

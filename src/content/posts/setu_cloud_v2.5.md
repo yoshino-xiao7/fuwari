@@ -1,6 +1,6 @@
 ---
 title: Setu Cloud v2.5 音乐功能重磅上线！
-published: 2025-12-27T22:00:00
+published: 2025-12-27T22:00:00+08:00
 description: 介绍 Setu Cloud v2.5 新增的网易云音乐集成功能，包括全局播放器、歌曲搜索、歌单管理、播放历史、技术实现与后续优化计划。
 image: ../assets/images/2025-12-27-22-05-32-image.png
 tags:

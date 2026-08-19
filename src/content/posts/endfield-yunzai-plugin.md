@@ -1,6 +1,6 @@
 ---
 title: 给终末地写了个 QQ 机器人插件：踩坑实录
-published: 2026-02-11T22:00:00
+published: 2026-02-11T22:00:00+08:00
 description: 为 Yunzai Bot 开发终末地插件，对接自建后端 API，实现游戏数据查询、自动签到、体力提醒等功能。顺便记录一下开发过程中踩过的各种坑。
 image: ../assets/images/002cbe3316a11b7cc951ad423eb07da7.jpg
 tags:

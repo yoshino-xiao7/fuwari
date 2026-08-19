@@ -1,6 +1,6 @@
 ---
 title: Setu Cloud v2 正式上线：用户端、API Key 与服务升级
-published: 2025-12-13T22:30:00
+published: 2025-12-13T22:30:00+08:00
 description: 记录 Setu Cloud v2 用户端正式上线后的主要变化，包括界面升级、API Key 管理、服务稳定性优化、快速上手方式与项目技术栈。
 image: ../assets/images/2025-12-13-23-14-59-image.png
 tags:

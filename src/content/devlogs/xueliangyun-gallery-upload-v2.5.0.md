@@ -1,6 +1,6 @@
 ---
 title: "雪涼云 setu-api 2.5.0 图库投稿更新日志"
-published: 2026-06-10T21:00:00
+published: 2026-06-10T21:00:00+08:00
 project: "xueliangyun"
 summary: "雪涼云 setu-api 2.5.0 完成图库投稿链路升级，新增用户批量投稿、OSS 直传、人工审核、发布入库、投稿记录查询与管理端审核能力。"
 ---

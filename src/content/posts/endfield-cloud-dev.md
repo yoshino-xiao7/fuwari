@@ -1,6 +1,6 @@
 ---
 title: 手搓一个终末地助手：开发碎碎念与功能总结
-published: 2026-02-08T12:00:00
+published: 2026-02-08T12:00:00+08:00
 description: 既然沉迷终末地拉电线，不如顺手写个助手？深度解析 Endfield Cloud 目前的开发进度与功能亮点。
 image: ../assets/images/e6238bd8f6dbda4b2bdd64a078a76a61.png
 tags:
