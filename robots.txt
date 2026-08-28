@@ -1,4 +1,5 @@
 User-agent: *
-Disallow: /_astro/
+Disallow: /404/
+Allow: /
 
 Sitemap: https://blog.yukiryou.icu/sitemap-index.xml

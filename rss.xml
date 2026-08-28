@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。</description><link>https://blog.yukiryou.icu/</link><language>zh_CN</language><item><title>新项目 dsh-grok-provider：给 DeepSeek Harness 接上官方 Grok Build</title><link>https://blog.yukiryou.icu/posts/2026-08-26-dsh-grok-provider/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-26-dsh-grok-provider/</guid><description>今天把社区 Grok Build Provider 发到了 0.1.1。登录走官方 CLI 的浏览器 OAuth，模型动态发现，额度面板不造假，插件自己不存第二份 token。</description><pubDate>Wed, 26 Aug 2026 06:19:37 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>雪涼的扣扣空间</title><description>雪涼（YukiRyou）的个人博客「雪涼的扣扣空间」，记录日常生活、技术实践、雪涼云开发日志、服务器部署、前后端开发与云原生相关经验，也分享独立开发过程中的真实思考与踩坑记录。</description><link>https://blog.yukiryou.icu/</link><language>zh-CN</language><lastBuildDate>Fri, 28 Aug 2026 02:50:32 GMT</lastBuildDate><atom:link href="https://blog.yukiryou.icu/rss.xml" rel="self" type="application/rss+xml"/><item><title>新项目 dsh-grok-provider：给 DeepSeek Harness 接上官方 Grok Build</title><link>https://blog.yukiryou.icu/posts/2026-08-26-dsh-grok-provider/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-26-dsh-grok-provider/</guid><description>今天把社区 Grok Build Provider 发到了 0.1.1。登录走官方 CLI 的浏览器 OAuth，模型动态发现，额度面板不造假，插件自己不存第二份 token。</description><pubDate>Wed, 26 Aug 2026 06:19:37 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
 &lt;p&gt;上一篇还在写 DeepSeek YukiRyou 的插件市场。今天换了个仓库，把另一件事真正发出去了：&lt;strong&gt;dsh-grok-provider&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;一句话：让 DeepSeek Harness 用你已经登录的官方 Grok Build 账号——动态模型、流式推理、工具调用、额度面板。当前版本 &lt;code&gt;0.1.1&lt;/code&gt;，npm 上能装。&lt;/p&gt;
 &lt;p&gt;这不是桌面壳的功能补丁，是一个独立的社区 Provider。非官方，和 xAI、DeepSeek Harness 都没有隶属关系。&lt;/p&gt;
@@ -121,7 +121,7 @@ dsh web
 &lt;/ol&gt;
 &lt;p&gt;下一步是 Windows 真机验收，以及按已验证的 Harness / xAI 协议逐项评估更多内容类型。路线图不是兼容性承诺，新能力还是得过文档决策和安全门禁。&lt;/p&gt;
 &lt;p&gt;仓库、npm 和发行页：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/dsh-grok-provider&quot;}&lt;/p&gt;
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/yoshino-xiao7/dsh-grok-provider&quot;&gt;github.com/yoshino-xiao7/dsh-grok-provider&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
 &lt;p&gt;npm：&lt;a href=&quot;https://www.npmjs.com/package/dsh-grok-provider/v/0.1.1&quot;&gt;dsh-grok-provider@0.1.1&lt;/a&gt;&lt;/p&gt;
 </content:encoded></item><item><title>DeepSeek YukiRyou v0.2.3：Windows 上线、插件市场落地和区域更新</title><link>https://blog.yukiryou.icu/posts/2026-08-23-deepseek-yukiryou-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-23-deepseek-yukiryou-update/</guid><description>记录 v0.2.3 系列（beta.1 / beta.2 / beta.3）：从 macOS 单平台变成 macOS + Windows 11 x64 的跨平台桌面工作台，交付可受管的社区插件市场，新增区域更新与国内镜像，内置 Harness 升级到 0.1.1-rc.2 并加入账户概览。</description><pubDate>Sun, 23 Aug 2026 12:40:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
 &lt;p&gt;昨天到今晚，连着发了 v0.2.3-beta.1、beta.2，今天 beta.3。这版是把 v0.2.2 那几条&quot;转向&quot;真正落地的一次里程碑：&lt;strong&gt;Windows 11 x64 出来了、插件市场出来了、区域更新和国内镜像也有了&lt;/strong&gt;。&lt;/p&gt;
@@ -171,7 +171,7 @@ dsh web
 &lt;/ol&gt;
 &lt;p&gt;状态也如实：插件生态完善是&quot;持续开发&quot;，Windows 的 Authenticode 和 Windows on Arm 留后续，手机远程控制还是&quot;规划中&quot;。宠物继续不在当前产品线。&lt;/p&gt;
 &lt;p&gt;这版开始，博客就按里程碑来写了。仓库在：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;}&lt;/p&gt;
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;&gt;github.com/yoshino-xiao7/deepseek-harness-desktop-yukiryou&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
 </content:encoded></item><item><title>DeepSeek YukiRyou：宠物砍了，v0.2.2 发布，以及一次失败的复盘</title><link>https://blog.yukiryou.icu/posts/2026-08-21-deepseek-yukiryou-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-21-deepseek-yukiryou-update/</guid><description>记录一次实打实的失败：昨天把开发重心放在规划已久的 DeepSeek 宠物区，方案做了 900 多行、原型跑了 Rive/dotLottie/WebM 对比和图集编码实验，最后发现&quot;低成本 × 高质量&quot;没有解，宠物暂停、代码归档。今天 v0.2.2-beta.1（Harness rc.8）照常发布，并转向 Plugin-first 与插件市场方向。</description><pubDate>Fri, 21 Aug 2026 01:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
 &lt;p&gt;先说结论，免得你们往下看半天：&lt;strong&gt;DeepSeek 宠物做砸了&lt;/strong&gt;。昨天把开发重心放在宠物区，认真设计了平台、写了原型、跑了编码实验，最后发现没有一个方案能跨过&quot;低成本 × 高质量&quot;这道坎。暂停了，代码归档，路线图里也把它删了。今天 v0.2.2-beta.1 照常发布。&lt;/p&gt;
 &lt;p&gt;这篇主要是记录这次失败——花了那么多时间，宠物功能一行都没上线。顺便交代一下今天发布的东西和新方向。&lt;/p&gt;
@@ -237,7 +237,7 @@ dsh web
 &lt;p&gt;教训就一条：&lt;strong&gt;当需求同时要求&quot;低成本&quot;和&quot;高质量&quot;时，先花时间验证这两件事之间有没有解，再决定要不要开工&lt;/strong&gt;。有些组合在现实里就是不存在，闷头做到最后一刻只会更亏。&lt;/p&gt;
 &lt;p&gt;宠物就此从当前产品线移除。除非哪天素材或方案有实质性的突破，否则我不打算再碰它。&lt;/p&gt;
 &lt;p&gt;仓库：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;}&lt;/p&gt;
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;&gt;github.com/yoshino-xiao7/deepseek-harness-desktop-yukiryou&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
 </content:encoded></item><item><title>DeepSeek YukiRyou 更新：发布跑顺了，官网也上线了</title><link>https://blog.yukiryou.icu/posts/2026-08-19-deepseek-yukiryou-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-19-deepseek-yukiryou-update/</guid><description>记录 DeepSeek YukiRyou 的第三个开发日：Companion 非宠物阶段收口、v0.2.1-beta.2 带着一次&quot;版本限定可逆临时补丁&quot;的实践发布、CI 发布链彻底跑顺，以及官网 deepseek.yukiryou.icu 上线。</description><pubDate>Wed, 19 Aug 2026 10:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
 &lt;p&gt;昨天的博客结尾说&quot;v0.2.1-beta.1 在准备&quot;，今天凌晨六点多它就发了，下午又发了 v0.2.1-beta.2。加上官网上线，三天时间，从&quot;能不能做出来&quot;到&quot;能稳定发出去&quot;，再到&quot;有门面了&quot;。&lt;/p&gt;
 &lt;p&gt;今天没有昨天那种大功能，但有几件事挺值得记：一次&quot;版本限定可逆临时补丁&quot;的实践、Companion 非宠物阶段收口、还有 CI 发布链终于跑顺。&lt;/p&gt;
@@ -306,7 +306,7 @@ Memory:      2500/2500（无线性增长）
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;还是那句话，没做完的照实记：通知功能继续延期（Harness 还是没有稳定的任务事件接口）；x64 的 E2E 还是没跑；宠物动画等素材。&lt;/p&gt;
 &lt;p&gt;仓库和官网：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;}&lt;/p&gt;
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;&gt;github.com/yoshino-xiao7/deepseek-harness-desktop-yukiryou&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
 &lt;p&gt;官网：&lt;a href=&quot;https://deepseek.yukiryou.icu&quot;&gt;deepseek.yukiryou.icu&lt;/a&gt;&lt;/p&gt;
 </content:encoded></item><item><title>DeepSeek YukiRyou 更新：真的发出来了，还多了个工作区审阅</title><link>https://blog.yukiryou.icu/posts/2026-08-18-deepseek-yukiryou-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-18-deepseek-yukiryou-update/</guid><description>记录 DeepSeek YukiRyou 的第二个发布日：发布流水线重构出多 runner 门禁、一口气发出 v0.1.1 和 v0.2.0 两个 Beta，以及今天最大的功能 Desktop Companion——账户余额、工作区文件树、Git 变更审阅和文件预览，还有它背后那一堆安全设计。</description><pubDate>Tue, 18 Aug 2026 15:55:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
 &lt;p&gt;昨天的博客写的是&quot;把壳做完&quot;，今天这篇写&quot;真的发出去了 + 加了个大功能&quot;。&lt;/p&gt;
@@ -402,7 +402,7 @@ Upgrade:     0.1.0 布局升级通过（Runtime Home 与 settings 字节保留�
 &lt;/ol&gt;
 &lt;p&gt;还没做的也摆着：宠物动画在等素材、插件市场和手机控制还在规划、通知仍然延期；CI 的 Secrets 还没配，下一步是把&quot;出包&quot;也彻底交到 CI 手里。&lt;/p&gt;
 &lt;p&gt;仓库（已改名）：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;}&lt;/p&gt;
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;&gt;github.com/yoshino-xiao7/deepseek-harness-desktop-yukiryou&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
 </content:encoded></item><item><title>DeepSeek YukiRyou：把 DeepSeek Harness 装进一个真正的 Mac 应用</title><link>https://blog.yukiryou.icu/posts/2026-08-17-deepseek-yukiryou/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-17-deepseek-yukiryou/</guid><description>记录 DeepSeek YukiRyou 从零到可发布的一天：Electron 桌面壳怎么搭的、运行时为什么要固定内置、故障怎么自恢复、启动页和设置页怎么做的，以及晚上被 Apple 公证教育出来的两段式发布流水线。</description><pubDate>Mon, 17 Aug 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言&lt;/h2&gt;
 &lt;p&gt;先交代一下今天干了啥：我把 DeepSeek Harness 打包成了一个正经的 macOS 应用，叫 &lt;strong&gt;DeepSeek YukiRyou&lt;/strong&gt;。下午两点多写到晚上九点多，9 个提交，从零到一个能签名、能公证、能自动更新的桌面应用。&lt;/p&gt;
 &lt;p&gt;为什么做这个？说白了，Harness 本身是个 Web UI，用是能用，但&quot;能用&quot;和&quot;像个应用&quot;差得挺远：要自己装 Node、记启动命令、管端口，进程挂了还得自己发现。我就想把这一堆破事全收进一个 &lt;code&gt;.app&lt;/code&gt; 里——双击打开就能干活，关掉窗口进程自己回收，崩了还能自己爬起来。&lt;/p&gt;
@@ -496,7 +496,7 @@ out/make/zip/darwin/arm64/DeepSeek YukiRyou-darwin-arm64-0.1.0.zip
 &lt;p&gt;正式对外发还差三样东西：Apple Developer 证书、App Store Connect API Key（或 Keychain 公证 profile）、更新包托管地址。流水线已经把位置留好了，拿到就能发。&lt;/p&gt;
 &lt;p&gt;没做完的也记着：8 小时 soak 还没实跑；x64 的 E2E 没跑（手头都是 Apple Silicon）；还有通知功能我直接砍了——Harness 没有稳定的任务事件接口，用 DOM 文本猜测太容易误报，与其做出来天天误报，不如不做。&lt;/p&gt;
 &lt;p&gt;项目开源了，欢迎来逛：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;}&lt;/p&gt;
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/yoshino-xiao7/deepseek-harness-desktop-yukiryou&quot;&gt;github.com/yoshino-xiao7/deepseek-harness-desktop-yukiryou&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
 </content:encoded></item><item><title>A-game-checkin 更新记录：前瞻兑换码订阅与统一账号库</title><link>https://blog.yukiryou.icu/posts/2026-08-14-a-game-checkin-update/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-08-14-a-game-checkin-update/</guid><description>从 1.0.0 到 1.2.3，记录 A-game-checkin 半个月来的更新：前瞻兑换码订阅落地、第四个社区塔吉多接入、SQLite 持久化与 Redis 临时状态分工、凭证权限包加密，以及和 genshin / StarRail / ZZZ 插件的登录共享兼容桥。</description><pubDate>Fri, 14 Aug 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：第一篇文章里的&quot;后续计划&quot;落地了&lt;/h2&gt;
 &lt;p&gt;上个月末写了 A-game-checkin 的第一阶段开发记录，当时的结论是：&lt;strong&gt;签到主链路已经跑通，下一步是验证稳定性，并开始推进前瞻兑换码推送与更多社区游戏接入。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;半个月过去，这两件事都做了，而且做了更多。&lt;/p&gt;
@@ -616,7 +616,7 @@ npm run check
 &lt;/ol&gt;
 &lt;p&gt;第一篇文章里说&quot;它最后不只是一个每天帮你点一下签到的工具，而是一个统一的二游社区入口&quot;。现在签到、兑换码、登录共享都在这条路上，而且每一步都有对应的自动化测试兜底。&lt;/p&gt;
 &lt;p&gt;下一步会继续观察真实账号下的稳定性，并跟着社区接口的变化持续维护。项目依然开源，欢迎到 GitHub 提 issue 或参与开发：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/A-game_checkin&quot;}&lt;/p&gt;
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/yoshino-xiao7/A-game_checkin&quot;&gt;github.com/yoshino-xiao7/A-game_checkin&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
 </content:encoded></item><item><title>把二游社区签到装进一个 Yunzai 插件：A-game-checkin 开发记录</title><link>https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-31-a-game-checkin-yunzai-plugin/</guid><description>记录 A-game-checkin 的第一阶段开发：为 Yunzai 接入米游社、森空岛和库街区，统一多游戏账号绑定、角色发现、自动签到、奖励记录与图片卡片，并聊聊兑换码推送和更多社区游戏的后续计划。</description><pubDate>Fri, 31 Jul 2026 14:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 前言：不想再为每个游戏装一套签到插件&lt;/h2&gt;
 &lt;p&gt;最近在开发一个新的 Yunzai 插件：&lt;strong&gt;A-game-checkin&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;它的目标很直接——把不同二游社区的每日签到统一到一个插件里。用户不需要记住每个社区不同的绑定方式，也不用为每款游戏单独寻找、安装和配置插件；绑定社区账号后，插件会自动发现账号下的游戏角色，并负责之后的每日签到。&lt;/p&gt;
@@ -732,7 +732,7 @@ npm run check
 &lt;p&gt;目前签到主链路已经跑通，下一步就是继续验证稳定性，并开始推进前瞻兑换码推送与更多社区游戏接入。&lt;/p&gt;
 &lt;p&gt;先把每天的签到交给机器人，之后再让它帮我们记住那些容易错过的兑换码和活动。&lt;/p&gt;
 &lt;p&gt;项目已经开源，感兴趣的话可以前往 GitHub 查看源码、提交问题或参与开发：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/A-game_checkin&quot;}&lt;/p&gt;
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/yoshino-xiao7/A-game_checkin&quot;&gt;github.com/yoshino-xiao7/A-game_checkin&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
 </content:encoded></item><item><title>Apple 开发者申请通过：雪涼云 iOS 版进度 70%</title><link>https://blog.yukiryou.icu/posts/2026-07-10-xueliangyun-ios-progress/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-07-10-xueliangyun-ios-progress/</guid><description>Apple Developer Program 申请历时两天终于通过，记录雪涼云 iOS 版目前的开发进度，以及播放器、刷图体验、Apple 登录和 AI 绘画完成通知等移动端适配。</description><pubDate>Fri, 10 Jul 2026 02:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;# 苹果开发者申请终于通过了&lt;/h2&gt;
 &lt;p&gt;今天，Apple Developer Program 的申请终于通过了，前后历时两天。&lt;/p&gt;
 &lt;p&gt;虽然等待时间不算特别长，但提交申请之后还是会忍不住时不时看一眼进度。现在开发者资格总算正式开通，雪涼云 iOS 版接下来的开发、测试和分发也可以继续往前推进了。&lt;/p&gt;
@@ -1806,7 +1806,7 @@ WikiItem.cover
 &lt;p&gt;前面几轮更新主要在做控制台体验、移动端适配和后端主链路整理。这一次则把“内容从哪里来”这件事往前推了一步：图库不再只能由管理员单点维护，用户也可以在审核流程内参与进来。&lt;/p&gt;
 &lt;p&gt;后面如果继续做下去，还可以围绕标签规范、投稿质量评分、重复图片检测、批量审核体验这些方向继续打磨。图库类项目真正难的从来不是把图存进去，而是让它们被正确地整理、审核、检索和使用。&lt;/p&gt;
 &lt;p&gt;相关项目：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/setu_cloud&quot;}&lt;/p&gt;
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/yoshino-xiao7/setu_cloud&quot;&gt;github.com/yoshino-xiao7/setu_cloud&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
 </content:encoded></item><item><title>用 Svelte 5 重写了博客的音乐播放器系统：一次 8 阶段的全面重构</title><link>https://blog.yukiryou.icu/posts/2026-06-04-fuwari-refactor/</link><guid isPermaLink="true">https://blog.yukiryou.icu/posts/2026-06-04-fuwari-refactor/</guid><description>记录对 Fuwari 博客主题的 8 阶段全面重构，重点是用 Svelte 5 runes 替代 1400 行 DOM 操作的播放器系统，以及过程中发现的 CSS 外部化时序 bug 和灵动岛状态同步问题。</description><pubDate>Thu, 04 Jun 2026 09:49:33 GMT</pubDate><content:encoded>&lt;h2&gt;# 起因：1400 行的单文件组件&lt;/h2&gt;
 &lt;p&gt;这个博客用的是 Fuwari 主题，一套基于 Astro 的日系博客框架。功能够用，但代码积累久了，有些地方开始变得难以维护。&lt;/p&gt;
 &lt;p&gt;最让我头疼的是音乐播放器。&lt;code&gt;GlobalMusicPlayer.astro&lt;/code&gt; 一个文件塞了 1033 行——一个完整的 TypeScript class，用纯 DOM 操作管理播放、暂停、进度条、播放列表、音质切换。灵动岛 &lt;code&gt;DynamicIsland.astro&lt;/code&gt; 又是 383 行，靠 &lt;code&gt;setInterval&lt;/code&gt; 每 3 秒轮询同步播放状态。两个组件之间只通过 &lt;code&gt;CustomEvent&lt;/code&gt; 松散耦合，没有类型安全可言。&lt;/p&gt;
@@ -2494,7 +2494,7 @@ let msg = `✅ ${signinData || &apos;签到成功！&apos;}`
 &lt;p&gt;回过头看，这个插件的功能其实不算复杂，但开发过程中踩的坑真的不少。&lt;strong&gt;Node.js 版本兼容、Puppeteer 渲染玄学、并发竞态、数据窜台&lt;/strong&gt;……每一个都够喝一壶的。&lt;/p&gt;
 &lt;p&gt;不过也正因为这些坑，才让我对 Yunzai Bot 插件开发有了更深的理解。尤其是并发刷新锁那个，感觉以后在别的项目里也能用上。&lt;/p&gt;
 &lt;p&gt;插件已经开源了，感兴趣的可以去 GitHub 看看：&lt;/p&gt;
-&lt;p&gt;::github{repo=&quot;yoshino-xiao7/endfield-suzuki-plugin&quot;}&lt;/p&gt;
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/yoshino-xiao7/endfield-suzuki-plugin&quot;&gt;github.com/yoshino-xiao7/endfield-suzuki-plugin&lt;/a&gt;&lt;/p&gt;&lt;/p&gt;
 &lt;p&gt;如果你也在玩终末地，欢迎来试试。有 bug 或者建议直接提 issue 就好，虽然我修 bug 的速度可能取决于&lt;strong&gt;当天有没有在拉电线&lt;/strong&gt;。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;电线要拉，插件也要写。工业党的快乐，就是这么朴实无华且枯燥。&lt;/p&gt;
@@ -3492,7 +3492,7 @@ tag=黑丝|白丝
 &lt;p&gt;- &lt;code&gt;setu pid=... / uid=... / tag=...&lt;/code&gt;：&lt;strong&gt;官方优先&lt;/strong&gt;→失败自动回退 &lt;strong&gt;API → DB&lt;/strong&gt;，并 **通知主人 ；&lt;/p&gt;
 &lt;p&gt;- 随机策略：&lt;strong&gt;随机跳页 + 水库采样&lt;/strong&gt;，避免“第一页偏置”；&lt;/p&gt;
 &lt;h2&gt;优化过程&lt;/h2&gt;
-&lt;p&gt;::github{repo=&quot;Tsuk1ko/pxder&quot;}
+&lt;p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/Tsuk1ko/pxder&quot;&gt;github.com/Tsuk1ko/pxder&lt;/a&gt;&lt;/p&gt;
 通过以上项目可以获取到你自己账号的refresh_token，然后就可以愉快的获取pixiv的信息了。&lt;/p&gt;
 &lt;hr /&gt;
 &lt;h2&gt;具体实现（可直接复用的核心函数）&lt;/h2&gt;
