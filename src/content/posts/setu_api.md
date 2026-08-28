@@ -7,7 +7,7 @@ tags:
   - api
 category: 技术分享
 draft: false
-lang: ""
+lang: zh-CN
 ---
 
 ## 起因

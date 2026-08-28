@@ -1,3 +1,5 @@
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
@@ -10,11 +12,9 @@ import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeComponents from "rehype-components"; /* Render the custom directive content */
 import rehypeExternalLinks from "rehype-external-links";
-import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import remarkDirective from "remark-directive"; /* Handle directives */
 import remarkGithubAdmonitionsToDirectives from "remark-github-admonitions-to-directives";
-import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
 import { imageFallbackConfig, siteConfig } from "./src/config.ts";
 import { expressiveCodeConfig } from "./src/config.ts";
@@ -26,9 +26,58 @@ import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 
+const SITE_ORIGIN = "https://blog.yukiryou.icu";
+
+/** 去掉站点前缀与首尾斜杠，得到稳定的比较键。 */
+function normalizePath(url) {
+	return url.replace(SITE_ORIGIN, "").replace(/^\/+|\/+$/g, "");
+}
+
+/**
+ * 从 frontmatter 读取每篇内容的最后修改时间，供 sitemap 输出 <lastmod>。
+ * 优先 updated，回退到 published。@astrojs/sitemap 无法访问 content
+ * collections，因此这里直接读文件系统。
+ */
+function collectLastmod() {
+	const map = new Map();
+	for (const [dir, prefix] of [
+		["src/content/posts", "posts"],
+		["src/content/devlogs", "devlogs"],
+	]) {
+		let files = [];
+		try {
+			files = readdirSync(dir).filter((f) => f.endsWith(".md"));
+		} catch {
+			continue;
+		}
+		for (const file of files) {
+			const raw = readFileSync(join(dir, file), "utf8");
+			const fm = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+			if (!fm) continue;
+			const pick = (key) =>
+				fm[1].match(new RegExp(`^${key}:\\s*(.+)$`, "m"))?.[1].trim();
+			const stamp = pick("updated") || pick("published");
+			if (!stamp) continue;
+			const date = new Date(stamp.replace(/^["']|["']$/g, ""));
+			if (Number.isNaN(date.getTime())) continue;
+			// slug 规则与 Astro 一致：去扩展名，空格转连字符，点号直接删除
+			const slug = file
+				.replace(/\.md$/, "")
+				.replace(/\s+/g, "-")
+				.replace(/\./g, "")
+				.replace(/-+/g, "-")
+				.toLowerCase();
+			map.set(`${prefix}/${slug}`, date.toISOString());
+		}
+	}
+	return map;
+}
+
+const contentLastmod = collectLastmod();
+
 // https://astro.build/config
 export default defineConfig({
-	site: "https://blog.yukiryou.icu",
+	site: SITE_ORIGIN,
 	base: "/",
 	trailingSlash: "always",
 	output: "static",
@@ -59,7 +108,31 @@ export default defineConfig({
 			},
 		}),
 		svelte(),
-		sitemap(),
+		sitemap({
+			// 根级分页页（/2/、/3/…）与首页内容高度重复，不应进入索引；
+			// 不能只检查 URL 尾部，以免误伤未来的 /posts/123/ 一类文章。
+			filter: (page) => !/^\/\d+\/$/.test(new URL(page).pathname),
+			serialize(item) {
+				const lastmod = contentLastmod.get(normalizePath(item.url));
+				if (lastmod) {
+					item.lastmod = lastmod;
+				}
+				if (item.url === "https://blog.yukiryou.icu/") {
+					item.changefreq = "daily";
+					item.priority = 1.0;
+				} else if (item.url.includes("/posts/")) {
+					item.changefreq = "weekly";
+					item.priority = 0.8;
+				} else if (item.url.includes("/devlogs/")) {
+					item.changefreq = "weekly";
+					item.priority = 0.6;
+				} else {
+					item.changefreq = "monthly";
+					item.priority = 0.5;
+				}
+				return item;
+			},
+		}),
 		expressiveCode({
 			themes: [expressiveCodeConfig.theme, expressiveCodeConfig.theme],
 			plugins: [
@@ -108,7 +181,6 @@ export default defineConfig({
 	],
 	markdown: {
 		remarkPlugins: [
-			remarkMath,
 			remarkReadingTime,
 			remarkExcerpt,
 			remarkGithubAdmonitionsToDirectives,
@@ -117,7 +189,6 @@ export default defineConfig({
 			parseDirectiveNode,
 		],
 		rehypePlugins: [
-			rehypeKatex,
 			rehypeSlug,
 			[rehypeImageFallback, imageFallbackConfig],
 			[

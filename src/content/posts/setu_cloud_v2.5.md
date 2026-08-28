@@ -9,7 +9,7 @@ tags:
   - 前端
 category: 建站分享
 draft: false
-lang: ""
+lang: zh-CN
 ---
 
 ## 序言

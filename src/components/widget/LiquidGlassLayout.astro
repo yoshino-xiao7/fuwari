@@ -43,7 +43,12 @@ const className = Astro.props.class;
       <!-- 展开按钮 -->
       {isCollapsed && (
         <div class="glass-expand-btn">
-          <button class="glass-expand-button" type="button">
+          <button
+            class="glass-expand-button"
+            type="button"
+            aria-expanded="false"
+            aria-controls={id}
+          >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="1"></circle>
               <circle cx="19" cy="12" r="1"></circle>
@@ -362,11 +367,13 @@ const className = Astro.props.class;
       // 折叠/展开功能
       if (this.dataset.isCollapsed === "true") {
         const id = this.dataset.id;
-        const btn = this.querySelector('.glass-expand-btn');
+        const btnWrapper = this.querySelector('.glass-expand-btn');
+        const button = this.querySelector<HTMLButtonElement>('.glass-expand-button');
         const body = this.querySelector(`#${id}`);
-        btn?.addEventListener('click', () => {
+        button?.addEventListener('click', () => {
           body?.classList.remove('collapsed');
-          btn.classList.add('hidden');
+          button.setAttribute('aria-expanded', 'true');
+          btnWrapper?.classList.add('hidden');
         });
       }
 

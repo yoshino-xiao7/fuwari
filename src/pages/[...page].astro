@@ -24,9 +24,20 @@ const pageTitle = isFirstPage
 const heading = isFirstPage
 	? siteConfig.title
 	: `${siteConfig.title} - 第 ${page.currentPage} 页`;
+const pageDescription = isFirstPage
+	? siteConfig.description
+	: `${siteConfig.description}（第 ${page.currentPage} 页）`;
+const prevUrl = page.url.prev
+	? new URL(page.url.prev, Astro.site).href
+	: undefined;
+const nextUrl = page.url.next
+	? new URL(page.url.next, Astro.site).href
+	: undefined;
 ---
 
-<MainGridLayout title={pageTitle}>
+<MainGridLayout title={pageTitle} description={pageDescription}>
+	{prevUrl && <link slot="head" rel="prev" href={prevUrl} />}
+	{nextUrl && <link slot="head" rel="next" href={nextUrl} />}
     <h1 class="sr-only">{heading}</h1>
     {isFirstPage && (
         <section class="card-base mb-4 px-6 py-5 md:px-8 md:py-6 onload-animation" aria-labelledby="home-identity-title">

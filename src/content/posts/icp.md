@@ -7,7 +7,7 @@ tags:
   - 备案
 category: 日常
 draft: false
-lang: ""
+lang: zh-CN
 ---
 ## 准备工作
 我们都知道国内服务器是需要备案的，但备案需要准备些什么呢？

@@ -66,6 +66,7 @@ for (const proj of projects) {
             class:list={["proj-dot w-2 h-2 rounded-full transition-all duration-300 cursor-pointer", i === 0 ? "bg-[oklch(0.65_0.2_var(--hue))] w-5" : "bg-neutral-400/40"]}
             data-index={i}
             title={p.name}
+            aria-label={`切换到项目：${p.name}`}
           />
         ))}
       </div>

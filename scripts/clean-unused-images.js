@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 /**
  * 清理未使用的图片资源脚本
- * 扫描 src/content/posts 下的所有 markdown 文件，
+ * 扫描 src/content 下所有 markdown 文件（posts / devlogs / spec 等），
  * 查找 src/content/assets 中未被引用的图片。
  * 默认仅预览；传入 --write 或 --yes 才会实际删除。
  */
@@ -37,8 +37,13 @@ const IMAGE_EXTENSIONS = [
  */
 async function getAllMarkdownFiles() {
 	try {
-		const pattern = path.join(POSTS_DIR, "**/*.md").replace(/\\/g, "/");
-		return await glob(pattern);
+		// 必须扫描整个 content 目录，而不只是 posts/：
+		// 删除目标是整个 assets/，若只统计 posts/ 的引用，
+		// 任何仅被 devlogs/ 或 spec/ 引用的图片都会被误判为「未使用」而删除。
+		const pattern = path.join(CONTENT_DIR, "**/*.md").replace(/\\/g, "/");
+		return await glob(pattern, {
+			ignore: [path.join(ASSETS_DIR, "**").replace(/\\/g, "/")],
+		});
 	} catch (error) {
 		console.error("获取 markdown 文件失败:", error.message);
 		return [];

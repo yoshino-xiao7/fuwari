@@ -10,6 +10,25 @@ import sanitizeHtml from "sanitize-html";
 
 const markdownParser = new MarkdownIt();
 
+/**
+ * RSS 走的是 markdown-it，而非站点的 remark/rehype 管线，
+ * 因此自定义指令不会被渲染，会以 `::github{repo="..."}` 原文泄漏到订阅源里。
+ * 这里把已知指令降级为可读的等价 HTML。
+ */
+function renderDirectives(html: string): string {
+	return html
+		.replace(
+			/::github\{repo=(?:&quot;|"|')([^"'&]+)(?:&quot;|"|')\}/g,
+			(_m, repo) =>
+				`<p><a href="https://github.com/${repo}">github.com/${repo}</a></p>`,
+		)
+		.replace(
+			/::(note|tip|important|caution|warning)(?:\[([^\]]*)\])?/g,
+			(_m, kind, label) =>
+				`<p><strong>${String(label || kind).toUpperCase()}</strong></p>`,
+		);
+}
+
 // get dynamic import of images as a map collection
 const imagesGlob = import.meta.glob<{ default: ImageMetadata }>(
 	"/src/content/**/*.{jpeg,jpg,png,gif,webp}", // include posts and assets
@@ -54,6 +73,9 @@ export async function GET(context: APIContext): Promise<Response> {
 					(res) => res.default,
 				);
 				if (imageMod) {
+					// 保持默认调用：这里只是把正文图指向已存在的构建产物。
+					// 指定 format/width 会让 Astro 额外生成一套 RSS 专用衍生图，
+					// 而原图依旧会被发射，反而让 dist 变大（实测 +44MB）。
 					const optimizedImg = await getImage({ src: imageMod });
 					img.setAttribute("src", new URL(optimizedImg.src, context.site).href);
 				}
@@ -69,9 +91,12 @@ export async function GET(context: APIContext): Promise<Response> {
 			pubDate: post.data.published,
 			link: `/posts/${post.slug}/`,
 			// sanitize the new html string with corrected image paths
-			content: sanitizeHtml(html.toString(), {
-				allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-			}),
+			// 指令替换放在 sanitize 之后：否则新生成的 <a> 会被过滤规则剥离
+			content: renderDirectives(
+				sanitizeHtml(html.toString(), {
+					allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+				}),
+			),
 		});
 	}
 
@@ -81,6 +106,12 @@ export async function GET(context: APIContext): Promise<Response> {
 			siteConfig.description || siteConfig.subtitle || "No description",
 		site: context.site,
 		items: feed,
-		customData: `<language>${siteConfig.lang}</language>`,
+		xmlns: { atom: "http://www.w3.org/2005/Atom" },
+		customData: [
+			// RSS 2.0 要求 IANA 语言标签（zh-CN），而 siteConfig.lang 用的是 zh_CN
+			`<language>${siteConfig.lang.replace("_", "-")}</language>`,
+			`<lastBuildDate>${new Date().toUTCString()}</lastBuildDate>`,
+			`<atom:link href="${new URL("rss.xml", context.site).href}" rel="self" type="application/rss+xml"/>`,
+		].join(""),
 	});
 }

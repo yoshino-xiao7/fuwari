@@ -6,7 +6,7 @@ image: "../assets/images/2025-11-26-22-40-37-image.jpg"
 tags: ["开场白"]
 category: 日常
 draft: false
-lang: ""
+lang: zh-CN
 ---
 
 ## 开始

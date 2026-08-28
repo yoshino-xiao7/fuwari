@@ -99,7 +99,20 @@ const jsonLd = {
 	"@graph": [blogPostingJsonLd, breadcrumbJsonLd],
 };
 ---
-<MainGridLayout banner={entry.data.image} title={entry.data.title} description={entry.data.description} lang={entry.data.lang} setOGTypeArticle={true} ogImage={ogImageUrl} headings={headings}>
+<MainGridLayout
+	banner={entry.data.image}
+	title={entry.data.title}
+	description={entry.data.description}
+	lang={entry.data.lang}
+	setOGTypeArticle={true}
+	ogImage={ogImageUrl}
+	ogImageAlt={`${entry.data.title}封面图`}
+	articlePublished={entry.data.published}
+	articleModified={entry.data.updated}
+	articleSection={entry.data.category}
+	articleTags={entry.data.tags}
+	headings={headings}
+>
     <script is:inline slot="head" type="application/ld+json" set:html={jsonLdString(jsonLd)}></script>
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4">
         <div id="post-container" class="card-base z-10 px-6 md:px-9 pt-6 pb-4 relative w-full">

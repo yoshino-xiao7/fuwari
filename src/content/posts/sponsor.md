@@ -7,7 +7,7 @@ tags:
   - 胡言乱语
 category: 日常
 draft: false
-lang: ""
+lang: zh-CN
 ---
 
 ## 开始

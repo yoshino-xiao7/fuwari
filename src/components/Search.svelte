@@ -15,6 +15,7 @@ let keywordDesktop = "";
 let keywordMobile = "";
 let result: SearchResult[] = [];
 let isSearching = false;
+let isPanelOpen = false;
 let posts: Record<string, unknown>[] = [];
 let postsPromise: Promise<void> | null = null;
 
@@ -60,6 +61,7 @@ const loadPosts = (): Promise<void> => {
 const togglePanel = () => {
 	const panel = document.getElementById("search-panel");
 	panel?.classList.toggle("float-panel-closed");
+	isPanelOpen = !panel?.classList.contains("float-panel-closed");
 };
 
 const setPanelVisibility = (show: boolean, isDesktop: boolean): void => {
@@ -71,6 +73,7 @@ const setPanelVisibility = (show: boolean, isDesktop: boolean): void => {
 	} else {
 		panel.classList.add("float-panel-closed");
 	}
+	isPanelOpen = show;
 };
 
 const highlightText = (text: string, keyword: string): string => {
@@ -158,14 +161,24 @@ $: search(keywordMobile, false);
 </div>
 
 <!-- toggle btn for phone/tablet view -->
-<button on:click={togglePanel} aria-label="Search Panel" id="search-switch"
+<button
+        on:click={togglePanel}
+        aria-label="打开搜索面板"
+        aria-controls="search-panel"
+        aria-expanded={isPanelOpen}
+        id="search-switch"
         class="btn-plain scale-animation lg:!hidden rounded-lg w-11 h-11 active:scale-90">
     <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
 </button>
 
 <!-- search panel -->
-<div id="search-panel" class="float-panel float-panel-closed search-panel absolute md:w-[30rem]
-top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
+<div
+ id="search-panel"
+ role="region"
+ aria-label="搜索结果"
+ aria-live="polite"
+ class="float-panel float-panel-closed search-panel absolute md:w-[30rem]
+ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
 
     <!-- search bar inside panel for phone/tablet -->
     <div id="search-bar-inside" class="flex relative lg:hidden transition-all items-center h-11 rounded-xl

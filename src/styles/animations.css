@@ -23,3 +23,11 @@
 		transform: rotate(360deg);
 	}
 }
+
+@media (prefers-reduced-motion: reduce) {
+	.cover-spin,
+	.cover-spin.playing {
+		animation: none !important;
+		transition: none !important;
+	}
+}

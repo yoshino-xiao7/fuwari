@@ -39,10 +39,28 @@ interface Props {
 	lang?: string;
 	setOGTypeArticle?: boolean;
 	ogImage?: string;
+	ogImageAlt?: string;
+	robots?: string;
+	articlePublished?: Date;
+	articleModified?: Date;
+	articleSection?: string;
+	articleTags?: string[];
 }
 
-let { title, banner, description, lang, setOGTypeArticle, ogImage } =
-	Astro.props;
+let {
+	title,
+	banner,
+	description,
+	lang,
+	setOGTypeArticle,
+	ogImage,
+	ogImageAlt,
+	robots,
+	articlePublished,
+	articleModified,
+	articleSection,
+	articleTags,
+} = Astro.props;
 
 // Banner
 const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
@@ -133,8 +151,21 @@ const siteJsonLd = isHomePage
 	  style={bgStyle}
 >
 	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<ThemeInit />
-		<HeadMeta pageTitle={pageTitle} description={description!} setOGTypeArticle={setOGTypeArticle} ogImage={ogImage} />
+		<HeadMeta
+			pageTitle={pageTitle}
+			description={description!}
+			setOGTypeArticle={setOGTypeArticle}
+			ogImage={ogImage}
+			ogImageAlt={ogImageAlt}
+			robots={robots}
+			articlePublished={articlePublished}
+			articleModified={articleModified}
+			articleSection={articleSection}
+			articleTags={articleTags}
+		/>
 		{siteJsonLd && <script is:inline type="application/ld+json" set:html={jsonLdString(siteJsonLd)}></script>}
 		<slot name="head" />
 	</head>
