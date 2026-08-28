@@ -145,22 +145,22 @@ const bgEnable = "1";
 <section><h2 id="成果一览">成果一览<a class="anchor" href="#成果一览"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><ul>
 <li><strong>发图插件</strong></li>
 </ul><p>  - <code>setu</code> 随机仅从 <strong>外部 API + 数据库</strong> 取图；</p><p>  - <code>setu pid=... / uid=... / tag=...</code>：<strong>官方优先</strong>→失败自动回退 <strong>API → DB</strong>，并 **通知主人 ；</p><p>  - 随机策略：<strong>随机跳页 + 水库采样</strong>，避免“第一页偏置”；</p></section>
-<section><h2 id="优化过程">优化过程<a class="anchor" href="#优化过程"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><a id="GCwt1v5f-card" class="card-github fetch-waiting no-styling" href="https://github.com/Tsuk1ko/pxder" target="_blank" repo="Tsuk1ko/pxder" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCwt1v5f-avatar" class="gc-avatar"></div><div class="gc-user">Tsuk1ko</div></div><div class="gc-divider">/</div><div class="gc-repo">pxder</div></div><div class="github-logo"></div></div><div id="GCwt1v5f-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCwt1v5f-stars" class="gc-stars">00K</div><div id="GCwt1v5f-forks" class="gc-forks">0K</div><div id="GCwt1v5f-license" class="gc-license">0K</div><span id="GCwt1v5f-language" class="gc-language">Waiting...</span></div><script id="GCwt1v5f-script" type="text/javascript" defer>
+<section><h2 id="优化过程">优化过程<a class="anchor" href="#优化过程"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><a id="GC3ac99d-card" class="card-github fetch-waiting no-styling" href="https://github.com/Tsuk1ko/pxder" target="_blank" repo="Tsuk1ko/pxder" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GC3ac99d-avatar" class="gc-avatar"></div><div class="gc-user">Tsuk1ko</div></div><div class="gc-divider">/</div><div class="gc-repo">pxder</div></div><div class="github-logo"></div></div><div id="GC3ac99d-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GC3ac99d-stars" class="gc-stars">00K</div><div id="GC3ac99d-forks" class="gc-forks">0K</div><div id="GC3ac99d-license" class="gc-license">0K</div><span id="GC3ac99d-language" class="gc-language">Waiting...</span></div><script id="GC3ac99d-script" type="text/javascript" defer>
       fetch('https://api.github.com/repos/Tsuk1ko/pxder', { referrerPolicy: "no-referrer" }).then(response => response.json()).then(data => {
-        document.getElementById('GCwt1v5f-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
-        document.getElementById('GCwt1v5f-language').innerText = data.language;
-        document.getElementById('GCwt1v5f-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
-        document.getElementById('GCwt1v5f-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
-        const avatarEl = document.getElementById('GCwt1v5f-avatar');
+        document.getElementById('GC3ac99d-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
+        document.getElementById('GC3ac99d-language').innerText = data.language;
+        document.getElementById('GC3ac99d-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
+        document.getElementById('GC3ac99d-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
+        const avatarEl = document.getElementById('GC3ac99d-avatar');
         avatarEl.style.backgroundImage = 'url(' + data.owner.avatar_url + ')';
         avatarEl.style.backgroundColor = 'transparent';
-        document.getElementById('GCwt1v5f-license').innerText = data.license?.spdx_id || "no-license";
-        document.getElementById('GCwt1v5f-card').classList.remove("fetch-waiting");
-        console.log("[GITHUB-CARD] Loaded card for Tsuk1ko/pxder | GCwt1v5f.")
+        document.getElementById('GC3ac99d-license').innerText = data.license?.spdx_id || "no-license";
+        document.getElementById('GC3ac99d-card').classList.remove("fetch-waiting");
+        console.log("[GITHUB-CARD] Loaded card for Tsuk1ko/pxder | GC3ac99d.")
       }).catch(err => {
-        const c = document.getElementById('GCwt1v5f-card');
+        const c = document.getElementById('GC3ac99d-card');
         c?.classList.add("fetch-error");
-        console.warn("[GITHUB-CARD] (Error) Loading card for Tsuk1ko/pxder | GCwt1v5f.")
+        console.warn("[GITHUB-CARD] (Error) Loading card for Tsuk1ko/pxder | GC3ac99d.")
       })
     </script></a><p>通过以上项目可以获取到你自己账号的refresh_token，然后就可以愉快的获取pixiv的信息了。</p><hr></section>
 <section><h2 id="具体实现可直接复用的核心函数">具体实现（可直接复用的核心函数）<a class="anchor" href="#具体实现可直接复用的核心函数"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><section><h3 id="1-pixiv-官方认证refresh_token--access_token">1) Pixiv 官方认证（refresh_token → access_token）<a class="anchor" href="#1-pixiv-官方认证refresh_token--access_token"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h3><div class="expressive-code"><link rel="stylesheet" href="/_astro/ec.4l8yc.css"><script type="module" src="/_astro/ec.g1fg5.js"></script><figure class="frame"><figcaption class="header"></figcaption><pre data-language="python" class="wrap" style="--ecMaxLine:79ch"><code><div class="ec-line"><div class="gutter"><div class="ln" aria-hidden="true">1</div></div><div class="code"><span style="--0:#F97583;--1:#F97583">import</span><span style="--0:#E1E4E8;--1:#E1E4E8"> requests</span></div></div><div class="ec-line"><div class="gutter"><div class="ln" aria-hidden="true">2</div></div><div class="code">

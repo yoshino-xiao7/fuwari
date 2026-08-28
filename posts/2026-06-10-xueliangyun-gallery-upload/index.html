@@ -200,22 +200,22 @@ const bgEnable = "1";
 <li>通过后能发布。</li>
 <li>发布后能被 <code>/setu/v2</code> 查询。</li>
 </ul><p>这才是一个可长期维护的投稿功能。</p><hr></section>
-<section><h2 id="-小结"># 小结<a class="anchor" href="#-小结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p><code>setu-api 2.5.0</code> 算是雪涼云图库能力的一次关键补强。</p><p>前面几轮更新主要在做控制台体验、移动端适配和后端主链路整理。这一次则把“内容从哪里来”这件事往前推了一步：图库不再只能由管理员单点维护，用户也可以在审核流程内参与进来。</p><p>后面如果继续做下去，还可以围绕标签规范、投稿质量评分、重复图片检测、批量审核体验这些方向继续打磨。图库类项目真正难的从来不是把图存进去，而是让它们被正确地整理、审核、检索和使用。</p><p>相关项目：</p><a id="GCf6q6ns-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/setu_cloud" target="_blank" repo="yoshino-xiao7/setu_cloud" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCf6q6ns-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">setu_cloud</div></div><div class="github-logo"></div></div><div id="GCf6q6ns-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCf6q6ns-stars" class="gc-stars">00K</div><div id="GCf6q6ns-forks" class="gc-forks">0K</div><div id="GCf6q6ns-license" class="gc-license">0K</div><span id="GCf6q6ns-language" class="gc-language">Waiting...</span></div><script id="GCf6q6ns-script" type="text/javascript" defer>
+<section><h2 id="-小结"># 小结<a class="anchor" href="#-小结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p><code>setu-api 2.5.0</code> 算是雪涼云图库能力的一次关键补强。</p><p>前面几轮更新主要在做控制台体验、移动端适配和后端主链路整理。这一次则把“内容从哪里来”这件事往前推了一步：图库不再只能由管理员单点维护，用户也可以在审核流程内参与进来。</p><p>后面如果继续做下去，还可以围绕标签规范、投稿质量评分、重复图片检测、批量审核体验这些方向继续打磨。图库类项目真正难的从来不是把图存进去，而是让它们被正确地整理、审核、检索和使用。</p><p>相关项目：</p><a id="GCaik9fs-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/setu_cloud" target="_blank" repo="yoshino-xiao7/setu_cloud" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCaik9fs-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">setu_cloud</div></div><div class="github-logo"></div></div><div id="GCaik9fs-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCaik9fs-stars" class="gc-stars">00K</div><div id="GCaik9fs-forks" class="gc-forks">0K</div><div id="GCaik9fs-license" class="gc-license">0K</div><span id="GCaik9fs-language" class="gc-language">Waiting...</span></div><script id="GCaik9fs-script" type="text/javascript" defer>
       fetch('https://api.github.com/repos/yoshino-xiao7/setu_cloud', { referrerPolicy: "no-referrer" }).then(response => response.json()).then(data => {
-        document.getElementById('GCf6q6ns-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
-        document.getElementById('GCf6q6ns-language').innerText = data.language;
-        document.getElementById('GCf6q6ns-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
-        document.getElementById('GCf6q6ns-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
-        const avatarEl = document.getElementById('GCf6q6ns-avatar');
+        document.getElementById('GCaik9fs-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
+        document.getElementById('GCaik9fs-language').innerText = data.language;
+        document.getElementById('GCaik9fs-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
+        document.getElementById('GCaik9fs-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
+        const avatarEl = document.getElementById('GCaik9fs-avatar');
         avatarEl.style.backgroundImage = 'url(' + data.owner.avatar_url + ')';
         avatarEl.style.backgroundColor = 'transparent';
-        document.getElementById('GCf6q6ns-license').innerText = data.license?.spdx_id || "no-license";
-        document.getElementById('GCf6q6ns-card').classList.remove("fetch-waiting");
-        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/setu_cloud | GCf6q6ns.")
+        document.getElementById('GCaik9fs-license').innerText = data.license?.spdx_id || "no-license";
+        document.getElementById('GCaik9fs-card').classList.remove("fetch-waiting");
+        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/setu_cloud | GCaik9fs.")
       }).catch(err => {
-        const c = document.getElementById('GCf6q6ns-card');
+        const c = document.getElementById('GCaik9fs-card');
         c?.classList.add("fetch-error");
-        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/setu_cloud | GCf6q6ns.")
+        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/setu_cloud | GCaik9fs.")
       })
     </script></a></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
 `?"":e).join(`

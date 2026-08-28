@@ -168,22 +168,22 @@ const bgEnable = "1";
 <li>API 请求统一封装，支持凭证自动刷新和重试机制</li>
 <li>所有信息卡片采用 HTML 模板 + Puppeteer 图片渲染</li>
 <li>QQ↔bindingId 映射持久化存储</li>
-</ul><a id="GChrpyeg-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/endfield-suzuki-plugin" target="_blank" repo="yoshino-xiao7/endfield-suzuki-plugin" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GChrpyeg-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">endfield-suzuki-plugin</div></div><div class="github-logo"></div></div><div id="GChrpyeg-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GChrpyeg-stars" class="gc-stars">00K</div><div id="GChrpyeg-forks" class="gc-forks">0K</div><div id="GChrpyeg-license" class="gc-license">0K</div><span id="GChrpyeg-language" class="gc-language">Waiting...</span></div><script id="GChrpyeg-script" type="text/javascript" defer>
+</ul><a id="GCcgitii-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/endfield-suzuki-plugin" target="_blank" repo="yoshino-xiao7/endfield-suzuki-plugin" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCcgitii-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">endfield-suzuki-plugin</div></div><div class="github-logo"></div></div><div id="GCcgitii-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCcgitii-stars" class="gc-stars">00K</div><div id="GCcgitii-forks" class="gc-forks">0K</div><div id="GCcgitii-license" class="gc-license">0K</div><span id="GCcgitii-language" class="gc-language">Waiting...</span></div><script id="GCcgitii-script" type="text/javascript" defer>
       fetch('https://api.github.com/repos/yoshino-xiao7/endfield-suzuki-plugin', { referrerPolicy: "no-referrer" }).then(response => response.json()).then(data => {
-        document.getElementById('GChrpyeg-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
-        document.getElementById('GChrpyeg-language').innerText = data.language;
-        document.getElementById('GChrpyeg-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
-        document.getElementById('GChrpyeg-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
-        const avatarEl = document.getElementById('GChrpyeg-avatar');
+        document.getElementById('GCcgitii-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
+        document.getElementById('GCcgitii-language').innerText = data.language;
+        document.getElementById('GCcgitii-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
+        document.getElementById('GCcgitii-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
+        const avatarEl = document.getElementById('GCcgitii-avatar');
         avatarEl.style.backgroundImage = 'url(' + data.owner.avatar_url + ')';
         avatarEl.style.backgroundColor = 'transparent';
-        document.getElementById('GChrpyeg-license').innerText = data.license?.spdx_id || "no-license";
-        document.getElementById('GChrpyeg-card').classList.remove("fetch-waiting");
-        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/endfield-suzuki-plugin | GChrpyeg.")
+        document.getElementById('GCcgitii-license').innerText = data.license?.spdx_id || "no-license";
+        document.getElementById('GCcgitii-card').classList.remove("fetch-waiting");
+        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/endfield-suzuki-plugin | GCcgitii.")
       }).catch(err => {
-        const c = document.getElementById('GChrpyeg-card');
+        const c = document.getElementById('GCcgitii-card');
         c?.classList.add("fetch-error");
-        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/endfield-suzuki-plugin | GChrpyeg.")
+        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/endfield-suzuki-plugin | GCcgitii.")
       })
     </script></a></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
 `?"":e).join(`

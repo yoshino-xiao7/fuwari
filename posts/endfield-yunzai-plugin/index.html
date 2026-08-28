@@ -202,22 +202,22 @@ const bgEnable = "1";
 
 
 <table><thead><tr><th>模块</th><th>技术</th></tr></thead><tbody><tr><td>运行环境</td><td>Yunzai Bot v3（Node.js）</td></tr><tr><td>后端</td><td>自建 Endfield Cloud API（Spring Boot）</td></tr><tr><td>渲染</td><td>Puppeteer（HTML/CSS → 图片）</td></tr><tr><td>数据存储</td><td>JSON 文件（bindings.json）</td></tr><tr><td>配置</td><td>YAML（config.yaml）+ Guoba 面板</td></tr><tr><td>依赖</td><td>node-fetch、yaml、puppeteer</td></tr></tbody></table><hr></section>
-<section><h2 id="-总结"># 总结<a class="anchor" href="#-总结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>回过头看，这个插件的功能其实不算复杂，但开发过程中踩的坑真的不少。<strong>Node.js 版本兼容、Puppeteer 渲染玄学、并发竞态、数据窜台</strong>……每一个都够喝一壶的。</p><p>不过也正因为这些坑，才让我对 Yunzai Bot 插件开发有了更深的理解。尤其是并发刷新锁那个，感觉以后在别的项目里也能用上。</p><p>插件已经开源了，感兴趣的可以去 GitHub 看看：</p><a id="GCthgzer-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/endfield-suzuki-plugin" target="_blank" repo="yoshino-xiao7/endfield-suzuki-plugin" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCthgzer-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">endfield-suzuki-plugin</div></div><div class="github-logo"></div></div><div id="GCthgzer-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCthgzer-stars" class="gc-stars">00K</div><div id="GCthgzer-forks" class="gc-forks">0K</div><div id="GCthgzer-license" class="gc-license">0K</div><span id="GCthgzer-language" class="gc-language">Waiting...</span></div><script id="GCthgzer-script" type="text/javascript" defer>
+<section><h2 id="-总结"># 总结<a class="anchor" href="#-总结"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h2><p>回过头看，这个插件的功能其实不算复杂，但开发过程中踩的坑真的不少。<strong>Node.js 版本兼容、Puppeteer 渲染玄学、并发竞态、数据窜台</strong>……每一个都够喝一壶的。</p><p>不过也正因为这些坑，才让我对 Yunzai Bot 插件开发有了更深的理解。尤其是并发刷新锁那个，感觉以后在别的项目里也能用上。</p><p>插件已经开源了，感兴趣的可以去 GitHub 看看：</p><a id="GCd9leqm-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/endfield-suzuki-plugin" target="_blank" repo="yoshino-xiao7/endfield-suzuki-plugin" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCd9leqm-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">endfield-suzuki-plugin</div></div><div class="github-logo"></div></div><div id="GCd9leqm-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCd9leqm-stars" class="gc-stars">00K</div><div id="GCd9leqm-forks" class="gc-forks">0K</div><div id="GCd9leqm-license" class="gc-license">0K</div><span id="GCd9leqm-language" class="gc-language">Waiting...</span></div><script id="GCd9leqm-script" type="text/javascript" defer>
       fetch('https://api.github.com/repos/yoshino-xiao7/endfield-suzuki-plugin', { referrerPolicy: "no-referrer" }).then(response => response.json()).then(data => {
-        document.getElementById('GCthgzer-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
-        document.getElementById('GCthgzer-language').innerText = data.language;
-        document.getElementById('GCthgzer-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
-        document.getElementById('GCthgzer-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
-        const avatarEl = document.getElementById('GCthgzer-avatar');
+        document.getElementById('GCd9leqm-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
+        document.getElementById('GCd9leqm-language').innerText = data.language;
+        document.getElementById('GCd9leqm-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
+        document.getElementById('GCd9leqm-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
+        const avatarEl = document.getElementById('GCd9leqm-avatar');
         avatarEl.style.backgroundImage = 'url(' + data.owner.avatar_url + ')';
         avatarEl.style.backgroundColor = 'transparent';
-        document.getElementById('GCthgzer-license').innerText = data.license?.spdx_id || "no-license";
-        document.getElementById('GCthgzer-card').classList.remove("fetch-waiting");
-        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/endfield-suzuki-plugin | GCthgzer.")
+        document.getElementById('GCd9leqm-license').innerText = data.license?.spdx_id || "no-license";
+        document.getElementById('GCd9leqm-card').classList.remove("fetch-waiting");
+        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/endfield-suzuki-plugin | GCd9leqm.")
       }).catch(err => {
-        const c = document.getElementById('GCthgzer-card');
+        const c = document.getElementById('GCd9leqm-card');
         c?.classList.add("fetch-error");
-        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/endfield-suzuki-plugin | GCthgzer.")
+        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/endfield-suzuki-plugin | GCd9leqm.")
       })
     </script></a><p>如果你也在玩终末地，欢迎来试试。有 bug 或者建议直接提 issue 就好，虽然我修 bug 的速度可能取决于<strong>当天有没有在拉电线</strong>。</p><blockquote>
 <p>电线要拉，插件也要写。工业党的快乐，就是这么朴实无华且枯燥。</p>

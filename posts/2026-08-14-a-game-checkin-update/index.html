@@ -179,22 +179,22 @@ const bgEnable = "1";
 <li><strong>功能变多</strong>：前瞻兑换码订阅上线，覆盖九款游戏；第四个社区塔吉多接入，补齐幻塔和异环。</li>
 <li><strong>架构变重</strong>：账号存储从 JSON 迁到 SQLite，临时状态交给 Redis，凭证按权限包加密，迁移过程带校验和回滚。</li>
 <li><strong>生态变宽</strong>：通过 genshin 兼容桥实现登录共享，StarRail-plugin 和 ZZZ-Plugin 可以复用同一套米游社登录，统一账号库开始真正承担”多社区统一入口”的角色。</li>
-</ol><p>第一篇文章里说”它最后不只是一个每天帮你点一下签到的工具，而是一个统一的二游社区入口”。现在签到、兑换码、登录共享都在这条路上，而且每一步都有对应的自动化测试兜底。</p><p>下一步会继续观察真实账号下的稳定性，并跟着社区接口的变化持续维护。项目依然开源，欢迎到 GitHub 提 issue 或参与开发：</p><a id="GCcj0pwk-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/A-game_checkin" target="_blank" repo="yoshino-xiao7/A-game_checkin" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCcj0pwk-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">A-game_checkin</div></div><div class="github-logo"></div></div><div id="GCcj0pwk-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCcj0pwk-stars" class="gc-stars">00K</div><div id="GCcj0pwk-forks" class="gc-forks">0K</div><div id="GCcj0pwk-license" class="gc-license">0K</div><span id="GCcj0pwk-language" class="gc-language">Waiting...</span></div><script id="GCcj0pwk-script" type="text/javascript" defer>
+</ol><p>第一篇文章里说”它最后不只是一个每天帮你点一下签到的工具，而是一个统一的二游社区入口”。现在签到、兑换码、登录共享都在这条路上，而且每一步都有对应的自动化测试兜底。</p><p>下一步会继续观察真实账号下的稳定性，并跟着社区接口的变化持续维护。项目依然开源，欢迎到 GitHub 提 issue 或参与开发：</p><a id="GC25iepi-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/A-game_checkin" target="_blank" repo="yoshino-xiao7/A-game_checkin" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GC25iepi-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">A-game_checkin</div></div><div class="github-logo"></div></div><div id="GC25iepi-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GC25iepi-stars" class="gc-stars">00K</div><div id="GC25iepi-forks" class="gc-forks">0K</div><div id="GC25iepi-license" class="gc-license">0K</div><span id="GC25iepi-language" class="gc-language">Waiting...</span></div><script id="GC25iepi-script" type="text/javascript" defer>
       fetch('https://api.github.com/repos/yoshino-xiao7/A-game_checkin', { referrerPolicy: "no-referrer" }).then(response => response.json()).then(data => {
-        document.getElementById('GCcj0pwk-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
-        document.getElementById('GCcj0pwk-language').innerText = data.language;
-        document.getElementById('GCcj0pwk-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
-        document.getElementById('GCcj0pwk-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
-        const avatarEl = document.getElementById('GCcj0pwk-avatar');
+        document.getElementById('GC25iepi-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
+        document.getElementById('GC25iepi-language').innerText = data.language;
+        document.getElementById('GC25iepi-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
+        document.getElementById('GC25iepi-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
+        const avatarEl = document.getElementById('GC25iepi-avatar');
         avatarEl.style.backgroundImage = 'url(' + data.owner.avatar_url + ')';
         avatarEl.style.backgroundColor = 'transparent';
-        document.getElementById('GCcj0pwk-license').innerText = data.license?.spdx_id || "no-license";
-        document.getElementById('GCcj0pwk-card').classList.remove("fetch-waiting");
-        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/A-game_checkin | GCcj0pwk.")
+        document.getElementById('GC25iepi-license').innerText = data.license?.spdx_id || "no-license";
+        document.getElementById('GC25iepi-card').classList.remove("fetch-waiting");
+        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/A-game_checkin | GC25iepi.")
       }).catch(err => {
-        const c = document.getElementById('GCcj0pwk-card');
+        const c = document.getElementById('GC25iepi-card');
         c?.classList.add("fetch-error");
-        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/A-game_checkin | GCcj0pwk.")
+        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/A-game_checkin | GC25iepi.")
       })
     </script></a></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
 `?"":e).join(`

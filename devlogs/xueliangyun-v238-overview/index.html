@@ -230,22 +230,22 @@ const bgEnable = "1";
 
 
 
-<table><thead><tr><th>模块</th><th>技术</th></tr></thead><tbody><tr><td>核心框架</td><td>Vue 3（Composition API）</td></tr><tr><td>构建工具</td><td>Vite 7</td></tr><tr><td>语言</td><td>TypeScript</td></tr><tr><td>UI 组件库</td><td>Naive UI</td></tr><tr><td>状态管理</td><td>Pinia 3</td></tr><tr><td>路由</td><td>Vue Router 4</td></tr><tr><td>HTTP</td><td>Axios（Token 拦截 + 401 刷新）</td></tr><tr><td>图表</td><td>ECharts 6 + vue-echarts</td></tr><tr><td>加密</td><td>CryptoJS</td></tr><tr><td>SEO</td><td>@vueuse/head</td></tr><tr><td>风格</td><td>CSS Variables + Scoped CSS 手写毛玻璃</td></tr></tbody></table><a id="GCo5atop-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/setu_cloud" target="_blank" repo="yoshino-xiao7/setu_cloud" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCo5atop-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">setu_cloud</div></div><div class="github-logo"></div></div><div id="GCo5atop-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCo5atop-stars" class="gc-stars">00K</div><div id="GCo5atop-forks" class="gc-forks">0K</div><div id="GCo5atop-license" class="gc-license">0K</div><span id="GCo5atop-language" class="gc-language">Waiting...</span></div><script id="GCo5atop-script" type="text/javascript" defer>
+<table><thead><tr><th>模块</th><th>技术</th></tr></thead><tbody><tr><td>核心框架</td><td>Vue 3（Composition API）</td></tr><tr><td>构建工具</td><td>Vite 7</td></tr><tr><td>语言</td><td>TypeScript</td></tr><tr><td>UI 组件库</td><td>Naive UI</td></tr><tr><td>状态管理</td><td>Pinia 3</td></tr><tr><td>路由</td><td>Vue Router 4</td></tr><tr><td>HTTP</td><td>Axios（Token 拦截 + 401 刷新）</td></tr><tr><td>图表</td><td>ECharts 6 + vue-echarts</td></tr><tr><td>加密</td><td>CryptoJS</td></tr><tr><td>SEO</td><td>@vueuse/head</td></tr><tr><td>风格</td><td>CSS Variables + Scoped CSS 手写毛玻璃</td></tr></tbody></table><a id="GCi9fmzf-card" class="card-github fetch-waiting no-styling" href="https://github.com/yoshino-xiao7/setu_cloud" target="_blank" repo="yoshino-xiao7/setu_cloud" rel="noopener noreferrer"><div class="gc-titlebar"><div class="gc-titlebar-left"><div class="gc-owner"><div id="GCi9fmzf-avatar" class="gc-avatar"></div><div class="gc-user">yoshino-xiao7</div></div><div class="gc-divider">/</div><div class="gc-repo">setu_cloud</div></div><div class="github-logo"></div></div><div id="GCi9fmzf-description" class="gc-description">Waiting for api.github.com...</div><div class="gc-infobar"><div id="GCi9fmzf-stars" class="gc-stars">00K</div><div id="GCi9fmzf-forks" class="gc-forks">0K</div><div id="GCi9fmzf-license" class="gc-license">0K</div><span id="GCi9fmzf-language" class="gc-language">Waiting...</span></div><script id="GCi9fmzf-script" type="text/javascript" defer>
       fetch('https://api.github.com/repos/yoshino-xiao7/setu_cloud', { referrerPolicy: "no-referrer" }).then(response => response.json()).then(data => {
-        document.getElementById('GCo5atop-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
-        document.getElementById('GCo5atop-language').innerText = data.language;
-        document.getElementById('GCo5atop-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
-        document.getElementById('GCo5atop-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
-        const avatarEl = document.getElementById('GCo5atop-avatar');
+        document.getElementById('GCi9fmzf-description').innerText = data.description?.replace(/:[a-zA-Z0-9_]+:/g, '') || "Description not set";
+        document.getElementById('GCi9fmzf-language').innerText = data.language;
+        document.getElementById('GCi9fmzf-forks').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.forks).replaceAll(" ", '');
+        document.getElementById('GCi9fmzf-stars').innerText = Intl.NumberFormat('en-us', { notation: "compact", maximumFractionDigits: 1 }).format(data.stargazers_count).replaceAll(" ", '');
+        const avatarEl = document.getElementById('GCi9fmzf-avatar');
         avatarEl.style.backgroundImage = 'url(' + data.owner.avatar_url + ')';
         avatarEl.style.backgroundColor = 'transparent';
-        document.getElementById('GCo5atop-license').innerText = data.license?.spdx_id || "no-license";
-        document.getElementById('GCo5atop-card').classList.remove("fetch-waiting");
-        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/setu_cloud | GCo5atop.")
+        document.getElementById('GCi9fmzf-license').innerText = data.license?.spdx_id || "no-license";
+        document.getElementById('GCi9fmzf-card').classList.remove("fetch-waiting");
+        console.log("[GITHUB-CARD] Loaded card for yoshino-xiao7/setu_cloud | GCi9fmzf.")
       }).catch(err => {
-        const c = document.getElementById('GCo5atop-card');
+        const c = document.getElementById('GCi9fmzf-card');
         c?.classList.add("fetch-error");
-        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/setu_cloud | GCo5atop.")
+        console.warn("[GITHUB-CARD] (Error) Loading card for yoshino-xiao7/setu_cloud | GCi9fmzf.")
       })
     </script></a></section>  </div> <script type="module">document.addEventListener("click",function(s){const t=s.target;if(t&&t.classList.contains("copy-btn")){const c=t.closest("pre")?.querySelector("code"),i=Array.from(c?.querySelectorAll(".code:not(summary *)")??[]).map(e=>e.textContent).map(e=>e===`
 `?"":e).join(`
