@@ -40,7 +40,7 @@ pnpm format
 pnpm new-post hello-world
 ```
 
-文章放在 `src/content/posts`，项目日志放在 `src/content/devlogs`。文章 frontmatter 示例：
+文章放在 `src/content/posts`。文章 frontmatter 示例：
 
 ```markdown
 ---
@@ -89,7 +89,7 @@ pnpm clean -- --write
 
 站点包含 Cookie 同意横幅。Umami、百度统计、Clarity、Google Analytics 和 Cloudflare Web Analytics 会在用户接受后注入；Vercel Analytics 由 Vercel 平台脚本提供，隐私说明见 `src/content/spec/about.md`。
 
-评论区使用 Giscus，文章页和 devlog 页共用 `src/components/comments/Giscus.astro`。
+评论区使用 Giscus，文章页使用 `src/components/comments/Giscus.astro`。
 
 ## CI/CD
 
@@ -108,7 +108,7 @@ GitHub Actions 使用 pnpm 安装依赖并构建：
 ├── src/
 │   ├── components/         # Astro/Svelte 组件
 │   ├── constants/          # 分析、评论、链接等常量
-│   ├── content/            # posts/devlogs/spec 内容
+│   ├── content/            # posts/spec 内容
 │   ├── layouts/            # 页面布局
 │   ├── pages/              # 路由页面
 │   ├── scripts/            # 客户端初始化脚本

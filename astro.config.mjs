@@ -40,35 +40,31 @@ function normalizePath(url) {
  */
 function collectLastmod() {
 	const map = new Map();
-	for (const [dir, prefix] of [
-		["src/content/posts", "posts"],
-		["src/content/devlogs", "devlogs"],
-	]) {
-		let files = [];
-		try {
-			files = readdirSync(dir).filter((f) => f.endsWith(".md"));
-		} catch {
-			continue;
-		}
-		for (const file of files) {
-			const raw = readFileSync(join(dir, file), "utf8");
-			const fm = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-			if (!fm) continue;
-			const pick = (key) =>
-				fm[1].match(new RegExp(`^${key}:\\s*(.+)$`, "m"))?.[1].trim();
-			const stamp = pick("updated") || pick("published");
-			if (!stamp) continue;
-			const date = new Date(stamp.replace(/^["']|["']$/g, ""));
-			if (Number.isNaN(date.getTime())) continue;
-			// slug 规则与 Astro 一致：去扩展名，空格转连字符，点号直接删除
-			const slug = file
-				.replace(/\.md$/, "")
-				.replace(/\s+/g, "-")
-				.replace(/\./g, "")
-				.replace(/-+/g, "-")
-				.toLowerCase();
-			map.set(`${prefix}/${slug}`, date.toISOString());
-		}
+	const dir = "src/content/posts";
+	let files = [];
+	try {
+		files = readdirSync(dir).filter((f) => f.endsWith(".md"));
+	} catch {
+		return map;
+	}
+	for (const file of files) {
+		const raw = readFileSync(join(dir, file), "utf8");
+		const fm = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+		if (!fm) continue;
+		const pick = (key) =>
+			fm[1].match(new RegExp(`^${key}:\\s*(.+)$`, "m"))?.[1].trim();
+		const stamp = pick("updated") || pick("published");
+		if (!stamp) continue;
+		const date = new Date(stamp.replace(/^["']|["']$/g, ""));
+		if (Number.isNaN(date.getTime())) continue;
+		// slug 规则与 Astro 一致：去扩展名，空格转连字符，点号直接删除
+		const slug = file
+			.replace(/\.md$/, "")
+			.replace(/\s+/g, "-")
+			.replace(/\./g, "")
+			.replace(/-+/g, "-")
+			.toLowerCase();
+		map.set(`posts/${slug}`, date.toISOString());
 	}
 	return map;
 }
@@ -123,9 +119,6 @@ export default defineConfig({
 				} else if (item.url.includes("/posts/")) {
 					item.changefreq = "weekly";
 					item.priority = 0.8;
-				} else if (item.url.includes("/devlogs/")) {
-					item.changefreq = "weekly";
-					item.priority = 0.6;
 				} else {
 					item.changefreq = "monthly";
 					item.priority = 0.5;

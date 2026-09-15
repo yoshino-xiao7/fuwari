@@ -10,7 +10,7 @@ import { getAbsoluteUrl, jsonLdString } from "../utils/seo-utils";
 
 const aboutPost = await getEntry("spec", "about");
 const aboutDescription =
-	"关于雪涼（YukiRyou）和个人博客「雪涼的扣扣空间」：记录个人项目、技术实践、雪涼云开发日志与日常内容。";
+	"关于雪涼（YukiRyou）和个人博客「雪涼的扣扣空间」：记录个人项目、技术实践与日常内容。";
 
 if (!aboutPost) {
 	throw new Error("About page content not found");

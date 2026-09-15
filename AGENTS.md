@@ -1,11 +1,10 @@
 # AGENTS.md — fuwari 博客内容维护规范
 
-本仓库是基于 Fuwari 主题定制的个人博客（Astro 5 + Svelte 5 + Tailwind CSS + pnpm）。本文档约束所有博客内容（文章、日志、配图）的写法，所有新增或修改内容的操作都应遵循。
+本仓库是基于 Fuwari 主题定制的个人博客（Astro 5 + Svelte 5 + Tailwind CSS + pnpm）。本文档约束所有博客内容（文章、配图）的写法，所有新增或修改内容的操作都应遵循。
 
 ## 内容目录
 
 - 博客文章：`src/content/posts/`（*.md）
-- 项目日志：`src/content/devlogs/`（*.md，版本更新/项目日志）
 - 静态页面：`src/content/spec/`（about、privacy）
 - 配图：`src/content/assets/images/`（正文引用的图片；`public/` 放站点级静态资源）
 
@@ -46,19 +45,6 @@ draft: false
 - 更新已有文章时：修改内容后把 `updated` 更新为当前时间；若改了标题/描述，检查分类与标签是否仍准确。
 - `draft: true` 的文章不会发布，适合未完成的内容。
 
-## 项目日志 frontmatter（src/content/devlogs）
-
-必填：`title`、`published`、`project`（项目 ID，如 `xueliangyun` 或 `endfield-yunzai`）。可选：`summary`。
-
-```yaml
----
-title: "雪涼云 2.6.0 更新日志：AI 绘图 Beta 上线"
-published: 2026-06-27T22:30:00+08:00
-project: "xueliangyun"
-summary: "一句话概括本次更新"
----
-```
-
 ## 配图
 
 - 新图放入 `src/content/assets/images/`，文件名用日期+描述（如 `2026-07-31-xxx.png`），不要用随机哈希名。
@@ -85,12 +71,12 @@ summary: "一句话概括本次更新"
 
 ### 模块结构
 
-- **侧边栏小部件**：`src/components/widget/`（Profile、Tags、BlogExplorer、YukiServices、ProjectProgress 等），在 `src/components/widget/SideBar.astro` 中挂载。
+- **侧边栏小部件**：`src/components/widget/`（Profile、Tags、BlogExplorer、YukiServices 等），在 `src/components/widget/SideBar.astro` 中挂载。
 - **页面组件**：`src/components/`（Navbar、Footer、PostCard、PostPage 等）。
 - **控制组件**：`src/components/control/`（BackToTop、Pagination、ButtonTag 等）。
 - **音乐模块**：`src/components/music/`（PlayerFull、MusicPlayer、music-store.svelte.ts 等）。
 - **布局**：`src/layouts/`（`Layout.astro` 总布局、`MainGridLayout.astro` 主网格，侧栏 + 正文 + TOC 的排列在此）。
-- **路由页面**：`src/pages/`（`[...page].astro`、`posts/[...slug].astro`、`archive/`、`devlogs/`、`rss.xml.ts` 等）。
+- **路由页面**：`src/pages/`（`[...page].astro`、`posts/[...slug].astro`、`archive/`、`rss.xml.ts` 等）。
 - **样式**：`src/styles/`（main.css、markdown.css、markdown-extend.styl、variables.styl）。
 - **配置**：`src/config.ts`（站点与模块开关）、`src/types/config.ts`（配置类型）、`src/constants/`（常量与第三方配置）。
 

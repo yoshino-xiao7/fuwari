@@ -49,12 +49,12 @@ function getChangedFiles() {
 }
 
 function contentUrl(file) {
-	const match = file.match(/^src\/content\/(posts|devlogs)\/(.+)\.md$/);
+	const match = file.match(/^src\/content\/posts\/(.+)\.md$/);
 	if (!match) return null;
 
-	const [, collection, filename] = match;
+	const [, filename] = match;
 	const slug = filename.toLowerCase().replaceAll(".", "").replace(/\s+/g, "-");
-	return `${siteOrigin}/${collection}/${encodeURI(slug)}/`;
+	return `${siteOrigin}/posts/${encodeURI(slug)}/`;
 }
 
 function selectChangedUrls(allUrls) {
@@ -84,9 +84,6 @@ function selectChangedUrls(allUrls) {
 		selected.add(url);
 		selected.add(`${siteOrigin}/`);
 		selected.add(`${siteOrigin}/archive/`);
-		if (file.startsWith("src/content/devlogs/")) {
-			selected.add(`${siteOrigin}/devlogs/`);
-		}
 	}
 
 	return [...selected];

@@ -26,13 +26,6 @@ type SpecSchema = z.ZodObject<{
 
 type AssetsSchema = z.ZodObject<Record<string, never>>;
 
-type DevlogsSchema = z.ZodObject<{
-	title: z.ZodString;
-	published: z.ZodDate;
-	project: z.ZodString;
-	summary: z.ZodDefault<z.ZodOptional<z.ZodString>>;
-}>;
-
 const postsCollection: CollectionConfig<PostsSchema> = defineCollection({
 	schema: z.object({
 		title: z.string(),
@@ -68,23 +61,12 @@ const assetsCollection: CollectionConfig<AssetsSchema> = defineCollection({
 	schema: z.object({}),
 });
 
-const devlogsCollection: CollectionConfig<DevlogsSchema> = defineCollection({
-	schema: z.object({
-		title: z.string(),
-		published: z.date(),
-		project: z.string(), // 项目ID，如 'xueliangyun' 或 'endfield-yunzai'
-		summary: z.string().optional().default(""),
-	}),
-});
-
 export const collections: {
 	posts: typeof postsCollection;
 	spec: typeof specCollection;
 	assets: typeof assetsCollection;
-	devlogs: typeof devlogsCollection;
 } = {
 	posts: postsCollection,
 	spec: specCollection,
 	assets: assetsCollection,
-	devlogs: devlogsCollection,
 };
