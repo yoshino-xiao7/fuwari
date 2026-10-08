@@ -106,12 +106,12 @@ export const navBarConfig: NavBarConfig = {
 		},
 		{
 			name: "状态",
-			url: "https://status.yukiryou.icu/",
+			url: "https://status.suzuki.ink/",
 			external: true,
 		},
 		{
 			name: "服务",
-			url: "https://cloud.yukiryou.icu/", // Internal links should not include the base path, as it is automatically added
+			url: "https://yk.yukiryou.icu/", // Internal links should not include the base path, as it is automatically added
 			external: true, // Show an external link icon and will open in a new tab
 		},
 	],
