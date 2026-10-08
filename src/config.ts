@@ -18,6 +18,8 @@ export const identityConfig = {
 	siteAliases: ["雪凉的扣扣空间", "扣扣空间", "YukiRyou Blog"],
 	personAliases: ["雪凉", "YukiRyou", "yukiryou"],
 	topics: [
+		"亦可",
+		"亦可YK",
 		"雪涼云",
 		"个人服务",
 		"Astro",
@@ -40,6 +42,8 @@ export const siteConfig: SiteConfig = {
 		"雪凉",
 		"YukiRyou",
 		"yukiryou",
+		"亦可",
+		"亦可YK",
 		"雪涼云",
 		"个人博客",
 		"技术博客",
